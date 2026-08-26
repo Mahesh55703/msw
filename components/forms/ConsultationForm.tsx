@@ -1,0 +1,121 @@
+"use client";
+
+import { useState } from "react";
+import { submitConsultation } from "@/app/actions/contact";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+
+const services = [
+  "PF / ESIC",
+  "Labour Compliance",
+  "Factory Compliance",
+  "Payroll",
+  "Contractor Compliance",
+  "HR Consulting",
+  "Industrial Relations",
+  "Compliance Audit",
+  "Other"
+];
+
+export function ConsultationForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setStatusMessage(null);
+
+    const formData = new FormData(event.currentTarget);
+    const result = await submitConsultation(formData);
+
+    if (result.success) {
+      setStatusMessage({ type: 'success', text: result.message || "Success!" });
+      (event.target as HTMLFormElement).reset();
+    } else {
+      setStatusMessage({ type: 'error', text: result.error || "An error occurred." });
+    }
+    
+    setIsSubmitting(false);
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-8 bg-white p-6 md:p-8 rounded-lg shadow-sm border border-slate-200">
+      
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="name" className="text-sm font-medium text-slate-700">Name</label>
+          <Input id="name" name="name" required placeholder="John Doe" />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="company" className="text-sm font-medium text-slate-700">Company</label>
+          <Input id="company" name="company" required placeholder="Acme Industries" />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="phone" className="text-sm font-medium text-slate-700">Phone</label>
+          <Input id="phone" name="phone" required placeholder="+91 9876543210" />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="email" className="text-sm font-medium text-slate-700">Email</label>
+          <Input id="email" name="email" type="email" required placeholder="john@example.com" />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="industry" className="text-sm font-medium text-slate-700">Industry</label>
+          <Input id="industry" name="industry" required placeholder="Manufacturing, Auto, etc." />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="location" className="text-sm font-medium text-slate-700">Location</label>
+          <Input id="location" name="location" required placeholder="City, State" />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="employees" className="text-sm font-medium text-slate-700">Number of Employees</label>
+          <Input id="employees" name="employees" type="number" placeholder="e.g. 50" />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="contractors" className="text-sm font-medium text-slate-700">Number of Contract Workers</label>
+          <Input id="contractors" name="contractors" type="number" placeholder="e.g. 100" />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <label className="text-sm font-medium text-slate-700">What do you need help with?</label>
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {services.map((service) => (
+            <div key={service} className="flex items-center space-x-2">
+              <Checkbox id={`service-${service}`} name="services" value={service} />
+              <label htmlFor={`service-${service}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                {service}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="message" className="text-sm font-medium text-slate-700">Describe your requirement</label>
+        <Textarea id="message" name="message" rows={4} placeholder="Tell us about your current compliance challenges..." />
+      </div>
+
+      {statusMessage && (
+        <div className={`p-4 rounded-md text-sm ${statusMessage.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'} border`}>
+          {statusMessage.text}
+        </div>
+      )}
+
+      <Button type="submit" size="lg" className="w-full bg-slate-900 text-white hover:bg-slate-800" disabled={isSubmitting}>
+        {isSubmitting ? "Submitting..." : "Request Consultation"}
+      </Button>
+    </form>
+  );
+}
