@@ -67,7 +67,7 @@ export default function Footer() {
           {/* Column 1: LabourAxis */}
           <div className="lg:pr-4 mb-4 md:mb-0">
             <Link href="/" className="inline-block mb-6">
-              <Image src="/logo-transparent.png" alt="LabourAxis Logo" width={200} height={50} className="object-contain h-12 w-auto brightness-0 invert" />
+              <Image src="/logo-transparent.png" alt="LabourAxis Logo" width={250} height={80} className="object-contain h-16 w-auto brightness-0 invert" />
             </Link>
             <p className="text-white font-bold mb-2">HR, Labour & Compliance, Aligned.</p>
             <p className="text-slate-400 text-sm leading-relaxed mb-8">
