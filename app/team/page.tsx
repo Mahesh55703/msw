@@ -2,6 +2,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { ArrowRight, User, Network, Briefcase } from "lucide-react";
 import type { Metadata } from "next";
+import prisma from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Our Team | LabourAxis",
@@ -12,9 +13,9 @@ export const metadata: Metadata = {
 };
 
 const FUTURE_ROLES = [
-  "Director — Operations",
-  "Head — Labour Compliance",
-  "Head — HR Advisory",
+  "Director - Operations",
+  "Head - Labour Compliance",
+  "Head - HR Advisory",
   "Compliance Manager",
   "Industrial Relations Manager",
   "Payroll & Statutory Executive"
@@ -30,7 +31,12 @@ const NETWORK_CATEGORIES = [
   "Industrial Relations Professionals"
 ];
 
-export default function TeamPage() {
+export default async function TeamPage() {
+  const teamMembers = await prisma.teamMember.findMany({
+    where: { isActive: true },
+    orderBy: { order: 'asc' }
+  });
+
   return (
     <div className="flex flex-col pb-24">
       {/* 01. Hero */}
@@ -51,24 +57,37 @@ export default function TeamPage() {
         </div>
       </section>
 
-      {/* 02. Leadership */}
+      {/* 02. Leadership / Team */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4 md:px-8 max-w-4xl">
           <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">Leadership</h2>
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 md:p-12 shadow-sm flex flex-col md:flex-row gap-10 items-center md:items-start">
-            <div className="w-32 h-32 md:w-48 md:h-48 bg-slate-200 rounded-full shrink-0 flex items-center justify-center overflow-hidden border-4 border-white shadow-md">
-              <img src="/lavish-chouhan.png" alt="Lavish Chouhan" className="w-full h-full object-cover" />
-            </div>
-            <div className="text-center md:text-left">
-              <h2 className="text-3xl font-bold text-slate-900 mb-2">Lavish Chouhan</h2>
-              <div className="text-blue-700 font-bold mb-4 uppercase tracking-wider text-sm">Founder & Chief Executive Officer</div>
-              <a href="https://www.linkedin.com/in/lavish-chouhan-8b29b4361/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 mb-6 bg-blue-50 px-3 py-1.5 rounded-full transition-colors border border-blue-100">
-                View LinkedIn →
-              </a>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                HR professional focused on building LabourAxis around practical industrial HR, labour compliance and workforce-management solutions.
-              </p>
-            </div>
+          
+          <div className="space-y-8">
+            {teamMembers.map((member: any) => (
+              <div key={member.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-8 md:p-12 shadow-sm flex flex-col md:flex-row gap-10 items-center md:items-start">
+                <div className="w-32 h-32 md:w-48 md:h-48 bg-slate-200 rounded-full shrink-0 flex items-center justify-center overflow-hidden border-4 border-white shadow-md">
+                  {member.imageUrl ? (
+                    <img src={member.imageUrl} alt={member.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-16 h-16 text-slate-400" />
+                  )}
+                </div>
+                <div className="text-center md:text-left">
+                  <h2 className="text-3xl font-bold text-slate-900 mb-2">{member.name}</h2>
+                  <div className="text-blue-700 font-bold mb-4 uppercase tracking-wider text-sm">{member.role}</div>
+                  
+                  {member.name.includes("Lavish") && (
+                    <a href="https://www.linkedin.com/in/lavish-chouhan-8b29b4361/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 mb-6 bg-blue-50 px-3 py-1.5 rounded-full transition-colors border border-blue-100">
+                      View LinkedIn →
+                    </a>
+                  )}
+
+                  <p className="text-slate-600 leading-relaxed mb-4 whitespace-pre-wrap">
+                    {member.bio}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

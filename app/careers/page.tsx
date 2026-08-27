@@ -2,6 +2,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { ArrowRight, BookOpen, TrendingUp, Hammer, HeartHandshake } from "lucide-react";
 import type { Metadata } from "next";
+import prisma from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Careers at LabourAxis | HR & Labour Compliance",
@@ -45,58 +46,6 @@ const DEPARTMENTS = [
   "Technology"
 ];
 
-const OPEN_POSITIONS = [
-  {
-    title: "HR & Labour Compliance Executive",
-    location: "Indore / Hybrid",
-    type: "Full-time",
-    department: "Compliance",
-    tags: ["HR Operations", "Labour Compliance"]
-  },
-  {
-    title: "Labour Compliance Executive",
-    location: "Indore / Hybrid",
-    type: "Full-time",
-    department: "Labour Compliance",
-    tags: ["Statutory Compliance", "Registers"]
-  },
-  {
-    title: "HR Executive — Industrial Relations",
-    location: "Indore / Hybrid",
-    type: "Full-time",
-    department: "HR / IR",
-    tags: ["Employee Relations", "HR Operations"]
-  },
-  {
-    title: "Payroll & Statutory Executive",
-    location: "Indore / Hybrid",
-    type: "Full-time",
-    department: "Payroll",
-    tags: ["Payroll", "PF/ESIC"]
-  },
-  {
-    title: "Business Development Executive",
-    location: "Indore / Remote",
-    type: "Full-time",
-    department: "Business Development",
-    tags: ["B2B Sales", "Client Acquisition"]
-  },
-  {
-    title: "Compliance Analyst",
-    location: "Indore / Hybrid",
-    type: "Full-time",
-    department: "Compliance",
-    tags: ["Research", "Documentation"]
-  },
-  {
-    title: "Full-Stack Developer — Compliance Platform",
-    location: "Remote",
-    type: "Full-time",
-    department: "Technology",
-    tags: ["React", "Node.js", "Architecture"]
-  }
-];
-
 const HIRING_PROCESS = [
   { step: "01", title: "Application", desc: "Submit your application with your resume and details." },
   { step: "02", title: "Screening", desc: "Initial discussion to understand mutual fit." },
@@ -104,7 +53,12 @@ const HIRING_PROCESS = [
   { step: "04", title: "Offer", desc: "Selected candidates receive an offer to join LabourAxis." }
 ];
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const openPositions = await prisma.jobPosting.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: 'asc' }
+  });
+
   return (
     <div className="flex flex-col pb-24">
       {/* Hero */}
@@ -169,11 +123,11 @@ export default function CareersPage() {
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-3xl font-bold text-slate-900">Future Opportunities</h2>
             <span className="bg-blue-50 text-blue-700 text-sm font-bold px-3 py-1 rounded-full border border-blue-100">
-              {OPEN_POSITIONS.length} Career Paths Planned
+              {openPositions.length} Career Paths Planned
             </span>
           </div>
           <div className="space-y-6">
-            {OPEN_POSITIONS.map((job, idx) => (
+            {openPositions.map((job, idx) => (
               <div key={idx} className="border border-slate-200 rounded-xl p-6 md:p-8 hover:border-slate-300 transition-colors shadow-sm flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900 mb-2">{job.title}</h3>
@@ -185,11 +139,7 @@ export default function CareersPage() {
                     <span>{job.department}</span>
                   </div>
                   <div className="flex gap-2">
-                    {job.tags.map(tag => (
-                      <span key={tag} className="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded-md">
-                        {tag}
-                      </span>
-                    ))}
+                    {/* Tags removed as they are not in schema */}
                   </div>
                 </div>
                 <div className="mt-4 md:mt-0 shrink-0 text-right">

@@ -1,14 +1,16 @@
-import { resourcesData } from "@/data/resources";
+
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
-const CATEGORY_MAP: Record<string, { title: string; type: string }> = {
-  "guides": { title: "Guides", type: "guide" },
-  "checklists": { title: "Checklists", type: "checklist" },
-  "updates": { title: "Updates", type: "update" },
-  "articles": { title: "Articles", type: "article" }
+import prisma from '@/lib/prisma'
+
+const CATEGORY_MAP: Record<string, { title: string; dbCategory: string }> = {
+  "guides": { title: "Guides", dbCategory: "guides" },
+  "checklists": { title: "Checklists", dbCategory: "checklists" },
+  "updates": { title: "Updates", dbCategory: "updates" },
+  "articles": { title: "Articles", dbCategory: "articles" }
 };
 
 export async function generateStaticParams() {
@@ -36,8 +38,14 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
   
   if (!categoryInfo) notFound();
 
-  // For FAQs, we should render the accordion view (but we will just render a list for now, or redirect to a dedicated FAQ component if needed. Let's render a clean list here).
-  const items = resourcesData.filter(r => r.type === categoryInfo.type);
+  // Fetch from Prisma DB
+  const items = await prisma.article.findMany({
+    where: { 
+      category: categoryInfo.dbCategory,
+      published: true 
+    },
+    orderBy: { publishedAt: 'desc' }
+  });
 
   return (
     <div className="flex flex-col">
@@ -86,20 +94,20 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
 
           {items.length === 0 ? (
             <p className="text-slate-500">No {categoryInfo.title.toLowerCase()} published yet. Check back soon.</p>
-          ) : categoryInfo.type === 'faq' ? (
+          ) : resolvedParams.category === 'faqs' ? (
             <div className="space-y-4">
               {items.map(faq => (
                 <details key={faq.slug} className="group bg-white border border-slate-200 rounded-lg [&_summary::-webkit-details-marker]:hidden">
                   <summary className="flex cursor-pointer items-center justify-between p-6 font-bold text-slate-900">
-                    <span className="text-lg">{faq.question}</span>
+                    <span className="text-lg">{faq.title}</span>
                     <span className="ml-1.5 flex-shrink-0 bg-slate-100 p-1.5 rounded-full text-slate-500 group-open:bg-blue-100 group-open:text-blue-700">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 transition duration-300 group-open:-rotate-180" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                       </svg>
                     </span>
                   </summary>
-                  <div className="px-6 pb-6 text-slate-600 leading-relaxed">
-                    <p>{faq.answer}</p>
+                  <div className="px-6 pb-6 text-slate-600 leading-relaxed prose max-w-none">
+                    <div dangerouslySetInnerHTML={{ __html: faq.content }} />
                   </div>
                 </details>
               ))}
@@ -124,14 +132,14 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
                     </div>
                     <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100 text-sm">
                       <span className="text-slate-500 font-medium truncate pr-4">
-                        {item.readingTime && <>{item.readingTime} &middot; </>}
+                        
                         {item.updatedAt 
-                          ? `${item.type === 'guide' ? 'Updated' : 'Updated'} ${new Date(item.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
-                          : new Date(item.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+                          ? `${item.category === 'guides' ? 'Updated' : 'Updated'} ${new Date(item.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                          : new Date(item.publishedAt || item.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                         }
                       </span>
                       <span className="font-bold text-slate-900 flex items-center group-hover:text-blue-700 transition-colors whitespace-nowrap">
-                        Read {item.type === 'guide' ? 'Guide' : item.type === 'article' ? 'Article' : 'Resource'} <ArrowRight className="w-4 h-4 ml-1" />
+                        Read {item.category === 'guides' ? 'Guide' : item.category === 'articles' ? 'Article' : 'Resource'} <ArrowRight className="w-4 h-4 ml-1" />
                       </span>
                     </div>
                   </div>

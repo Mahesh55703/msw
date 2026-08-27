@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,13 +34,15 @@ export const metadata: Metadata = {
   },
 };
 
+import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth h-full">
       {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
         <head>
           <Script
@@ -66,9 +66,7 @@ export default function RootLayout({
         </head>
       )}
       <body className={`${inter.className} min-h-screen flex flex-col bg-slate-50`}>
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Turnstile } from "@marsidev/react-turnstile";
 
 const services = [
   "PF / ESIC",
@@ -168,6 +169,12 @@ export function ConsultationForm() {
       {statusMessage && (
         <div className={`p-4 rounded-md text-sm ${statusMessage.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'} border`}>
           {statusMessage.text}
+        </div>
+      )}
+
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+        <div className="flex justify-center pt-2">
+          <Turnstile siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
         </div>
       )}
 

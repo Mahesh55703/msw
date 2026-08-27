@@ -86,16 +86,16 @@ export default function FaqClientComponent({ initialData }: { initialData: FaqCa
               {popularQuestions.map((faq, idx) => (
                 <div key={idx} className="bg-slate-50 border border-slate-200 p-4 rounded-lg shadow-sm">
                   <h3 className="font-bold text-slate-900 mb-2">{faq.question}</h3>
-                  <p className="text-sm text-slate-600 line-clamp-2">{faq.answer}</p>
+                  <div className="text-sm text-slate-600 line-clamp-2" dangerouslySetInnerHTML={{ __html: faq.answer }} />
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Tabs - Horizontal Scroll on Mobile */}
+        {/* Tabs - Wrap to show all categories */}
         <div className="mb-12">
-          <div className="flex overflow-x-auto gap-2 pb-4 border-b border-slate-200 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div className="flex flex-wrap gap-2 pb-4 border-b border-slate-200">
             <button
               onClick={() => setActiveTab("all")}
               className={`whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm transition-colors shrink-0 ${
@@ -158,7 +158,7 @@ export default function FaqClientComponent({ initialData }: { initialData: FaqCa
                     </span>
                   </summary>
                   <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed border-t border-slate-100 pt-4 mt-2">
-                    <p>{faq.answer}</p>
+                    <div className="prose prose-slate max-w-none prose-p:leading-relaxed prose-a:text-blue-600" dangerouslySetInnerHTML={{ __html: faq.answer }} />
                   </div>
                 </details>
               ))}
@@ -190,7 +190,7 @@ export default function FaqClientComponent({ initialData }: { initialData: FaqCa
                         </span>
                       </summary>
                       <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed border-t border-slate-100 pt-4 mt-2">
-                        <p>{faq.answer}</p>
+                        <div className="prose prose-slate max-w-none prose-p:leading-relaxed prose-a:text-blue-600" dangerouslySetInnerHTML={{ __html: faq.answer }} />
                       </div>
                     </details>
                   ))}
