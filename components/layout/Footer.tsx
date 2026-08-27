@@ -53,9 +53,9 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Contact</h3>
             <ul className="flex flex-col gap-3">
-              <li>Phone: [PHONE NUMBER]</li>
-              <li>WhatsApp: [WHATSAPP]</li>
-              <li>Email: [EMAIL ADDRESS]</li>
+              <li>Phone: <a href="tel:18001800000" className="hover:text-white transition-colors">1800-180-0000</a></li>
+              <li>WhatsApp: <a href="https://wa.me/18001800000" className="hover:text-white transition-colors">1800-180-0000</a></li>
+              <li>Email: <a href="mailto:info@labouraxis.com" className="hover:text-white transition-colors">info@labouraxis.com</a></li>
               <li className="mt-2">
                 <Link href="/contact" className="text-white underline hover:no-underline">
                   Request Consultation

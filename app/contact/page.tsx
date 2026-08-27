@@ -13,7 +13,7 @@ export default function ContactPage() {
       {/* Hero */}
       <section className="bg-slate-900 text-white py-20">
         <div className="container mx-auto px-4 md:px-8 text-center max-w-3xl">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Discuss Your Compliance Requirements</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Discuss Your HR & Compliance Requirements</h1>
           <p className="text-xl text-slate-300">
             Whether you need a full compliance audit, routine HR support, or contractor compliance tracking, our team is ready to assist.
           </p>
@@ -25,9 +25,35 @@ export default function ContactPage() {
           <div className="lg:col-span-2">
             <h2 className="text-2xl font-bold text-slate-900 mb-6">Request a Consultation</h2>
             <p className="text-slate-600 mb-8">
-              Fill out the form below with details about your workforce and current challenges. We will review your requirement and get back to you promptly.
+              Fill out the form below with details about your workforce and current challenges. We will review your requirement and get back to you.
             </p>
             <ConsultationForm />
+
+            <div className="mt-16 bg-slate-50 border border-slate-200 rounded-2xl p-8">
+              <h3 className="text-2xl font-bold text-slate-900 mb-6">What happens next?</h3>
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <div className="text-sm font-bold text-blue-600 mb-1">01</div>
+                  <h4 className="font-bold text-slate-900 mb-2">Submit your requirement</h4>
+                  <p className="text-sm text-slate-600">Provide initial details through our consultation form.</p>
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-blue-600 mb-1">02</div>
+                  <h4 className="font-bold text-slate-900 mb-2">Initial discussion</h4>
+                  <p className="text-sm text-slate-600">We will schedule a call to explore your needs.</p>
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-blue-600 mb-1">03</div>
+                  <h4 className="font-bold text-slate-900 mb-2">Understand your requirements</h4>
+                  <p className="text-sm text-slate-600">Deep dive into your workforce structure and compliance gaps.</p>
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-blue-600 mb-1">04</div>
+                  <h4 className="font-bold text-slate-900 mb-2">Recommend an appropriate approach</h4>
+                  <p className="text-sm text-slate-600">We outline a practical plan to bring your processes under control.</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-1 space-y-8">
@@ -70,13 +96,6 @@ export default function ContactPage() {
                   title="LabourAxis Office Map"
                 ></iframe>
               </div>
-            </div>
-
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-6">
-              <h3 className="font-bold text-slate-900 mb-3">Our Approach</h3>
-              <p className="text-sm text-slate-600 mb-4">
-                We take a practical approach to compliance, focusing on your operational realities rather than just paperwork. We'll identify the gaps and help you build structured processes to mitigate risk.
-              </p>
             </div>
           </div>
         </div>

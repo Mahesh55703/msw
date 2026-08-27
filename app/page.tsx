@@ -2,53 +2,57 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { servicesData } from "@/data/services";
 import { industriesData } from "@/data/industries";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Check } from "lucide-react";
 import { Testimonials } from "@/components/home/Testimonials";
 import { HomeFaqs } from "@/components/home/HomeFaqs";
 
 export default function Home() {
   return (
     <div className="flex flex-col gap-24 pb-24">
-      {/* Hero Section */}
-      <section className="bg-slate-900 text-white pt-24 pb-32">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
-              Simplify HR. Strengthen Compliance. Reduce Risk.
-            </h1>
-            <p className="text-xl text-slate-300 mb-10 max-w-2xl text-balance">
-              Industrial HR, Labour & Statutory Compliance solutions for factories, MSMEs and growing businesses.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/contact" className={buttonVariants({ size: "lg", className: "bg-white text-slate-900 hover:bg-slate-100 text-base" })}>
-                Request a Consultation
-              </Link>
-              <Link href="/services" className={buttonVariants({ size: "lg", variant: "outline", className: "bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/30 text-base" })}>
-                Explore Services
-              </Link>
+      <div className="relative mb-8 md:mb-12">
+        {/* Hero Section */}
+        <section className="bg-slate-900 text-white pt-24 pb-32">
+          <div className="container mx-auto px-4 md:px-8">
+            <div className="max-w-3xl">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
+                Simplify HR. Strengthen Compliance. Reduce Risk.
+              </h1>
+              <p className="text-xl text-slate-300 mb-10 max-w-2xl text-balance">
+                Industrial HR, Labour & Statutory Compliance solutions for factories, MSMEs and growing businesses.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/contact" className={buttonVariants({ size: "lg", className: "bg-white text-slate-900 hover:bg-slate-100 text-base" })}>
+                  Request a Consultation
+                </Link>
+                <Link href="/services" className={buttonVariants({ size: "lg", variant: "outline", className: "bg-transparent border-white/20 text-white hover:bg-white/10 hover:border-white/30 text-base" })}>
+                  Explore Services
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Trust / Service Strip */}
-      <section className="-mt-12">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 flex flex-wrap justify-center gap-6 md:gap-12 text-sm font-semibold text-slate-600">
-            <span>HR Operations</span>
-            <span className="hidden sm:inline text-slate-300">•</span>
-            <span>Labour Compliance</span>
-            <span className="hidden sm:inline text-slate-300">•</span>
-            <span>PF / ESIC</span>
-            <span className="hidden sm:inline text-slate-300">•</span>
-            <span>Factory Compliance</span>
-            <span className="hidden sm:inline text-slate-300">•</span>
-            <span>Contract Labour</span>
-            <span className="hidden sm:inline text-slate-300">•</span>
-            <span>Industrial Relations</span>
+        {/* Trust / Service Strip */}
+        <section className="absolute bottom-0 left-0 w-full translate-y-1/2 z-10">
+          <div className="container mx-auto px-4 md:px-8">
+            <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6 flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm md:text-base font-bold text-slate-700">
+              {[
+                "HR Operations",
+                "Labour Compliance",
+                "PF / ESIC",
+                "Factory Compliance",
+                "Contract Labour",
+                "Industrial Relations"
+              ].map((highlight, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <Check className="w-5 h-5 text-green-600" />
+                  <span>{highlight}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* Why businesses work with us */}
       <section className="container mx-auto px-4 md:px-8">

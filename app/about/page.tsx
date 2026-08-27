@@ -99,13 +99,21 @@ export default function AboutPage() {
       {/* 02. Who We Are */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-center mb-16">
             <h2 className="text-3xl font-bold text-slate-900 mb-8">Who We Are</h2>
             <p className="text-xl text-slate-700 leading-relaxed mb-6">
               LabourAxis is being built around a simple idea: HR and compliance should not operate as disconnected administrative functions.
             </p>
             <p className="text-lg text-slate-600 leading-relaxed">
               Businesses need structured HR processes, organized workforce records, clear compliance tracking and practical support to manage their people effectively.
+            </p>
+          </div>
+          
+          {/* Our Vision */}
+          <div className="max-w-4xl mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-10 md:p-12 text-center shadow-sm">
+            <h2 className="text-3xl font-bold text-slate-900 mb-6">Our Vision</h2>
+            <p className="text-xl text-slate-700 leading-relaxed italic">
+              "To build a comprehensive ecosystem where practical industrial HR, structured labour compliance, and technology intersect to help workforce-intensive organizations operate efficiently and responsibly."
             </p>
           </div>
         </div>
@@ -174,17 +182,48 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* 05.5 Who We Serve */}
+      <section className="py-24 bg-slate-50 border-t border-slate-200">
+        <div className="container mx-auto px-4 md:px-8 max-w-5xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Who We Serve</h2>
+            <p className="text-lg text-slate-600">Our services are tailored for environments with complex workforce dynamics.</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            {[
+              "Manufacturing",
+              "Engineering",
+              "Automotive",
+              "Construction",
+              "Logistics",
+              "Hospitality",
+              "Healthcare",
+              "MSMEs"
+            ].map((audience, idx) => (
+              <div key={idx} className="bg-white border border-slate-200 rounded-lg p-6 flex items-center justify-center font-semibold text-slate-700 shadow-sm">
+                {audience}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 06. Meet the Founder */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4 md:px-8 max-w-4xl">
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 md:p-12 shadow-sm flex flex-col md:flex-row gap-10 items-center md:items-start">
             <div className="w-32 h-32 md:w-48 md:h-48 bg-slate-200 rounded-full shrink-0 flex items-center justify-center overflow-hidden border-4 border-white shadow-md">
-              <User className="w-16 h-16 text-slate-400" />
-              {/* NOTE: Replace with actual image <img src="/founder.jpg" alt="[Your Name]" className="w-full h-full object-cover" /> */}
+              {/* Add your photo to the public folder as lavish-chouhan.png */}
+              <img src="/lavish-chouhan.png" alt="Lavish Chouhan" className="w-full h-full object-cover" />
+              {/* <User className="w-16 h-16 text-slate-400" /> */}
             </div>
             <div className="text-center md:text-left">
-              <h2 className="text-3xl font-bold text-slate-900 mb-2">[Your Name]</h2>
-              <div className="text-blue-700 font-bold mb-6 uppercase tracking-wider text-sm">Founder | LabourAxis</div>
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Lavish Chouhan</h2>
+              <div className="text-blue-700 font-bold mb-4 uppercase tracking-wider text-sm">Founder | LabourAxis</div>
+              <a href="https://www.linkedin.com/in/lavish-chouhan-8b29b4361/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 mb-6 bg-blue-50 px-3 py-1.5 rounded-full transition-colors border border-blue-100">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                Connect on LinkedIn
+              </a>
               <p className="text-slate-600 leading-relaxed mb-4">
                 Currently pursuing an MSW with specialization in Human Resource Management, with a growing focus on industrial HR, employee relations and labour compliance.
               </p>

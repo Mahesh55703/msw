@@ -44,10 +44,14 @@ export function ConsultationForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-8 bg-white p-6 md:p-8 rounded-lg shadow-sm border border-slate-200">
       
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-3 gap-6">
         <div className="space-y-2">
           <label htmlFor="name" className="text-sm font-medium text-slate-700">Name</label>
           <Input id="name" name="name" required placeholder="John Doe" />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="designation" className="text-sm font-medium text-slate-700">Designation</label>
+          <Input id="designation" name="designation" required placeholder="HR Manager" />
         </div>
         <div className="space-y-2">
           <label htmlFor="company" className="text-sm font-medium text-slate-700">Company</label>

@@ -11,7 +11,7 @@ export const mainNav = [
       { title: "Factory & Industrial Compliance", href: "/services/factory-compliance" },
       { title: "Contract Labour Compliance", href: "/services/contract-labour-compliance" },
       { title: "Industrial Relations", href: "/services/industrial-relations" },
-      { title: "Compliance Health Check & Audit", href: "/services/compliance-audit" }
+      { title: "Compliance Health Check", href: "/compliance-health-check" }
     ]
   },
   { 
@@ -41,13 +41,23 @@ export const mainNav = [
       { title: "Articles", href: "/resources/articles" }
     ]
   },
-  { title: "About", href: "/about" },
+  { 
+    title: "About", 
+    href: "/about",
+    items: [
+      { title: "About LabourAxis", href: "/about" },
+      { title: "Our Team", href: "/team" },
+      { title: "Careers", href: "/careers" }
+    ]
+  },
   { title: "Contact", href: "/contact" },
 ];
 
 export const footerNav = {
   company: [
     { title: "About", href: "/about" },
+    { title: "Team", href: "/team" },
+    { title: "Careers", href: "/careers" },
     { title: "Services", href: "/services" },
     { title: "Industries", href: "/industries" },
     { title: "Resources", href: "/resources" },
