@@ -1,3 +1,14 @@
+
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "LabourAxis | Industrial HR & Labour Compliance Consultancy",
+  description: "Practical HR, labour compliance, PF, ESIC and workforce support for factories, MSMEs and workforce-intensive businesses across India.",
+  alternates: {
+    canonical: "/"
+  }
+};
+
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { servicesData } from "@/data/services";

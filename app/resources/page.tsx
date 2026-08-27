@@ -4,8 +4,11 @@ import { BookOpen, CheckSquare, HelpCircle, Bell, FileText, ArrowRight } from "l
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "HR, Labour & Compliance Resources | LabourAxis",
-  description: "Practical guides, checklists, FAQs and compliance insights to help businesses understand and manage HR and labour requirements.",
+  title: "HR & Labour Compliance Resources | LabourAxis",
+  description: "Access LabourAxis resources including guides, articles, checklists, and updates to stay compliant with Indian labour laws and statutory regulations.",
+  alternates: {
+    canonical: "/resources"
+  }
 };
 
 const CATEGORIES = [

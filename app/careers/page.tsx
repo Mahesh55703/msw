@@ -4,8 +4,11 @@ import { ArrowRight, BookOpen, TrendingUp, Hammer, HeartHandshake } from "lucide
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Careers | LabourAxis",
-  description: "Build the future of industrial HR & Compliance with LabourAxis.",
+  title: "Careers at LabourAxis | HR & Labour Compliance",
+  description: "Join LabourAxis and help shape the future of industrial HR and labour compliance in India. Explore our current open roles and opportunities.",
+  alternates: {
+    canonical: "/careers"
+  }
 };
 
 const WHY_CARDS = [

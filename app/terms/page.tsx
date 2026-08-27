@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Use | LabourAxis",
-  description: "Terms and conditions for using the LabourAxis website and services.",
+  title: "Terms of Service | LabourAxis",
+  description: "Read the LabourAxis Terms of Service covering the usage of our website and HR and compliance consultation services.",
+  alternates: {
+    canonical: "/terms"
+  }
 };
 
 export default function TermsPage() {

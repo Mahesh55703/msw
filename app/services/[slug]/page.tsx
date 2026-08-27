@@ -15,13 +15,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const resolvedParams = await params;
   const service = servicesData.find((s) => s.slug === resolvedParams.slug);
   if (!service) {
-    return {
-      title: "Service Not Found",
-    };
+    return { title: "Service Not Found" };
   }
   return {
     title: `${service.title} | LabourAxis`,
     description: service.heroSupportingText,
+    alternates: {
+      canonical: `/services/${service.slug}`
+    }
   };
 }
 
@@ -51,8 +52,33 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
   const relatedServicesData = servicesData.filter(s => service.relatedServices.includes(s.slug));
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        "name": service.title,
+        "description": service.heroSupportingText,
+        "provider": {
+          "@type": "Organization",
+          "name": "LabourAxis",
+          "url": process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": (process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com") },
+          { "@type": "ListItem", "position": 2, "name": "Services", "item": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/services` },
+          { "@type": "ListItem", "position": 3, "name": service.title, "item": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/services/${service.slug}` }
+        ]
+      }
+    ]
+  };
+
   return (
     <div className="flex flex-col pb-24">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* 01. Breadcrumb */}
       <div className="bg-slate-900 border-b border-slate-800 pt-6 pb-4">
         <div className="container mx-auto px-4 md:px-8">

@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Disclaimer | LabourAxis",
-  description: "Important legal disclaimers regarding the information and services provided by LabourAxis.",
+  description: "Important legal disclaimer regarding the use of LabourAxis website content and our position on providing general informational compliance content.",
+  alternates: {
+    canonical: "/disclaimer"
+  }
 };
 
 export default function DisclaimerPage() {

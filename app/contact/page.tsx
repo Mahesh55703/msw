@@ -3,8 +3,11 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Request Consultation | Industrial HR & Labour Compliance",
-  description: "Discuss your HR, payroll, and compliance requirements with our experts.",
+  title: "Contact LabourAxis | HR & Labour Compliance Consultation",
+  description: "Get in touch with LabourAxis for practical HR, labour compliance, PF, ESIC, and workforce support tailored to your business needs.",
+  alternates: {
+    canonical: "/contact"
+  }
 };
 
 export default function ContactPage() {
@@ -60,13 +63,6 @@ export default function ContactPage() {
             <div>
               <h3 className="text-xl font-bold text-slate-900 mb-6">Get in Touch</h3>
               <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <Phone className="w-5 h-5 text-slate-600 mt-1 shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-slate-900">Phone</h4>
-                    <a href="tel:18001800000" className="text-slate-600 hover:text-blue-600 transition-colors">1800-180-0000</a>
-                  </div>
-                </div>
                 <div className="flex items-start gap-4">
                   <Mail className="w-5 h-5 text-slate-600 mt-1 shrink-0" />
                   <div>

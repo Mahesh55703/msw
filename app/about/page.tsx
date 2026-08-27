@@ -4,8 +4,11 @@ import { ArrowRight, CheckCircle2, User, Building2, Network, BookOpen, ShieldChe
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About LabourAxis | Practical HR & Labour Compliance",
-  description: "LabourAxis focuses on the intersection of HR Operations, Labour Compliance, Industrial Relations, and Workforce Management.",
+  title: "About LabourAxis | Industrial HR & Labour Compliance",
+  description: "Learn about LabourAxis, our mission, values, and our expertise in providing practical HR and statutory compliance support for workforce-intensive businesses.",
+  alternates: {
+    canonical: "/about"
+  }
 };
 
 const FOCUS_PILLARS = [

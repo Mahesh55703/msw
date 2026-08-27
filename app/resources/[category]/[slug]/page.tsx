@@ -29,6 +29,9 @@ export async function generateMetadata({ params }: { params: Promise<{ category:
   return {
     title: `${resource.title} | LabourAxis`,
     description: resource.excerpt,
+    alternates: {
+      canonical: `/resources/${resolvedParams.category}/${resource.slug}`
+    }
   };
 }
 
@@ -87,8 +90,46 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
     }
   };
 
+  const jsonLd: any = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": (process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com") },
+          { "@type": "ListItem", "position": 2, "name": "Resources", "item": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/resources` },
+          { "@type": "ListItem", "position": 3, "name": resolvedParams.category.charAt(0).toUpperCase() + resolvedParams.category.slice(1), "item": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/resources/${resolvedParams.category}` },
+          { "@type": "ListItem", "position": 4, "name": resource.title, "item": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/resources/${resolvedParams.category}/${resource.slug}` }
+        ]
+      }
+    ]
+  };
+
+  if (resource.type === 'article' || resource.type === 'guide') {
+    jsonLd["@graph"].push({
+      "@type": "Article",
+      "headline": resource.title,
+      "description": resource.excerpt,
+      "datePublished": resource.publishedAt,
+      "dateModified": resource.updatedAt || resource.publishedAt,
+      "author": {
+        "@type": "Organization",
+        "name": "LabourAxis"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "LabourAxis",
+        "logo": {
+          "@type": "ImageObject",
+          "url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/logo.png`
+        }
+      }
+    });
+  }
+
   return (
     <div className="flex flex-col pb-24 bg-white min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Breadcrumb */}
       <div className="bg-slate-50 border-b border-slate-200 pt-6 pb-4">
         <div className="container mx-auto px-4 md:px-8 max-w-7xl">
@@ -272,6 +313,38 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                   </div>
                 )}
               </>
+            )}
+
+            {/* Checklist Content */}
+            {resource.type === 'checklist' && resource.checklistItems && (
+              <div className="space-y-12">
+                {resource.checklistItems.map((section, idx) => (
+                  <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 shadow-sm">
+                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-100 flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0">
+                        {idx + 1}
+                      </div>
+                      {section.category}
+                    </h3>
+                    <ul className="space-y-4">
+                      {section.items.map((item, itemIdx) => (
+                        <li key={itemIdx} className="flex items-start gap-4">
+                          <div className="w-6 h-6 rounded border-2 border-slate-300 flex-shrink-0 mt-0.5 flex items-center justify-center bg-slate-50" />
+                          <span className="text-slate-700 leading-relaxed text-lg">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+
+                <div className="mt-12 text-center p-8 bg-slate-50 rounded-2xl border border-slate-200">
+                   <h4 className="text-xl font-bold text-slate-900 mb-2">Need help implementing these compliance checks?</h4>
+                   <p className="text-slate-600 mb-6">LabourAxis can review your HR and labour compliance processes and identify areas requiring attention.</p>
+                   <Link href="/contact" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-blue-600 text-white hover:bg-blue-700 h-11 px-8">
+                     Request a Compliance Health Check
+                   </Link>
+                </div>
+              </div>
             )}
           </article>
         </div>

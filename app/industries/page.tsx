@@ -4,8 +4,11 @@ import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Industries | LabourAxis",
-  description: "Workforce requirements, labour compliance and HR challenges vary by industry. Discover tailored compliance support.",
+  title: "Industries We Serve | LabourAxis",
+  description: "LabourAxis provides tailored HR and compliance solutions across manufacturing, construction, logistics, and other workforce-intensive industries.",
+  alternates: {
+    canonical: "/industries"
+  }
 };
 
 export default function IndustriesHubPage() {

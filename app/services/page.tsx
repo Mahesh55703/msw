@@ -3,8 +3,11 @@ import { ServiceCard } from "@/components/services/ServiceCard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Services | LabourAxis",
-  description: "Comprehensive HR, labour, and statutory compliance services for factories, MSMEs, and contractors.",
+  title: "HR & Labour Compliance Services | LabourAxis",
+  description: "Explore LabourAxis services including PF, ESIC, Factory Compliance, Contract Labour, and comprehensive HR consulting for Indian industries.",
+  alternates: {
+    canonical: "/services"
+  }
 };
 
 export default function ServicesPage() {

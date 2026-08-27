@@ -1,11 +1,43 @@
 "use server";
 
 import { Resend } from "resend";
+import { headers } from "next/headers";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Simple in-memory rate limiting map
+const rateLimitMap = new Map<string, { count: number, timestamp: number }>();
+const RATE_LIMIT = 5; // max 5 submissions
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
 export async function submitConsultation(formData: FormData) {
   try {
+    const headersList = await headers();
+    const ip = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown';
+    
+    // Basic Rate Limiting
+    if (ip !== 'unknown') {
+      const now = Date.now();
+      const ipData = rateLimitMap.get(ip);
+      
+      if (ipData && (now - ipData.timestamp) < RATE_LIMIT_WINDOW_MS) {
+        if (ipData.count >= RATE_LIMIT) {
+          return { success: false, error: "Too many requests. Please try again later." };
+        }
+        rateLimitMap.set(ip, { count: ipData.count + 1, timestamp: ipData.timestamp });
+      } else {
+        rateLimitMap.set(ip, { count: 1, timestamp: now });
+      }
+    }
+
+    // Honeypot spam protection check
+    const websiteHoneypot = formData.get("website");
+    if (websiteHoneypot) {
+      console.log("Spam detected via honeypot.");
+      // Pretend it was successful to trick the bot
+      return { success: true, message: "Message received successfully." };
+    }
+
     const data = {
       name: formData.get("name") as string,
       company: formData.get("company") as string,

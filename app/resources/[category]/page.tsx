@@ -23,6 +23,10 @@ export async function generateMetadata({ params }: { params: Promise<{ category:
   
   return {
     title: `${categoryInfo.title} | LabourAxis Resources`,
+    description: `Browse all LabourAxis ${categoryInfo.title.toLowerCase()} regarding HR, PF, ESIC and labour compliance.`,
+    alternates: {
+      canonical: `/resources/${resolvedParams.category}`
+    }
   };
 }
 

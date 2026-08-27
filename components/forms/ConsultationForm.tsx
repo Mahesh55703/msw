@@ -34,6 +34,11 @@ export function ConsultationForm() {
     if (result.success) {
       setStatusMessage({ type: 'success', text: result.message || "Success!" });
       (event.target as HTMLFormElement).reset();
+      
+      // GA4 Conversion Tracking
+      if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'consultation_submit');
+      }
     } else {
       setStatusMessage({ type: 'error', text: result.error || "An error occurred." });
     }
@@ -44,10 +49,13 @@ export function ConsultationForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-8 bg-white p-6 md:p-8 rounded-lg shadow-sm border border-slate-200">
       
+      {/* Honeypot field for spam protection */}
+      <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+      
       <div className="grid md:grid-cols-3 gap-6">
         <div className="space-y-2">
           <label htmlFor="name" className="text-sm font-medium text-slate-700">Name</label>
-          <Input id="name" name="name" required placeholder="John Doe" />
+          <Input id="name" name="name" required placeholder="Your Name" />
         </div>
         <div className="space-y-2">
           <label htmlFor="designation" className="text-sm font-medium text-slate-700">Designation</label>
@@ -55,7 +63,7 @@ export function ConsultationForm() {
         </div>
         <div className="space-y-2">
           <label htmlFor="company" className="text-sm font-medium text-slate-700">Company</label>
-          <Input id="company" name="company" required placeholder="Acme Industries" />
+          <Input id="company" name="company" required placeholder="Your Company" />
         </div>
       </div>
 
@@ -66,7 +74,7 @@ export function ConsultationForm() {
         </div>
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium text-slate-700">Email</label>
-          <Input id="email" name="email" type="email" required placeholder="john@example.com" />
+          <Input id="email" name="email" type="email" required placeholder="you@company.com" />
         </div>
       </div>
 

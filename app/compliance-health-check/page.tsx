@@ -4,8 +4,11 @@ import { ArrowRight, CheckCircle2, ShieldAlert, FileSearch, ClipboardCheck, Sett
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Compliance Health Check | LabourAxis",
-  description: "Identify compliance gaps before they become costly problems with a comprehensive Labour & Statutory Compliance Health Check.",
+  title: "Labour & Statutory Compliance Health Check | LabourAxis",
+  description: "Request a comprehensive health check from LabourAxis to identify gaps, mitigate risks, and strengthen your statutory and labour compliance frameworks.",
+  alternates: {
+    canonical: "/compliance-health-check"
+  }
 };
 
 const WHAT_WE_REVIEW = [

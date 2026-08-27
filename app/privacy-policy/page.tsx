@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | LabourAxis",
-  description: "Learn how LabourAxis collects, uses, and protects your information.",
+  description: "Read the LabourAxis Privacy Policy to understand how we collect, use, and protect your personal and business information.",
+  alternates: {
+    canonical: "/privacy-policy"
+  }
 };
 
 export default function PrivacyPolicyPage() {
@@ -70,7 +73,6 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-bold text-slate-900 mb-4">5. Contact Us</h2>
               <p>If you have questions or comments about this Privacy Policy, please contact us at:</p>
               <p className="mt-4 font-semibold text-slate-900">Email: info@labouraxis.com</p>
-              <p className="font-semibold text-slate-900">Phone: 1800-180-0000</p>
             </div>
 
           </div>

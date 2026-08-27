@@ -4,8 +4,11 @@ import { ArrowRight, User, Network, Briefcase } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Our Team & Professional Network | LabourAxis",
-  description: "Meet the leadership and professional network behind LabourAxis.",
+  title: "Our Team | LabourAxis",
+  description: "Meet the LabourAxis team of HR and labour compliance experts dedicated to helping factories and MSMEs across India reduce risk and build better workplaces.",
+  alternates: {
+    canonical: "/team"
+  }
 };
 
 const FUTURE_ROLES = [
@@ -90,7 +93,7 @@ export default function TeamPage() {
                 </div>
                 <h3 className="font-bold text-slate-900 mb-2">{role}</h3>
                 <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full uppercase tracking-wide">
-                  Position Opening Soon
+                  Future Opportunities
                 </span>
               </div>
             ))}

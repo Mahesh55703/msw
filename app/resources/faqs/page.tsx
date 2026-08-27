@@ -3,10 +3,33 @@ import type { Metadata } from "next";
 import FaqClientComponent from "./FaqClientComponent";
 
 export const metadata: Metadata = {
-  title: "Frequently Asked Questions | LabourAxis",
-  description: "Find practical answers to common HR, labour, statutory compliance and workforce-management questions.",
+  title: "HR, Labour & Compliance FAQs | LabourAxis",
+  description: "Find answers to frequently asked questions regarding PF, ESIC, factory compliance, contract labour, and general HR regulations in India.",
+  alternates: {
+    canonical: "/resources/faqs"
+  }
 };
 
 export default function FaqsPage() {
-  return <FaqClientComponent initialData={faqsData} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqsData.flatMap(category => 
+      category.faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    )
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <FaqClientComponent initialData={faqsData} />
+    </>
+  );
 }

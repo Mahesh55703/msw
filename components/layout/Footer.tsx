@@ -75,10 +75,6 @@ export default function Footer() {
             </p>
             
             <div className="space-y-3 text-sm text-slate-400">
-              <a href="tel:18001800000" className="flex items-center gap-3 hover:text-white transition-colors group">
-                <Phone className="w-4 h-4 group-hover:text-blue-400" />
-                1800-180-0000
-              </a>
               <a href="mailto:info@labouraxis.com" className="flex items-center gap-3 hover:text-white transition-colors group">
                 <Mail className="w-4 h-4 group-hover:text-blue-400" />
                 info@labouraxis.com
