@@ -113,7 +113,7 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-10 md:p-12 text-center shadow-sm">
             <h2 className="text-3xl font-bold text-slate-900 mb-6">Our Vision</h2>
             <p className="text-xl text-slate-700 leading-relaxed italic">
-              "To build a comprehensive ecosystem where practical industrial HR, structured labour compliance, and technology intersect to help workforce-intensive organizations operate efficiently and responsibly."
+              "To build a trusted ecosystem for practical industrial HR, labour compliance and workforce management."
             </p>
           </div>
         </div>
@@ -225,7 +225,7 @@ export default function AboutPage() {
                 Connect on LinkedIn
               </a>
               <p className="text-slate-600 leading-relaxed mb-4">
-                Currently pursuing an MSW with specialization in Human Resource Management, with a growing focus on industrial HR, employee relations and labour compliance.
+                Currently pursuing an MSW with a specialization in Human Resource Management, with a growing focus on industrial HR, employee relations and labour compliance.
               </p>
               <p className="text-slate-600 leading-relaxed mb-6">
                 With a background in Social Work and HR, the long-term vision is to build LabourAxis into a practical HR and labour compliance consultancy serving factories, MSMEs and workforce-intensive organizations.
@@ -246,7 +246,7 @@ export default function AboutPage() {
           <Network className="w-12 h-12 text-blue-600 mx-auto mb-6" />
           <h2 className="text-3xl font-bold text-slate-900 mb-6">A Connected Professional Approach</h2>
           <p className="text-lg text-slate-600 leading-relaxed max-w-3xl mx-auto">
-            Some HR, compliance and business matters require specialized professional expertise. Where appropriate, LabourAxis can work alongside appropriately qualified professionals such as legal practitioners, Chartered Accountants, Company Secretaries and safety professionals.
+            Some HR, compliance and business matters require specialized professional expertise. Where appropriate, LabourAxis can work alongside appropriately qualified professionals such as legal practitioners, Chartered Accountants, Company Secretaries and safety professionals. We are actively building relationships with domain experts to support our clients' broader needs.
           </p>
         </div>
       </section>

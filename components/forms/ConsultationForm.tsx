@@ -84,11 +84,50 @@ export function ConsultationForm() {
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label htmlFor="employees" className="text-sm font-medium text-slate-700">Number of Employees</label>
-          <Input id="employees" name="employees" type="number" placeholder="e.g. 50" />
+          <select id="employees" name="employees" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2">
+            <option value="">Select Range</option>
+            <option value="1-10">1–10</option>
+            <option value="11-50">11–50</option>
+            <option value="51-100">51–100</option>
+            <option value="101-250">101–250</option>
+            <option value="251-500">251–500</option>
+            <option value="500+">500+</option>
+          </select>
         </div>
         <div className="space-y-2">
           <label htmlFor="contractors" className="text-sm font-medium text-slate-700">Number of Contract Workers</label>
-          <Input id="contractors" name="contractors" type="number" placeholder="e.g. 100" />
+          <select id="contractors" name="contractors" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2">
+            <option value="">Select Range</option>
+            <option value="0">0 (None)</option>
+            <option value="1-10">1–10</option>
+            <option value="11-50">11–50</option>
+            <option value="51-100">51–100</option>
+            <option value="101-250">101–250</option>
+            <option value="251-500">251–500</option>
+            <option value="500+">500+</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="preferredContact" className="text-sm font-medium text-slate-700">Preferred Contact Method</label>
+          <select id="preferredContact" name="preferredContact" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2">
+            <option value="Phone">Phone</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Email">Email</option>
+          </select>
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="source" className="text-sm font-medium text-slate-700">How did you hear about us?</label>
+          <select id="source" name="source" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2">
+            <option value="">Please select</option>
+            <option value="Google">Google / Search</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Referral">Referral</option>
+            <option value="Existing Client">Existing Client</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
       </div>
 
@@ -109,6 +148,13 @@ export function ConsultationForm() {
       <div className="space-y-2">
         <label htmlFor="message" className="text-sm font-medium text-slate-700">Describe your requirement</label>
         <Textarea id="message" name="message" rows={4} placeholder="Tell us about your current compliance challenges..." />
+      </div>
+
+      <div className="flex items-start space-x-3 pt-2">
+        <Checkbox id="privacy" name="privacy" required className="mt-1" />
+        <label htmlFor="privacy" className="text-sm text-slate-600 leading-relaxed">
+          I agree to LabourAxis processing the information submitted through this form for responding to my enquiry. View our <a href="/privacy-policy" className="text-blue-600 hover:underline">Privacy Policy</a>.
+        </label>
       </div>
 
       {statusMessage && (

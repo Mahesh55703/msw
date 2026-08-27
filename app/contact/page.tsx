@@ -77,24 +77,11 @@ export default function ContactPage() {
                 <div className="flex items-start gap-4">
                   <MapPin className="w-5 h-5 text-slate-600 mt-1 shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-slate-900">Office</h4>
-                    <p className="text-slate-600">223-C, Vaibhav nagar Extention,<br/>Kanadiya Road, Indore - 452016</p>
-                    <p className="text-sm text-slate-500 mt-2">Available for pan-India remote consulting and on-site support where applicable.</p>
+                    <h4 className="font-semibold text-slate-900">Location</h4>
+                    <p className="text-slate-600">Based in Indore, Madhya Pradesh</p>
+                    <p className="text-sm text-slate-500 mt-2">Serving clients remotely across India, with on-site support where applicable.</p>
                   </div>
                 </div>
-              </div>
-              
-              <div className="mt-8 rounded-xl overflow-hidden border border-slate-200 shadow-sm h-64 bg-slate-100">
-                <iframe 
-                  src="https://www.google.com/maps?q=223-C,+Vaibhav+Nagar+Extention,+Kanadiya+Road,+Indore+-+452016&output=embed" 
-                  width="100%" 
-                  height="100%" 
-                  style={{border: 0}} 
-                  allowFullScreen={false} 
-                  loading="lazy" 
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="LabourAxis Office Map"
-                ></iframe>
               </div>
             </div>
           </div>

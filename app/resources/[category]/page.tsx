@@ -36,7 +36,7 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
   const items = resourcesData.filter(r => r.type === categoryInfo.type);
 
   return (
-    <div className="flex flex-col pb-24">
+    <div className="flex flex-col">
       <div className="bg-slate-900 border-b border-slate-800 pt-6 pb-4">
         <div className="container mx-auto px-4 md:px-8">
           <nav className="flex text-sm text-slate-400">
@@ -49,15 +49,37 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
         </div>
       </div>
 
-      <section className="bg-slate-900 text-white pt-12 pb-20">
+      <section className="bg-slate-900 text-white pt-12 pb-16">
         <div className="container mx-auto px-4 md:px-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">{categoryInfo.title}</h1>
-          <p className="text-xl text-slate-300">Browse our collection of {categoryInfo.title.toLowerCase()}.</p>
+          <p className="text-xl text-slate-300">
+            {resolvedParams.category === 'articles' 
+              ? "Practical insights on HR, labour compliance, industrial relations and workforce management." 
+              : resolvedParams.category === 'guides'
+              ? "Practical guides for HR, labour compliance and workforce management."
+              : `Browse our collection of ${categoryInfo.title.toLowerCase()}.`}
+          </p>
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-12 mb-12">
         <div className="container mx-auto px-4 md:px-8 max-w-5xl">
+          
+          {resolvedParams.category === 'articles' && (
+            <div className="mb-12">
+              <div className="max-w-md mb-6">
+                <input type="text" placeholder="Search articles..." className="w-full h-12 rounded-lg border border-slate-200 px-4 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent text-slate-900" />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="bg-slate-900 text-white text-sm font-semibold px-4 py-2 rounded-full cursor-pointer">All</span>
+                <span className="bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm font-semibold px-4 py-2 rounded-full cursor-pointer transition-colors">Labour Compliance</span>
+                <span className="bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm font-semibold px-4 py-2 rounded-full cursor-pointer transition-colors">HR</span>
+                <span className="bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm font-semibold px-4 py-2 rounded-full cursor-pointer transition-colors">PF/ESIC</span>
+                <span className="bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm font-semibold px-4 py-2 rounded-full cursor-pointer transition-colors">Factory</span>
+              </div>
+            </div>
+          )}
+
           {items.length === 0 ? (
             <p className="text-slate-500">No {categoryInfo.title.toLowerCase()} published yet. Check back soon.</p>
           ) : categoryInfo.type === 'faq' ? (
@@ -79,17 +101,35 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
               ))}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className={items.length === 1 ? "max-w-2xl mx-auto" : "grid md:grid-cols-2 lg:grid-cols-3 gap-8"}>
               {items.map(item => (
-                <Link key={item.slug} href={`/resources/${resolvedParams.category}/${item.slug}`} className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-all flex flex-col">
-                  <div className="mb-4">
-                    <span className="inline-block bg-slate-100 text-slate-700 text-xs font-bold px-2 py-1 rounded mb-3">{item.category}</span>
-                    <h2 className="text-xl font-bold text-slate-900 mb-2">{item.title}</h2>
-                    <p className="text-slate-600 line-clamp-2">{item.excerpt}</p>
+                <Link key={item.slug} href={`/resources/${resolvedParams.category}/${item.slug}`} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-slate-300 transition-all flex flex-col group">
+                  <div className="aspect-video bg-slate-100 relative overflow-hidden border-b border-slate-100 flex items-center justify-center">
+                    {item.featuredImage ? (
+                      <img src={item.featuredImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400 group-hover:scale-105 transition-transform duration-500">
+                        <span className="font-semibold text-sm">LabourAxis</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100 text-sm">
-                    <span className="text-slate-500">{item.publishedAt}</span>
-                    <span className="font-bold text-blue-700 flex items-center">Read <ArrowRight className="w-4 h-4 ml-1" /></span>
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="mb-4">
+                      <span className="inline-block bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-md mb-3 uppercase tracking-wider">{item.category}</span>
+                      <h2 className="text-xl font-bold text-slate-900 mb-2 leading-tight group-hover:text-blue-700 transition-colors">{item.title}</h2>
+                    </div>
+                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100 text-sm">
+                      <span className="text-slate-500 font-medium truncate pr-4">
+                        {item.readingTime && <>{item.readingTime} &middot; </>}
+                        {item.updatedAt 
+                          ? `${item.type === 'guide' ? 'Updated' : 'Updated'} ${new Date(item.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                          : new Date(item.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+                        }
+                      </span>
+                      <span className="font-bold text-slate-900 flex items-center group-hover:text-blue-700 transition-colors whitespace-nowrap">
+                        Read {item.type === 'guide' ? 'Guide' : item.type === 'article' ? 'Article' : 'Resource'} <ArrowRight className="w-4 h-4 ml-1" />
+                      </span>
+                    </div>
                   </div>
                 </Link>
               ))}

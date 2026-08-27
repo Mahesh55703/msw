@@ -160,13 +160,13 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* Open Positions */}
+      {/* Future Opportunities */}
       <section id="open-positions" className="py-24 bg-white">
         <div className="container mx-auto px-4 md:px-8 max-w-4xl">
           <div className="flex items-center justify-between mb-12">
-            <h2 className="text-3xl font-bold text-slate-900">Open Positions</h2>
+            <h2 className="text-3xl font-bold text-slate-900">Future Opportunities</h2>
             <span className="bg-blue-50 text-blue-700 text-sm font-bold px-3 py-1 rounded-full border border-blue-100">
-              {OPEN_POSITIONS.length} Roles Defined
+              {OPEN_POSITIONS.length} Career Paths Planned
             </span>
           </div>
           <div className="space-y-6">
@@ -190,8 +190,8 @@ export default function CareersPage() {
                   </div>
                 </div>
                 <div className="mt-4 md:mt-0 shrink-0 text-right">
-                   <div className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 bg-blue-50 px-4 py-2 rounded-full cursor-not-allowed border border-blue-100">
-                      Opening Soon
+                   <div className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
+                      Future Opportunity
                    </div>
                 </div>
               </div>

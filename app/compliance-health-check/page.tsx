@@ -12,7 +12,7 @@ const WHAT_WE_REVIEW = [
   {
     icon: FileSearch,
     title: "Statutory Registrations",
-    desc: "Verification of all required factory, shop, and establishment licenses and their validity."
+    desc: "Review of applicable registrations, licences and their validity based on the establishment's circumstances."
   },
   {
     icon: ClipboardCheck,
@@ -266,13 +266,9 @@ export default function ComplianceHealthCheckPage() {
       {/* Consultation Form CTA */}
       <section id="consultation-form" className="py-24 bg-slate-900 text-white">
         <div className="container mx-auto px-4 md:px-8 max-w-3xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to secure your compliance?</h2>
-          <p className="text-xl text-slate-300 mb-10">
-            Request a Health Check today and get a clear picture of your compliance standing.
-          </p>
-          {/* We will route this to the full contact form page for now to leverage the detailed form designed there */}
-          <Link href="/contact" className={buttonVariants({ size: "lg", className: "bg-white text-slate-900 hover:bg-slate-100 text-lg px-8 py-6 h-auto" })}>
-            Proceed to Request Form <ArrowRight className="ml-2 w-5 h-5" />
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to understand where your compliance stands?</h2>
+          <Link href="/contact" className={buttonVariants({ size: "lg", className: "bg-white text-slate-900 hover:bg-slate-100 text-lg px-8 py-6 h-auto mt-8" })}>
+            Request a Compliance Health Check <ArrowRight className="ml-2 w-5 h-5" />
           </Link>
         </div>
       </section>

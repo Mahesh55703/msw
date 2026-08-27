@@ -119,7 +119,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
             {resource.excerpt}
           </p>
           
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 font-medium">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 font-medium">
             {resource.author && (
               <div className="flex items-center gap-2 text-slate-900">
                 <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
@@ -130,12 +130,13 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
             )}
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              Published: {resource.publishedAt}
+              Published: {new Date(resource.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
             {resource.updatedAt && (
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                Updated: {resource.updatedAt}
+                {resource.type === 'guide' ? 'Last reviewed: ' : 'Updated: '}
+                {new Date(resource.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
               </div>
             )}
             {resource.readingTime && (
@@ -148,11 +149,21 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
         </div>
       </section>
 
-      {/* Featured Image */}
-      {resource.featuredImage && resource.type === 'article' && (
+      {/* Featured Image / Guide Cover */}
+      {resource.type === 'article' && resource.featuredImage && (
         <div className="container mx-auto px-4 md:px-8 max-w-5xl -mt-8 relative z-10 mb-16">
           <div className="aspect-[21/9] relative rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-white">
             <Image src={resource.featuredImage} alt={resource.title} fill className="object-contain p-8" priority />
+          </div>
+        </div>
+      )}
+
+      {resource.type === 'guide' && (
+        <div className="container mx-auto px-4 md:px-8 max-w-3xl -mt-8 relative z-10 mb-16">
+          <div className="aspect-[16/9] md:aspect-[21/9] relative rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-slate-900 text-white flex flex-col items-center justify-center p-8 text-center">
+             <div className="font-bold text-sm tracking-widest text-slate-400 mb-6 uppercase">LabourAxis</div>
+             <h2 className="text-3xl md:text-5xl font-bold mb-6 max-w-xl">{resource.title}</h2>
+             <div className="text-slate-300 font-medium">HR • Labour • Compliance</div>
           </div>
         </div>
       )}
@@ -170,7 +181,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
               {toc.length > 0 && (
                 <div className="bg-slate-50 rounded-xl border border-slate-200 p-6 hidden lg:block">
                   <h3 className="font-bold text-slate-900 mb-4 uppercase tracking-wider text-sm flex items-center gap-2">
-                    <List className="w-4 h-4"/> In This Article
+                    <List className="w-4 h-4"/> In This {resource.type === 'guide' ? 'Guide' : 'Article'}
                   </h3>
                   <ul className="space-y-3">
                     {toc.map((item, idx) => (
@@ -186,10 +197,16 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
 
               {/* Sidebar CTA */}
               <div className="bg-slate-900 text-white rounded-xl p-6 shadow-md hidden lg:block">
-                <h3 className="font-bold text-lg mb-3">NEED HELP?</h3>
-                <p className="text-slate-300 text-sm mb-6">Review your HR & labour compliance processes with our experts.</p>
+                <h3 className="font-bold text-lg mb-3">
+                  {resource.type === 'guide' ? 'Need help reviewing your factory compliance?' : 'NEED HELP?'}
+                </h3>
+                <p className="text-slate-300 text-sm mb-6">
+                  {resource.type === 'guide' 
+                    ? 'LabourAxis can help review your HR, labour and statutory compliance processes and identify areas that may require attention.'
+                    : 'Review your HR & labour compliance processes with our experts.'}
+                </p>
                 <Link href="/contact" className="block text-center bg-white text-slate-900 font-bold py-3 px-4 rounded hover:bg-slate-100 transition-colors w-full">
-                  Compliance Health Check
+                  Request a Compliance Health Check
                 </Link>
               </div>
 
@@ -241,7 +258,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                 </div>
 
                 {/* Author Profile */}
-                {resource.type === 'article' && resource.author && (
+                {(resource.type === 'article' || resource.type === 'guide') && resource.author && (
                   <div className="mt-16 pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-slate-50 p-8 rounded-2xl">
                     <div className="w-24 h-24 shrink-0 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-sm">
                       {resource.authorImage ? <Image src={resource.authorImage} alt={resource.author} width={96} height={96} /> : <User className="w-10 h-10 text-slate-400" />}
@@ -300,6 +317,46 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                 </Link>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Guide Final Area */}
+      {resource.type === 'guide' && (
+        <div className="bg-slate-50 border-t border-slate-200 py-20 mt-12">
+          <div className="container mx-auto px-4 md:px-8 max-w-7xl">
+            
+            <div className="bg-slate-900 rounded-3xl p-10 md:p-16 text-center text-white max-w-4xl mx-auto shadow-xl mb-20">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">Need Help Reviewing Your Factory Compliance?</h2>
+              <p className="text-xl text-slate-300 mb-10 text-balance max-w-2xl mx-auto leading-relaxed">
+                Understand where your current HR and labour compliance processes may have gaps.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link href="/contact" className={buttonVariants({ size: "lg", className: "bg-blue-600 hover:bg-blue-700 text-white border-0 w-full sm:w-auto" })}>
+                  Request a Compliance Health Check
+                </Link>
+                <Link href="/contact" className={buttonVariants({ variant: "outline", size: "lg", className: "bg-transparent text-white border-white hover:bg-white/10 w-full sm:w-auto" })}>
+                  Discuss Your Requirements
+                </Link>
+              </div>
+            </div>
+
+            {resource.relatedResources && resource.relatedResources.length > 0 && (
+              <div className="max-w-4xl mx-auto">
+                <h3 className="text-2xl font-bold text-slate-900 mb-8">Related Resources</h3>
+                <div className="grid sm:grid-cols-2 gap-6">
+                  {resourcesData.filter(r => resource.relatedResources?.includes(r.slug)).map(rel => (
+                    <Link key={rel.slug} href={`/resources/${rel.type}s/${rel.slug}`} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-200 p-6 flex flex-col">
+                       <span className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-2">{rel.category}</span>
+                       <h4 className="font-bold text-slate-900 text-lg mb-4 line-clamp-2">{rel.title}</h4>
+                       <div className="mt-auto text-sm font-bold text-slate-500 group-hover:text-blue-600 flex items-center">
+                         View Resource <ArrowRight className="w-4 h-4 ml-1" />
+                       </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

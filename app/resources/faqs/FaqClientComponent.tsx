@@ -32,8 +32,26 @@ export default function FaqClientComponent({ initialData }: { initialData: FaqCa
     return { ...category, faqs: filteredFaqs };
   }).filter(category => category.faqs.length > 0);
 
+  // Generate FAQ Schema (only for currently displayed FAQs to match what Google sees)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": filteredData.flatMap(cat => cat.faqs).map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
   return (
     <div className="flex flex-col pb-24 bg-white min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       
       {/* Header Area */}
       <section className="bg-slate-900 text-white pt-20 pb-16">
@@ -60,7 +78,7 @@ export default function FaqClientComponent({ initialData }: { initialData: FaqCa
 
       <div className="container mx-auto px-4 md:px-8 max-w-4xl py-12">
         
-        {/* Popular Questions (Only show when not searching and active tab is 'all') */}
+        {/* Popular Questions */}
         {searchQuery === "" && activeTab === "all" && popularQuestions.length > 0 && (
           <div className="mb-16">
             <h2 className="text-xl font-bold text-slate-900 mb-6 uppercase tracking-wider text-sm border-b border-slate-200 pb-2">Popular Questions</h2>
@@ -75,76 +93,114 @@ export default function FaqClientComponent({ initialData }: { initialData: FaqCa
           </div>
         )}
 
-        {/* Tabs */}
-        {searchQuery === "" && (
-          <div className="mb-12">
-            <div className="flex flex-wrap gap-2 pb-4 border-b border-slate-200">
+        {/* Tabs - Horizontal Scroll on Mobile */}
+        <div className="mb-12">
+          <div className="flex overflow-x-auto gap-2 pb-4 border-b border-slate-200 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <button
+              onClick={() => setActiveTab("all")}
+              className={`whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm transition-colors shrink-0 ${
+                activeTab === "all" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              All
+            </button>
+            {initialData.map(cat => (
               <button
-                onClick={() => setActiveTab("all")}
-                className={`whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm transition-colors ${
-                  activeTab === "all" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                key={cat.id}
+                onClick={() => setActiveTab(cat.id)}
+                className={`whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm transition-colors shrink-0 ${
+                  activeTab === cat.id ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
               >
-                All
+                {cat.title}
               </button>
-              {initialData.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveTab(cat.id)}
-                  className={`whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm transition-colors ${
-                    activeTab === cat.id ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                  }`}
-                >
-                  {cat.title}
-                </button>
-              ))}
-            </div>
+            ))}
           </div>
-        )}
+        </div>
 
-        {/* Search Results count */}
-        {searchQuery !== "" && (
+        {/* Search Results count & Context Header */}
+        {searchQuery !== "" ? (
           <div className="mb-8 font-bold text-slate-600">
-            Showing results for "{searchQuery}"
+            Showing results for "{searchQuery}" {activeTab !== "all" && `in ${initialData.find(c => c.id === activeTab)?.title}`}
           </div>
-        )}
+        ) : activeTab === "all" ? (
+          <h2 className="text-2xl font-bold text-slate-900 mb-6 pb-2 border-b border-slate-200">All Frequently Asked Questions</h2>
+        ) : null}
 
         {/* FAQ Categories & Questions */}
-        <div className="space-y-16">
+        <div className="space-y-12">
           {filteredData.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-xl text-slate-600">No questions found matching your search.</p>
-              <button onClick={() => setSearchQuery("")} className="mt-4 text-blue-600 font-bold hover:underline">
-                Clear search
-              </button>
+            <div className="text-center py-16 bg-slate-50 rounded-2xl border border-slate-200">
+              <h3 className="text-2xl font-bold text-slate-900 mb-4">No FAQs found</h3>
+              <p className="text-lg text-slate-600 max-w-md mx-auto mb-8 text-balance">
+                We couldn't find an answer matching your search. Try a different keyword or discuss your requirement with LabourAxis.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button onClick={() => setSearchQuery("")} className={buttonVariants({ variant: "outline" })}>
+                  Clear Search
+                </button>
+                <Link href="/contact" className={buttonVariants({ variant: "default", className: "bg-blue-600 hover:bg-blue-700" })}>
+                  Discuss Your HR Requirement
+                </Link>
+              </div>
+            </div>
+          ) : activeTab === "all" ? (
+            // Flatten list for "All" tab so it's a continuous list rather than breaking into categories
+            <div className="space-y-4">
+              {filteredData.flatMap(cat => cat.faqs).map((faq, idx) => (
+                <details key={idx} className="group bg-white border border-slate-200 rounded-lg [&_summary::-webkit-details-marker]:hidden shadow-sm">
+                  <summary className="flex cursor-pointer items-start sm:items-center justify-between p-5 md:p-6 font-bold text-slate-900">
+                    <span className="text-lg pr-4">{faq.question}</span>
+                    <span className="ml-1.5 mt-1 sm:mt-0 flex-shrink-0 bg-slate-50 shadow-sm border border-slate-200 p-1.5 rounded-full text-slate-500 group-open:bg-blue-100 group-open:border-blue-200 group-open:text-blue-700 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 transition-transform duration-300 group-open:-rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                  </summary>
+                  <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed border-t border-slate-100 pt-4 mt-2">
+                    <p>{faq.answer}</p>
+                  </div>
+                </details>
+              ))}
+              {searchQuery === "" && (
+                 <div className="mt-12 bg-slate-900 p-10 rounded-2xl text-center text-white shadow-lg">
+                   <h3 className="text-2xl font-bold mb-4">Need help improving your HR processes?</h3>
+                   <Link href="/contact" className={buttonVariants({ size: "lg", className: "bg-blue-600 hover:bg-blue-700 text-white mt-4" })}>
+                     Discuss Your HR Requirement
+                   </Link>
+                 </div>
+              )}
             </div>
           ) : (
+            // Categorized list when specific category selected
             filteredData.map(category => (
               <div key={category.id} className="scroll-mt-8">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6 pb-2 border-b border-slate-200">{category.title}</h2>
+                {searchQuery !== "" && (
+                  <h2 className="text-2xl font-bold text-slate-900 mb-6 pb-2 border-b border-slate-200">{category.title}</h2>
+                )}
                 <div className="space-y-4">
                   {category.faqs.map((faq, idx) => (
                     <details key={idx} className="group bg-white border border-slate-200 rounded-lg [&_summary::-webkit-details-marker]:hidden shadow-sm">
-                      <summary className="flex cursor-pointer items-center justify-between p-6 font-bold text-slate-900">
+                      <summary className="flex cursor-pointer items-start sm:items-center justify-between p-5 md:p-6 font-bold text-slate-900">
                         <span className="text-lg pr-4">{faq.question}</span>
-                        <span className="ml-1.5 flex-shrink-0 bg-slate-50 shadow-sm border border-slate-200 p-1.5 rounded-full text-slate-500 group-open:bg-blue-100 group-open:border-blue-200 group-open:text-blue-700 transition-colors">
+                        <span className="ml-1.5 mt-1 sm:mt-0 flex-shrink-0 bg-slate-50 shadow-sm border border-slate-200 p-1.5 rounded-full text-slate-500 group-open:bg-blue-100 group-open:border-blue-200 group-open:text-blue-700 transition-colors">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 transition-transform duration-300 group-open:-rotate-180" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                           </svg>
                         </span>
                       </summary>
-                      <div className="px-6 pb-6 text-slate-600 leading-relaxed border-t border-slate-100 pt-4 mt-2">
+                      <div className="px-5 md:px-6 pb-6 text-slate-600 leading-relaxed border-t border-slate-100 pt-4 mt-2">
                         <p>{faq.answer}</p>
                       </div>
                     </details>
                   ))}
                 </div>
 
-                {/* Category CTA (only show if not searching or if it's the only category shown) */}
-                {(searchQuery === "" || filteredData.length === 1) && (
-                  <div className="mt-8 bg-slate-50 p-8 rounded-xl border border-slate-200 text-center">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4">{category.ctaText}</h3>
-                    <Link href={category.ctaLink} className={buttonVariants({ variant: "default" })}>
+                {/* Contextual Category CTA */}
+                {searchQuery === "" && (
+                  <div className="mt-12 bg-slate-900 p-10 rounded-2xl text-center text-white shadow-lg">
+                    <h3 className="text-2xl font-bold mb-4">{category.ctaText}</h3>
+                    <Link href={category.ctaLink} className={buttonVariants({ size: "lg", className: "bg-blue-600 hover:bg-blue-700 text-white mt-4" })}>
                       {category.ctaButton}
                     </Link>
                   </div>

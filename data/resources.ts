@@ -216,6 +216,15 @@ export const resourcesData: ResourceItem[] = [
     category: 'Factory Compliance',
     excerpt: 'A comprehensive guide to understanding and managing the complex web of statutory requirements for factories and industrial establishments.',
     content: `
+## What This Guide Covers
+✓ Applicability & thresholds
+✓ Working hours & overtime
+✓ Occupational health & safety
+✓ Welfare facilities
+✓ Registers & documentation
+✓ Principal employer responsibilities
+✓ Compliance roadmap
+
 ## Understanding Factory Labour Compliance
 Factory labour compliance encompasses the framework of statutory laws, state-specific rules, and regulatory obligations governing employment, occupational safety, health, and welfare within a manufacturing or industrial environment.
 
@@ -224,11 +233,11 @@ Because factories operate with unique risks and workforce dynamics, the regulato
 ## Applicability Thresholds
 Applicability of factory-specific regulations (such as the Factories Act, 1948, and corresponding state rules) generally depends on the nature of the manufacturing process, the number of workers, and the use of power.
 
-Historically, the baseline thresholds have been:
+Historically, commonly referenced thresholds under the central framework have included:
 - **10 or more workers** (where the manufacturing process is carried on with the aid of power).
 - **20 or more workers** (where the manufacturing process is carried on without the aid of power).
 
-> **Important Note:** Several Indian states have amended these thresholds in recent years (often increasing them to 20 and 40 workers, respectively) to promote ease of doing business. Furthermore, the impending implementation of the Occupational Safety, Health and Working Conditions (OSH) Code may alter these definitions further. Always verify applicability against your specific state's current gazette notifications.
+> **Important Note:** Several Indian states have amended these thresholds in recent years (often increasing them to 20 and 40 workers, respectively) to promote ease of doing business. Always verify applicability against your specific state's current gazette notifications and the applicable legal framework for your specific establishment.
 
 ## Key Compliance Pillars
 
@@ -271,12 +280,20 @@ Compliance should not be treated as a reactive exercise for inspection days. Est
 
 *Disclaimer: This guide is for informational purposes only and does not constitute legal advice. Labour laws in India are concurrent and subject to frequent state-level amendments. Establishments should consult with qualified compliance professionals or legal counsel regarding their specific obligations.*
     `,
-    author: 'LabourAxis Compliance Team',
+    author: 'LabourAxis Editorial',
     publishedAt: '2026-08-20',
     updatedAt: '2026-08-26',
     readingTime: '12 min read',
     featured: true,
+    keyTakeaways: [
+      'Factory compliance requirements can vary based on establishment characteristics and applicable state requirements.',
+      'Employers should maintain appropriate records and documentation.',
+      'Working hours, overtime, safety and welfare requirements need systematic monitoring.',
+      'Contract labour documentation should be reviewed as part of the overall compliance process.',
+      'A recurring compliance calendar can help prevent missed obligations.'
+    ],
     relatedServices: ['factory-compliance', 'labour-compliance'],
+    relatedResources: ['factory-labour-compliance-checklist', 'contractor-compliance-checklist', 'what-is-labour-compliance', '7-labour-compliance-mistakes-msmes-should-avoid'],
     relatedIndustries: ['manufacturing', 'engineering', 'automotive']
   },
 

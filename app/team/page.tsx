@@ -74,10 +74,13 @@ export default function TeamPage() {
       <section className="py-24 bg-slate-50 border-y border-slate-200">
         <div className="container mx-auto px-4 md:px-8 max-w-5xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Future Organizational Structure</h2>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Building Our Team</h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              We are actively building a structured organization. These roles represent our scalable architecture as we grow.
+              LabourAxis is building a multidisciplinary team across HR, labour compliance, industrial relations and business operations.
             </p>
+          </div>
+          <div className="mb-8 border-b border-slate-200 pb-2">
+            <h3 className="text-xl font-bold text-slate-800">Future Roles</h3>
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             {FUTURE_ROLES.map((role, idx) => (
@@ -100,7 +103,7 @@ export default function TeamPage() {
         <div className="container mx-auto px-4 md:px-8 max-w-5xl">
           <div className="text-center mb-16">
             <Network className="w-12 h-12 text-blue-600 mx-auto mb-6" />
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Professional Network</h2>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">Areas of Professional Collaboration</h2>
             <p className="text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed">
               LabourAxis works with appropriately qualified professionals where a client requirement calls for specialist expertise. We are building relationships with domain experts.
             </p>
