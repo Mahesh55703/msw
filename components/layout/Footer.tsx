@@ -62,10 +62,10 @@ export default function Footer() {
 
       {/* Main Footer */}
       <div className="container mx-auto px-4 md:px-8 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-6">
           
           {/* Column 1: LabourAxis */}
-          <div className="lg:pr-8 mb-4 md:mb-0">
+          <div className="lg:pr-4 mb-4 md:mb-0">
             <Link href="/" className="inline-block mb-6">
               <Image src="/logo-transparent.png" alt="LabourAxis Logo" width={200} height={50} className="object-contain h-12 w-auto brightness-0 invert" />
             </Link>
@@ -96,14 +96,14 @@ export default function Footer() {
             <FooterColumn title="Industries" items={footerNav.industries} />
           </div>
 
-          {/* Column 4: Company & Resources */}
-          <div className="flex flex-col gap-6 md:gap-8">
-            <div>
-              <FooterColumn title="Company" items={footerNav.company} />
-            </div>
-            <div>
-              <FooterColumn title="Resources" items={footerNav.resources} />
-            </div>
+          {/* Column 4: Company */}
+          <div>
+            <FooterColumn title="Company" items={footerNav.company} />
+          </div>
+
+          {/* Column 5: Resources */}
+          <div>
+            <FooterColumn title="Resources" items={footerNav.resources} />
           </div>
 
         </div>
