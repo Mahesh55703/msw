@@ -284,7 +284,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
                 </div>
 
                 {/* Related Services */}
-                {resource.relatedServices.length > 0 && (
+                {resource.relatedServices?.length > 0 && (
                   <div>
                     <h3 className="font-bold text-[#12372A] mb-4 uppercase tracking-wider text-xs">RELATED SERVICES</h3>
                     <ul className="space-y-3">
@@ -308,7 +308,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
 
             {/* Main Article Body */}
             <div className="lg:col-span-8 order-1 lg:order-1">
-              {resource.keyTakeaways.length > 0 && (
+              {resource.keyTakeaways?.length > 0 && (
                 <div className="bg-[#EDE8DE]/70 border border-[#D9E1DC] rounded-3xl p-6 md:p-8 mb-10 shadow-2xs">
                   <h3 className="font-bold text-[#12372A] mb-4 text-lg">Key Takeaways</h3>
                   <ul className="space-y-2.5 text-[#202522] text-sm md:text-base leading-relaxed">
