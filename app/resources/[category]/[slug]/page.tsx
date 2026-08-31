@@ -20,7 +20,9 @@ export async function generateStaticParams() {
 
   const map = new Map<string, { category: string; slug: string }>();
   for (const a of staticArticles) map.set(a.slug, a);
-  for (const a of dbArticles) map.set(a.slug, { category: a.category, slug: a.slug });
+  if (Array.isArray(dbArticles)) {
+    for (const a of dbArticles) map.set(a.slug, { category: a.category, slug: a.slug });
+  }
 
   return Array.from(map.values());
 }

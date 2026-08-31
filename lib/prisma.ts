@@ -1,6 +1,13 @@
 import { PrismaClient } from '@prisma/client'
 
 const prismaClientSingleton = () => {
+  if (!process.env.DATABASE_URL) {
+    return new Proxy({} as PrismaClient, {
+      get() {
+        return () => Promise.resolve(null);
+      }
+    });
+  }
   return new PrismaClient()
 }
 
