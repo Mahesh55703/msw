@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import { verifySession } from '@/lib/session';
 import prisma from '@/lib/prisma';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request): Promise<NextResponse> {
   const session = await verifySession();
   if (!session.isAuth) {
