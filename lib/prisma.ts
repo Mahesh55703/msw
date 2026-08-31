@@ -1,12 +1,20 @@
 import { PrismaClient } from '@prisma/client'
 
+function createDummyProxy(): any {
+  return new Proxy(() => Promise.resolve([]), {
+    get(_target, prop) {
+      if (prop === 'then') return undefined;
+      return createDummyProxy();
+    },
+    apply() {
+      return Promise.resolve([]);
+    }
+  });
+}
+
 const prismaClientSingleton = () => {
   if (!process.env.DATABASE_URL) {
-    return new Proxy({} as PrismaClient, {
-      get() {
-        return () => Promise.resolve(null);
-      }
-    });
+    return createDummyProxy() as PrismaClient;
   }
   return new PrismaClient()
 }
