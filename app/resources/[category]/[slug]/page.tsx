@@ -323,7 +323,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
               )}
 
               <div className="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-headings:text-[#12372A] prose-headings:tracking-tight prose-h2:text-2xl prose-h2:md:text-3xl prose-a:text-[#1F7A5C] prose-img:rounded-3xl">
-                <div dangerouslySetInnerHTML={{ __html: resource.content }} />
+                <div dangerouslySetInnerHTML={{ __html: typeof resource.content === 'string' ? resource.content : (resource.content?.__html || resource.content?.html || '') }} />
                 
                 {(resource.ctaHeading || resource.ctaPrimaryLabel) && (
                   <div className="mt-12 bg-[#F7F4EC] border-l-4 border-[#1F7A5C] p-8 rounded-r-3xl shadow-xs not-prose">
