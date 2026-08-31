@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, ChevronDown, ChevronRight, X } from "lucide-react";
+import { Menu, ChevronDown, ChevronRight, X, Mail, ArrowRight } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Sheet,
@@ -36,66 +37,80 @@ export default function MobileNav() {
 
   const handleLinkClick = () => {
     setOpen(false);
-    // Reset happens on next open due to useEffect
   };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         render={
-          <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open navigation" />
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="lg:hidden h-10 w-10 border-[#D9E1DC] text-[#202522] hover:bg-[#F7F4EC] hover:text-[#12372A] rounded-xl" 
+            aria-label="Open navigation" 
+          />
         }
       >
-        <Menu className="h-6 w-6" />
+        <Menu className="h-5 w-5" />
       </SheetTrigger>
       
       <SheetContent
         side="right"
-        className="w-[85vw] max-w-[400px] p-0 flex flex-col h-[100dvh]"
+        className="w-[88vw] max-w-[380px] p-0 flex flex-col h-[100dvh] bg-[#FFFFFF] border-l border-[#D9E1DC]"
         showCloseButton={false}
       >
-        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+        <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
         
         {/* Header of Drawer */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-100 shrink-0">
+        <div className="flex items-center justify-between p-5 border-b border-[#D9E1DC] shrink-0 bg-[#F7F4EC]">
           <Link
             href="/"
             className="flex items-center"
             onClick={handleLinkClick}
           >
-            <span className="text-xl font-bold text-slate-900">LabourAxis</span>
+            <Image 
+              src="/logo-transparent.png" 
+              alt="LabourAxis Logo" 
+              width={180} 
+              height={45} 
+              className="object-contain h-10 w-auto" 
+            />
           </Link>
           <SheetClose
-            render={<Button variant="ghost" size="icon" aria-label="Close navigation" />}
+            render={<Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-[#66736D] hover:text-[#202522] hover:bg-[#D9E1DC]/50" aria-label="Close navigation" />}
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           </SheetClose>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">
-          <nav className="flex flex-col px-6 py-4">
+        {/* Scrollable Navigation List */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden bg-[#FFFFFF]">
+          <nav className="flex flex-col px-4 py-3">
             {mainNav.map((item) => {
               const hasItems = item.items && item.items.length > 0;
               const isAccordion = hasItems;
               const isOpen = openAccordion === item.title;
+              const isDirectActive = pathname === item.href;
 
               if (isAccordion) {
                 const sectionId = `mobile-${item.title.toLowerCase().replace(/\s+/g, '-')}-menu`;
                 return (
-                  <div key={item.href} className="flex flex-col border-b border-slate-100">
+                  <div key={item.href} className="flex flex-col border-b border-[#D9E1DC]/60 py-1">
                     <button
                       type="button"
                       aria-expanded={isOpen}
                       aria-controls={sectionId}
                       onClick={() => toggleAccordion(item.title)}
-                      className="flex items-center justify-between py-4 w-full text-left text-lg font-bold text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                      className={cn(
+                        "flex items-center justify-between py-3 px-3 w-full text-left font-bold rounded-xl transition-colors cursor-pointer",
+                        isOpen ? "text-[#1F7A5C] bg-[#1F7A5C]/10" : "text-[#202522] hover:bg-[#F7F4EC]"
+                      )}
                     >
-                      {item.title}
+                      <span className="text-base">{item.title}</span>
                       <ChevronDown
                         className={cn(
-                          "h-5 w-5 text-slate-500 transition-transform duration-200",
-                          isOpen ? "rotate-180" : ""
+                          "h-4 w-4 text-[#66736D] transition-transform duration-200",
+                          isOpen ? "rotate-180 text-[#1F7A5C]" : ""
                         )}
                       />
                     </button>
@@ -104,10 +119,10 @@ export default function MobileNav() {
                       id={sectionId}
                       className={cn(
                         "overflow-hidden transition-all duration-200",
-                        isOpen ? "max-h-[1000px] pb-4 opacity-100" : "max-h-0 opacity-0"
+                        isOpen ? "max-h-[1000px] pb-3 opacity-100" : "max-h-0 opacity-0"
                       )}
                     >
-                      <div className="flex flex-col gap-3 pl-4 border-l-2 border-slate-100 ml-2">
+                      <div className="flex flex-col gap-1 pl-3 pr-1 border-l-2 border-[#1F7A5C] ml-3 my-1">
                         {item.items!.map((subItem) => {
                           const isSubActive = pathname === subItem.href;
                           return (
@@ -116,11 +131,14 @@ export default function MobileNav() {
                               href={subItem.href}
                               onClick={handleLinkClick}
                               className={cn(
-                                "text-base py-1 font-medium hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 min-h-[44px] flex items-center",
-                                isSubActive ? "text-slate-900 font-bold" : "text-slate-600"
+                                "text-sm py-2 px-2.5 rounded-xl font-medium transition-colors flex items-center justify-between",
+                                isSubActive 
+                                  ? "text-[#1F7A5C] bg-[#1F7A5C]/10 font-bold" 
+                                  : "text-[#66736D] hover:text-[#202522] hover:bg-[#F7F4EC]"
                               )}
                             >
-                              {subItem.title}
+                              <span>{subItem.title}</span>
+                              {isSubActive && <span className="w-1.5 h-1.5 rounded-full bg-[#1F7A5C]"></span>}
                             </Link>
                           );
                         })}
@@ -132,31 +150,46 @@ export default function MobileNav() {
 
               // Direct link
               return (
-                <div key={item.href} className="border-b border-slate-100">
+                <div key={item.href} className="border-b border-[#D9E1DC]/60 py-1">
                   <Link
                     href={item.href}
                     onClick={handleLinkClick}
-                    className="flex items-center justify-between py-4 text-lg font-bold text-slate-900 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 min-h-[44px]"
+                    className={cn(
+                      "flex items-center justify-between py-3 px-3 font-bold rounded-xl transition-colors",
+                      isDirectActive 
+                        ? "text-[#1F7A5C] bg-[#1F7A5C]/10" 
+                        : "text-[#202522] hover:bg-[#F7F4EC]"
+                    )}
                   >
-                    {item.title}
+                    <span className="text-base">{item.title}</span>
                     {item.title !== "Home" && (
-                      <ChevronRight className="h-5 w-5 text-slate-500" />
+                      <ChevronRight className="h-4 w-4 text-[#66736D]" />
                     )}
                   </Link>
                 </div>
               );
             })}
           </nav>
+
+          {/* Quick Contact Box */}
+          <div className="mx-4 my-4 p-4 rounded-2xl bg-[#F7F4EC] border border-[#D9E1DC] text-xs text-[#66736D] space-y-2">
+            <div className="font-bold text-[#12372A] uppercase tracking-wider text-[10px]">Contact Assistance</div>
+            <a href="mailto:info@labouraxis.com" className="flex items-center gap-2 text-[#66736D] hover:text-[#1F7A5C]">
+              <Mail className="w-3.5 h-3.5 text-[#1F7A5C]" />
+              <span>info@labouraxis.com</span>
+            </a>
+          </div>
         </div>
 
         {/* Footer with CTA */}
-        <div className="p-6 border-t border-slate-100 shrink-0 bg-white">
+        <div className="p-4 border-t border-[#D9E1DC] shrink-0 bg-[#FFFFFF] shadow-2xs">
           <Link
             href="/contact"
             onClick={handleLinkClick}
-            className={buttonVariants({ className: "w-full bg-slate-900 text-white hover:bg-slate-800 h-12 text-base font-medium" })}
+            className={buttonVariants({ className: "w-full bg-[#1F7A5C] hover:bg-[#165B44] text-white h-11 text-sm font-bold rounded-xl shadow-xs" })}
           >
-            Request Consultation
+            <span>Request Consultation</span>
+            <ArrowRight className="w-4 h-4 ml-1.5" />
           </Link>
         </div>
       </SheetContent>

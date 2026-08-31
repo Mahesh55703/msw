@@ -1,7 +1,7 @@
 'use client'
 
 import { format } from 'date-fns'
-import { Copy, Trash2, Check } from 'lucide-react'
+import { Copy, Check } from 'lucide-react'
 import { useState } from 'react'
 
 export default function MediaGallery({ initialItems }: { initialItems: any[] }) {
@@ -19,42 +19,46 @@ export default function MediaGallery({ initialItems }: { initialItems: any[] }) 
 
   if (initialItems.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">No media uploaded yet. Upload your first image to get started.</p>
+      <div className="text-center py-16">
+        <p className="text-xs text-[#66736D] font-medium">No media uploaded yet. Use the upload button above to upload public images.</p>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
       {initialItems.map((item) => (
-        <div key={item.id} className="relative group border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex flex-col">
-          <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
+        <div key={item.id} className="relative group border border-[#D9E1DC] rounded-2xl overflow-hidden bg-white shadow-2xs hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="aspect-[4/3] w-full overflow-hidden bg-[#F7F4EC] relative">
             <img
               src={item.url}
               alt={item.altText || item.filename}
-              className="object-cover group-hover:opacity-75 transition-opacity duration-200 w-full h-48"
+              className="object-cover group-hover:scale-105 transition-transform duration-300 w-full h-full"
             />
           </div>
-          <div className="p-3 flex-1 flex flex-col justify-between">
+          <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
             <div>
-              <p className="text-sm font-medium text-gray-900 truncate" title={item.filename}>
+              <p className="text-xs font-bold text-[#12372A] truncate" title={item.filename}>
                 {item.filename}
               </p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-[11px] text-[#66736D] mt-0.5">
                 {format(new Date(item.createdAt), 'dd MMM yyyy')}
               </p>
             </div>
             
-            <div className="mt-4 flex space-x-2">
+            <div>
               <button
                 onClick={() => copyToClipboard(item.url, item.id)}
-                className="flex-1 inline-flex justify-center items-center px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                className={`w-full inline-flex justify-center items-center px-3 py-2 text-xs font-bold rounded-xl transition-colors shadow-2xs ${
+                  copiedId === item.id 
+                    ? 'bg-[#1F7A5C] text-white' 
+                    : 'bg-[#F7F4EC] hover:bg-[#1F7A5C]/10 text-[#12372A] border border-[#D9E1DC]'
+                }`}
               >
                 {copiedId === item.id ? (
-                  <><Check className="h-3 w-3 mr-1 text-green-500" /> Copied</>
+                  <><Check className="h-3.5 w-3.5 mr-1.5 text-white stroke-[2.5]" /> Copied to Clipboard</>
                 ) : (
-                  <><Copy className="h-3 w-3 mr-1" /> Copy URL</>
+                  <><Copy className="h-3.5 w-3.5 mr-1.5 text-[#1F7A5C]" /> Copy Asset URL</>
                 )}
               </button>
             </div>
@@ -64,3 +68,4 @@ export default function MediaGallery({ initialItems }: { initialItems: any[] }) 
     </div>
   )
 }
+

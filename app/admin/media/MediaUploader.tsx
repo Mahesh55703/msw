@@ -52,14 +52,15 @@ export default function MediaUploader() {
       <Button 
         onClick={() => fileInputRef.current?.click()} 
         disabled={isUploading}
-        className="bg-white text-orange-600 hover:bg-amber-50 font-semibold"
+        className="bg-[#1F7A5C] text-white hover:bg-[#165B44] font-bold text-xs rounded-xl shadow-xs"
       >
         {isUploading ? (
-          <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...</>
+          <><Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> Uploading...</>
         ) : (
-          <><Upload className="mr-2 h-4 w-4" /> Upload Image</>
+          <><Upload className="mr-2 h-3.5 w-3.5" /> Upload Image</>
         )}
       </Button>
     </div>
   )
 }
+

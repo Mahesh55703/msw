@@ -136,56 +136,56 @@ export default function FaqForm({ initialData }: { initialData?: any }) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-24 text-slate-800">
-      <div className="flex items-center justify-between gap-4 bg-white p-4 border border-slate-200 rounded-xl shadow-sm sticky top-4 z-50">
-        <div className="flex items-center gap-4">
-          <Link href="/admin/faqs" className="text-slate-500 hover:text-slate-900 transition-colors">
+    <div className="max-w-3xl mx-auto space-y-6 pb-24 text-[#202522]">
+      <div className="flex items-center justify-between gap-4 bg-white p-4 border border-[#D9E1DC] rounded-2xl shadow-xs sticky top-4 z-50">
+        <div className="flex items-center gap-3">
+          <Link href="/admin/faqs" className="text-[#66736D] hover:text-[#12372A] p-1.5 rounded-lg hover:bg-[#F7F4EC] transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h1 className="text-xl font-bold text-slate-900">{isEdit ? 'Edit FAQ' : 'Add FAQ'}</h1>
+          <h1 className="text-lg font-bold text-[#12372A]">{isEdit ? 'Edit FAQ' : 'Add FAQ'}</h1>
         </div>
-        <div className="flex items-center gap-3">
-          <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, false)} disabled={isSubmitting}>
+        <div className="flex items-center gap-2.5">
+          <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, false)} disabled={isSubmitting} className="bg-[#F7F4EC] hover:bg-[#EDE8DE] text-[#12372A] border border-[#D9E1DC] rounded-xl text-xs font-bold">
             Save Draft
           </Button>
-          <Button type="button" onClick={(e) => handleSubmit(e, true)} disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : (isEdit && published ? 'Save Changes' : 'Publish FAQ')}
+          <Button type="button" onClick={(e) => handleSubmit(e, true)} disabled={isSubmitting} className="bg-[#1F7A5C] hover:bg-[#165B44] text-white rounded-xl text-xs font-bold shadow-xs">
+            {isSubmitting ? 'Saving...' : (isEdit && published ? 'Save Changes' : 'Publish Live')}
           </Button>
         </div>
       </div>
 
-      {error && <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm font-medium border border-red-100">{error}</div>}
+      {error && <div className="p-4 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200">{error}</div>}
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-8">
+      <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] p-6 space-y-6">
         <div className="space-y-2">
           <div className="flex justify-between">
-            <Label htmlFor="question" className="text-base font-semibold">Question *</Label>
-            <span className={`text-xs ${question.length > 180 ? 'text-red-500' : 'text-slate-400'}`}>{question.length} / 180</span>
+            <Label htmlFor="question" className="text-xs font-bold text-[#12372A]">Question *</Label>
+            <span className={`text-[10px] ${question.length > 180 ? 'text-rose-500 font-bold' : 'text-[#66736D]'}`}>{question.length} / 180</span>
           </div>
-          <Input id="question" value={question} onChange={e => setQuestion(e.target.value)} placeholder="e.g. What is HR operations?" className="text-lg font-medium" />
+          <Input id="question" value={question} onChange={e => setQuestion(e.target.value)} placeholder="e.g. What are the key compliances under CLRA?" className="text-sm font-medium rounded-xl border-[#D9E1DC]" />
         </div>
         
         <div className="space-y-2">
           <div className="flex justify-between">
-            <Label className="text-base font-semibold">Answer *</Label>
-            <span className="text-xs text-slate-400">Recommended: 50–150 words</span>
+            <Label className="text-xs font-bold text-[#12372A]">Answer *</Label>
+            <span className="text-[10px] text-[#66736D]">Recommended: 50–150 words</span>
           </div>
-          <div className="border border-slate-200 rounded-md overflow-hidden bg-slate-50">
+          <div className="border border-[#D9E1DC] rounded-xl overflow-hidden bg-[#F7F4EC]/30">
             <SimpleMenuBar editor={editor} />
             <EditorContent editor={editor} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-[#D9E1DC]/80">
           <div className="space-y-2">
-            <Label htmlFor="category" className="font-semibold">Category *</Label>
-            <select id="category" value={category} onChange={e => setCategory(e.target.value)} className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm">
+            <Label htmlFor="category" className="text-xs font-bold text-[#12372A]">Category *</Label>
+            <select id="category" value={category} onChange={e => setCategory(e.target.value)} className="flex h-10 w-full rounded-xl border border-[#D9E1DC] bg-white px-3 py-2 text-xs font-medium text-[#202522] focus:outline-none focus:ring-2 focus:ring-[#1F7A5C]">
               {FAQ_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
             </select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="displayOrder" className="font-semibold">Display Order</Label>
-            <Input id="displayOrder" type="number" value={displayOrder} onChange={e => setDisplayOrder(parseInt(e.target.value) || 0)} />
+            <Label htmlFor="displayOrder" className="text-xs font-bold text-[#12372A]">Display Order</Label>
+            <Input id="displayOrder" type="number" value={displayOrder} onChange={e => setDisplayOrder(parseInt(e.target.value) || 0)} className="rounded-xl border-[#D9E1DC] text-xs font-mono" />
           </div>
         </div>
       </div>

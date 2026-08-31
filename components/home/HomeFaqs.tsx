@@ -1,3 +1,5 @@
+import { Plus } from "lucide-react";
+
 export function HomeFaqs() {
   const HOME_FAQS = [
     {
@@ -27,24 +29,26 @@ export function HomeFaqs() {
   ];
 
   return (
-    <section className="py-24 bg-white">
-      <div className="container mx-auto px-4 md:px-8 max-w-3xl">
+    <section className="py-24 bg-[#FFFFFF] relative">
+      <div className="container mx-auto px-4 md:px-8 max-w-4xl">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
-          <p className="text-lg text-slate-600">Common questions about our services and compliance.</p>
+          <span className="text-xs font-bold uppercase tracking-wider text-[#1F7A5C] bg-[#1F7A5C]/10 border border-[#1F7A5C]/20 px-3.5 py-1.5 rounded-full inline-block mb-3">
+            Common Inquiries
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#12372A] mb-4 tracking-tight">Frequently Asked Questions</h2>
+          <p className="text-lg text-[#66736D]">Common questions about our services and compliance.</p>
         </div>
+        
         <div className="space-y-4">
           {HOME_FAQS.map((faq, idx) => (
-            <details key={idx} className="group bg-slate-50 border border-slate-200 rounded-lg [&_summary::-webkit-details-marker]:hidden">
-              <summary className="flex cursor-pointer items-center justify-between p-6 font-bold text-slate-900">
-                <span className="text-lg pr-4">{faq.question}</span>
-                <span className="ml-1.5 flex-shrink-0 bg-white shadow-sm border border-slate-200 p-1.5 rounded-full text-slate-500 group-open:bg-blue-100 group-open:border-blue-200 group-open:text-blue-700 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0 transition-transform duration-300 group-open:-rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
+            <details key={idx} className="group bg-[#F7F4EC]/70 hover:bg-[#F7F4EC] border border-[#D9E1DC] rounded-2xl transition-all duration-200 [&_summary::-webkit-details-marker]:hidden shadow-2xs">
+              <summary className="flex cursor-pointer items-center justify-between p-6 font-bold text-[#12372A] select-none">
+                <span className="text-base md:text-lg pr-4 font-semibold text-[#12372A] group-open:text-[#1F7A5C] transition-colors">{faq.question}</span>
+                <span className="ml-2 flex-shrink-0 w-8 h-8 rounded-full bg-white border border-[#D9E1DC] flex items-center justify-center text-[#66736D] group-open:bg-[#1F7A5C] group-open:border-[#1F7A5C] group-open:text-white transition-all duration-200 shadow-2xs">
+                  <Plus className="w-4 h-4 transition-transform duration-300 group-open:rotate-45" />
                 </span>
               </summary>
-              <div className="px-6 pb-6 text-slate-600 leading-relaxed border-t border-slate-200 pt-4 mt-2">
+              <div className="px-6 pb-6 text-[#202522] text-base leading-relaxed border-t border-[#D9E1DC]/60 pt-4 mt-1">
                 <p>{faq.answer}</p>
               </div>
             </details>

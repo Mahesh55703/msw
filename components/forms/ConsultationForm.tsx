@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Turnstile } from "@marsidev/react-turnstile";
+import { ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
 
 const services = [
   "PF / ESIC",
@@ -48,52 +49,52 @@ export function ConsultationForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-8 bg-white p-6 md:p-8 rounded-lg shadow-sm border border-slate-200">
+    <form onSubmit={onSubmit} className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#D9E1DC]">
       
       {/* Honeypot field for spam protection */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
       
       <div className="grid md:grid-cols-3 gap-6">
         <div className="space-y-2">
-          <label htmlFor="name" className="text-sm font-medium text-slate-700">Name</label>
-          <Input id="name" name="name" required placeholder="Your Name" />
+          <label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Name</label>
+          <Input id="name" name="name" required placeholder="Your Name" className="h-12 rounded-xl border-[#D9E1DC] focus:border-[#1F7A5C]" />
         </div>
         <div className="space-y-2">
-          <label htmlFor="designation" className="text-sm font-medium text-slate-700">Designation</label>
-          <Input id="designation" name="designation" required placeholder="HR Manager" />
+          <label htmlFor="designation" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Designation</label>
+          <Input id="designation" name="designation" required placeholder="HR Manager" className="h-12 rounded-xl border-[#D9E1DC] focus:border-[#1F7A5C]" />
         </div>
         <div className="space-y-2">
-          <label htmlFor="company" className="text-sm font-medium text-slate-700">Company</label>
-          <Input id="company" name="company" required placeholder="Your Company" />
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label htmlFor="phone" className="text-sm font-medium text-slate-700">Phone</label>
-          <Input id="phone" name="phone" required placeholder="+91 9876543210" />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-slate-700">Email</label>
-          <Input id="email" name="email" type="email" required placeholder="you@company.com" />
+          <label htmlFor="company" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Company</label>
+          <Input id="company" name="company" required placeholder="Your Company" className="h-12 rounded-xl border-[#D9E1DC] focus:border-[#1F7A5C]" />
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label htmlFor="industry" className="text-sm font-medium text-slate-700">Industry</label>
-          <Input id="industry" name="industry" required placeholder="Manufacturing, Auto, etc." />
+          <label htmlFor="phone" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Phone</label>
+          <Input id="phone" name="phone" required placeholder="+91 9876543210" className="h-12 rounded-xl border-[#D9E1DC] focus:border-[#1F7A5C]" />
         </div>
         <div className="space-y-2">
-          <label htmlFor="location" className="text-sm font-medium text-slate-700">Location</label>
-          <Input id="location" name="location" required placeholder="City, State" />
+          <label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Email</label>
+          <Input id="email" name="email" type="email" required placeholder="you@company.com" className="h-12 rounded-xl border-[#D9E1DC] focus:border-[#1F7A5C]" />
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label htmlFor="employees" className="text-sm font-medium text-slate-700">Number of Employees</label>
-          <select id="employees" name="employees" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2">
+          <label htmlFor="industry" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Industry</label>
+          <Input id="industry" name="industry" required placeholder="Manufacturing, Auto, etc." className="h-12 rounded-xl border-[#D9E1DC] focus:border-[#1F7A5C]" />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="location" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Location</label>
+          <Input id="location" name="location" required placeholder="City, State" className="h-12 rounded-xl border-[#D9E1DC] focus:border-[#1F7A5C]" />
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label htmlFor="employees" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Number of Employees</label>
+          <select id="employees" name="employees" className="flex h-12 w-full rounded-xl border border-[#D9E1DC] bg-white px-3 py-2 text-sm text-[#202522] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F7A5C] shadow-2xs">
             <option value="">Select Range</option>
             <option value="1-10">1–10</option>
             <option value="11-50">11–50</option>
@@ -104,8 +105,8 @@ export function ConsultationForm() {
           </select>
         </div>
         <div className="space-y-2">
-          <label htmlFor="contractors" className="text-sm font-medium text-slate-700">Number of Contract Workers</label>
-          <select id="contractors" name="contractors" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2">
+          <label htmlFor="contractors" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Number of Contract Workers</label>
+          <select id="contractors" name="contractors" className="flex h-12 w-full rounded-xl border border-[#D9E1DC] bg-white px-3 py-2 text-sm text-[#202522] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F7A5C] shadow-2xs">
             <option value="">Select Range</option>
             <option value="0">0 (None)</option>
             <option value="1-10">1–10</option>
@@ -120,16 +121,16 @@ export function ConsultationForm() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label htmlFor="preferredContact" className="text-sm font-medium text-slate-700">Preferred Contact Method</label>
-          <select id="preferredContact" name="preferredContact" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2">
+          <label htmlFor="preferredContact" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Preferred Contact Method</label>
+          <select id="preferredContact" name="preferredContact" className="flex h-12 w-full rounded-xl border border-[#D9E1DC] bg-white px-3 py-2 text-sm text-[#202522] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F7A5C] shadow-2xs">
             <option value="Phone">Phone</option>
             <option value="WhatsApp">WhatsApp</option>
             <option value="Email">Email</option>
           </select>
         </div>
         <div className="space-y-2">
-          <label htmlFor="source" className="text-sm font-medium text-slate-700">How did you hear about us?</label>
-          <select id="source" name="source" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2">
+          <label htmlFor="source" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">How did you hear about us?</label>
+          <select id="source" name="source" className="flex h-12 w-full rounded-xl border border-[#D9E1DC] bg-white px-3 py-2 text-sm text-[#202522] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F7A5C] shadow-2xs">
             <option value="">Please select</option>
             <option value="Google">Google / Search</option>
             <option value="LinkedIn">LinkedIn</option>
@@ -140,35 +141,40 @@ export function ConsultationForm() {
         </div>
       </div>
 
-      <div className="space-y-4">
-        <label className="text-sm font-medium text-slate-700">What do you need help with?</label>
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="space-y-3 pt-2">
+        <label className="text-xs font-bold uppercase tracking-wider text-[#12372A]">What do you need help with?</label>
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
           {services.map((service) => (
-            <div key={service} className="flex items-center space-x-2">
+            <label 
+              key={service} 
+              htmlFor={`service-${service}`} 
+              className="flex items-center space-x-3 p-3 bg-[#F7F4EC]/60 border border-[#D9E1DC] rounded-xl hover:bg-white hover:border-[#1F7A5C]/50 transition-colors cursor-pointer"
+            >
               <Checkbox id={`service-${service}`} name="services" value={service} />
-              <label htmlFor={`service-${service}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              <span className="text-xs font-semibold text-[#202522] leading-none">
                 {service}
-              </label>
-            </div>
+              </span>
+            </label>
           ))}
         </div>
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="message" className="text-sm font-medium text-slate-700">Describe your requirement</label>
-        <Textarea id="message" name="message" rows={4} placeholder="Tell us about your current compliance challenges..." />
+        <label htmlFor="message" className="text-xs font-bold uppercase tracking-wider text-[#12372A]">Describe your requirement</label>
+        <Textarea id="message" name="message" rows={4} placeholder="Tell us about your current compliance challenges..." className="rounded-xl border-[#D9E1DC] focus:border-[#1F7A5C]" />
       </div>
 
       <div className="flex items-start space-x-3 pt-2">
         <Checkbox id="privacy" name="privacy" required className="mt-1" />
-        <label htmlFor="privacy" className="text-sm text-slate-600 leading-relaxed">
-          I agree to LabourAxis processing the information submitted through this form for responding to my enquiry. View our <a href="/privacy-policy" className="text-blue-600 hover:underline">Privacy Policy</a>.
+        <label htmlFor="privacy" className="text-xs md:text-sm text-[#66736D] leading-relaxed cursor-pointer select-none">
+          I agree to LabourAxis processing the information submitted through this form for responding to my enquiry. View our <a href="/privacy-policy" className="text-[#1F7A5C] hover:underline font-semibold">Privacy Policy</a>.
         </label>
       </div>
 
       {statusMessage && (
-        <div className={`p-4 rounded-md text-sm ${statusMessage.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'} border`}>
-          {statusMessage.text}
+        <div className={`p-4 rounded-xl text-sm ${statusMessage.type === 'success' ? 'bg-[#1F7A5C]/10 text-[#12372A] border border-[#1F7A5C]/30' : 'bg-red-50 text-red-800 border-red-200'} border flex items-center gap-3`}>
+          {statusMessage.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-[#1F7A5C] shrink-0" /> : <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />}
+          <span>{statusMessage.text}</span>
         </div>
       )}
 
@@ -178,8 +184,14 @@ export function ConsultationForm() {
         </div>
       )}
 
-      <Button type="submit" size="lg" className="w-full bg-slate-900 text-white hover:bg-slate-800" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Request Consultation"}
+      <Button 
+        type="submit" 
+        size="lg" 
+        className="w-full bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base py-4 h-auto rounded-xl shadow-lg transition-all cursor-pointer group" 
+        disabled={isSubmitting}
+      >
+        <span>{isSubmitting ? "Submitting..." : "Request Consultation"}</span>
+        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
       </Button>
     </form>
   );

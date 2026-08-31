@@ -21,74 +21,87 @@ export default async function EnquiryDetailPage({ params }: { params: { id: stri
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-xl shadow-md text-white flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div className="bg-[#12372A] p-6 md:p-8 rounded-2xl shadow-sm text-white flex flex-col sm:flex-row sm:items-center sm:justify-between border border-[#0D281E] gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Enquiry {enquiry.referenceNumber}</h1>
-          <p className="text-blue-100 mt-1">{enquiry.company || enquiry.name} - {enquiry.service}</p>
+          <span className="text-[10px] font-bold text-[#D6A84F] uppercase tracking-wider">Enterprise Enquiry Record</span>
+          <h1 className="text-2xl font-bold tracking-tight text-white mt-1">Ref: {enquiry.referenceNumber}</h1>
+          <p className="text-[#A2B3AA] text-xs mt-1">{enquiry.company || enquiry.name} • {enquiry.service || 'General'}</p>
+        </div>
+        <div className="shrink-0">
+          <span className={`px-3 py-1 inline-flex text-xs font-bold rounded-full
+            ${enquiry.status === 'NEW' ? 'bg-[#D6A84F]/20 text-[#D6A84F] border border-[#D6A84F]/40' : ''}
+            ${enquiry.status === 'CONTACTED' ? 'bg-white/10 text-white border border-white/20' : ''}
+            ${enquiry.status === 'QUALIFIED' ? 'bg-[#1F7A5C] text-white' : ''}
+            ${enquiry.status === 'PROPOSAL' ? 'bg-[#D6A84F] text-[#12372A]' : ''}
+            ${enquiry.status === 'WON' ? 'bg-emerald-400 text-[#12372A]' : ''}
+            ${enquiry.status === 'LOST' ? 'bg-rose-500 text-white' : ''}
+          `}>
+            Status: {enquiry.status}
+          </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left Column: Details */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Contact Information</h3>
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#D9E1DC]/80 bg-[#F7F4EC]/40">
+              <h3 className="text-sm font-bold text-[#12372A]">Client Contact Details</h3>
             </div>
-            <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-              <dl className="sm:divide-y sm:divide-gray-200">
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Name</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{enquiry.name} {enquiry.designation && `(${enquiry.designation})`}</dd>
+            <div className="p-6">
+              <dl className="divide-y divide-[#D9E1DC]/60 text-xs">
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Full Name</dt>
+                  <dd className="font-bold text-[#12372A] sm:col-span-2">{enquiry.name} {enquiry.designation && `(${enquiry.designation})`}</dd>
                 </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Company</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{enquiry.company || 'N/A'}</dd>
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Organization</dt>
+                  <dd className="font-bold text-[#12372A] sm:col-span-2">{enquiry.company || 'N/A'}</dd>
                 </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Email address</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{enquiry.email}</dd>
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Email Address</dt>
+                  <dd className="font-mono text-[#1F7A5C] sm:col-span-2">{enquiry.email}</dd>
                 </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Phone</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{enquiry.phone || 'N/A'}</dd>
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Phone Number</dt>
+                  <dd className="font-mono text-[#12372A] sm:col-span-2">{enquiry.phone || 'N/A'}</dd>
                 </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Preferred Contact</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{enquiry.preferredContactMethod || 'N/A'}</dd>
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Preferred Channel</dt>
+                  <dd className="text-[#202522] sm:col-span-2">{enquiry.preferredContactMethod || 'N/A'}</dd>
                 </div>
               </dl>
             </div>
           </div>
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Requirement Details</h3>
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#D9E1DC]/80 bg-[#F7F4EC]/40">
+              <h3 className="text-sm font-bold text-[#12372A]">Requirement Scope</h3>
             </div>
-            <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-              <dl className="sm:divide-y sm:divide-gray-200">
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Services Needed</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{enquiry.service || 'N/A'}</dd>
+            <div className="p-6">
+              <dl className="divide-y divide-[#D9E1DC]/60 text-xs">
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Services Needed</dt>
+                  <dd className="font-bold text-[#12372A] sm:col-span-2">{enquiry.service || 'N/A'}</dd>
                 </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Industry & Location</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{enquiry.industry || 'N/A'} - {enquiry.location || 'N/A'}</dd>
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Industry & Location</dt>
+                  <dd className="text-[#202522] sm:col-span-2">{enquiry.industry || 'N/A'} • {enquiry.location || 'N/A'}</dd>
                 </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Workforce Size</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    Employees: {enquiry.employeeCount || '0'} | Contractors: {enquiry.contractorCount || '0'}
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Workforce Scale</dt>
+                  <dd className="text-[#202522] sm:col-span-2">
+                    Employees: <span className="font-bold text-[#12372A]">{enquiry.employeeCount || '0'}</span> | Contract Labour: <span className="font-bold text-[#12372A]">{enquiry.contractorCount || '0'}</span>
                   </dd>
                 </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Source</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{enquiry.source || 'N/A'}</dd>
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Lead Source</dt>
+                  <dd className="text-[#202522] sm:col-span-2">{enquiry.source || 'Direct Website'}</dd>
                 </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Message</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap">{enquiry.message || 'N/A'}</dd>
+                <div className="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                  <dt className="font-bold text-[#66736D]">Message / Details</dt>
+                  <dd className="text-[#202522] sm:col-span-2 whitespace-pre-wrap leading-relaxed bg-[#F7F4EC]/60 p-3.5 rounded-xl border border-[#D9E1DC]/60">{enquiry.message || 'No additional message provided.'}</dd>
                 </div>
               </dl>
             </div>
@@ -97,64 +110,72 @@ export default async function EnquiryDetailPage({ params }: { params: { id: stri
 
         {/* Right Column: Status & Timeline */}
         <div className="space-y-6">
-          <div className="bg-white shadow sm:rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Manage Status</h3>
-              <form action={updateEnquiryStatus} className="mt-4 flex flex-col space-y-4">
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#D9E1DC]/80 bg-[#F7F4EC]/40">
+              <h3 className="text-sm font-bold text-[#12372A]">Update Lead Pipeline</h3>
+            </div>
+            <div className="p-6">
+              <form action={updateEnquiryStatus} className="flex flex-col space-y-4">
                 <input type="hidden" name="enquiryId" value={enquiry.id} />
                 <select 
                   name="status" 
                   defaultValue={enquiry.status}
-                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md border"
+                  className="block w-full px-3.5 py-2.5 text-xs font-semibold text-[#202522] border-[#D9E1DC] focus:outline-none focus:ring-2 focus:ring-[#1F7A5C] rounded-xl border bg-white"
                 >
                   <option value="NEW">New</option>
                   <option value="CONTACTED">Contacted</option>
                   <option value="QUALIFIED">Qualified</option>
                   <option value="PROPOSAL">Proposal Sent</option>
-                  <option value="WON">Won</option>
-                  <option value="LOST">Lost</option>
+                  <option value="WON">Won (Client Signed)</option>
+                  <option value="LOST">Lost / Inactive</option>
                 </select>
-                <Button type="submit" className="w-full">Update Status</Button>
+                <Button type="submit" className="w-full bg-[#1F7A5C] hover:bg-[#165B44] text-white rounded-xl text-xs font-bold shadow-xs">
+                  Save Pipeline Status
+                </Button>
               </form>
             </div>
           </div>
 
-          <div className="bg-white shadow sm:rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">Internal Notes</h3>
-              <form action={addEnquiryNote} className="mb-6 space-y-3">
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#D9E1DC]/80 bg-[#F7F4EC]/40">
+              <h3 className="text-sm font-bold text-[#12372A]">Internal Notes & Log</h3>
+            </div>
+            <div className="p-6">
+              <form action={addEnquiryNote} className="space-y-3">
                 <input type="hidden" name="enquiryId" value={enquiry.id} />
                 <textarea
                   name="note"
                   rows={3}
-                  className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md border p-2"
-                  placeholder="Add a note (only visible to admins)..."
+                  className="block w-full text-xs border-[#D9E1DC] rounded-xl border p-3 bg-[#F7F4EC]/30 text-[#202522] focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#1F7A5C]"
+                  placeholder="Record call notes, discussion points or next steps..."
                   required
                 />
-                <Button type="submit" variant="outline" className="w-full">Add Note</Button>
+                <Button type="submit" variant="outline" className="w-full border-[#D9E1DC] text-[#12372A] hover:bg-[#F7F4EC] rounded-xl text-xs font-bold">
+                  Add Activity Note
+                </Button>
               </form>
 
-              <div className="flow-root mt-6">
-                <ul role="list" className="-mb-8">
+              <div className="flow-root mt-6 pt-6 border-t border-[#D9E1DC]/80">
+                <ul role="list" className="-mb-6">
                   {enquiry.activities.map((activity, activityIdx) => (
                     <li key={activity.id}>
-                      <div className="relative pb-8">
+                      <div className="relative pb-6">
                         {activityIdx !== enquiry.activities.length - 1 ? (
-                          <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+                          <span className="absolute top-4 left-3.5 -ml-px h-full w-0.5 bg-[#D9E1DC]" aria-hidden="true" />
                         ) : null}
                         <div className="relative flex space-x-3">
                           <div>
-                            <span className={`h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${activity.type === 'NOTE_ADDED' ? 'bg-blue-500' : 'bg-gray-400'}`}>
-                              <span className="text-white text-xs font-bold">{activity.type === 'NOTE_ADDED' ? 'N' : 'S'}</span>
+                            <span className={`h-7 w-7 rounded-full flex items-center justify-center ring-4 ring-white ${activity.type === 'NOTE_ADDED' ? 'bg-[#1F7A5C]' : 'bg-[#D6A84F]'}`}>
+                              <span className="text-white text-[10px] font-bold">{activity.type === 'NOTE_ADDED' ? 'N' : 'S'}</span>
                             </span>
                           </div>
-                          <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                          <div className="min-w-0 flex-1 pt-1 flex justify-between space-x-4">
                             <div>
-                              <p className="text-sm text-gray-500">
+                              <p className="text-xs text-[#202522] leading-relaxed">
                                 {activity.note}
                               </p>
                             </div>
-                            <div className="text-right text-xs whitespace-nowrap text-gray-500">
+                            <div className="text-right text-[10px] whitespace-nowrap text-[#66736D]">
                               <time dateTime={activity.createdAt.toISOString()}>{format(new Date(activity.createdAt), 'MMM d, h:mm a')}</time>
                             </div>
                           </div>

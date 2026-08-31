@@ -147,37 +147,37 @@ export default function CmsForm({ category, initialData, users = [] }: CmsFormPr
   const singularCategory = category.slice(0, -1).replace(/^\w/, c => c.toUpperCase())
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-6 pb-24 text-slate-800">
+    <div className="max-w-[1400px] mx-auto space-y-6 pb-24 text-[#202522]">
       
       {/* Top Action Bar */}
-      <div className="flex items-center justify-between gap-4 bg-white p-4 border border-slate-200 rounded-xl shadow-sm sticky top-4 z-50">
-        <div className="flex items-center gap-4">
-          <Link href={`/admin/${category}`} className="text-slate-500 hover:text-slate-900 transition-colors">
+      <div className="flex items-center justify-between gap-4 bg-white p-4 border border-[#D9E1DC] rounded-2xl shadow-xs sticky top-4 z-50">
+        <div className="flex items-center gap-3">
+          <Link href={`/admin/${category}`} className="text-[#66736D] hover:text-[#12372A] p-1.5 rounded-lg hover:bg-[#F7F4EC] transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h1 className="text-xl font-bold text-slate-900">
+          <h1 className="text-lg font-bold text-[#12372A]">
             {isEdit ? 'Edit' : 'Create'} {singularCategory}
           </h1>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {isEdit && (
             <Link href={`/resources/${category}/${slug}`} target="_blank">
-              <Button type="button" variant="outline" size="sm" className="gap-2">
-                <Eye className="w-4 h-4" /> Preview
+              <Button type="button" variant="outline" size="sm" className="gap-2 border-[#D9E1DC] text-[#12372A] hover:bg-[#F7F4EC] rounded-xl text-xs font-bold">
+                <Eye className="w-3.5 h-3.5" /> Preview Live
               </Button>
             </Link>
           )}
-          <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, false)} disabled={isSubmitting}>
+          <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, false)} disabled={isSubmitting} className="bg-[#F7F4EC] hover:bg-[#EDE8DE] text-[#12372A] border border-[#D9E1DC] rounded-xl text-xs font-bold">
             Save Draft
           </Button>
-          <Button type="button" onClick={(e) => handleSubmit(e, true)} disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : (isEdit && published ? 'Save Changes' : 'Publish')}
+          <Button type="button" onClick={(e) => handleSubmit(e, true)} disabled={isSubmitting} className="bg-[#1F7A5C] hover:bg-[#165B44] text-white rounded-xl text-xs font-bold shadow-xs">
+            {isSubmitting ? 'Saving...' : (isEdit && published ? 'Save Changes' : 'Publish Live')}
           </Button>
         </div>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-600 rounded-lg text-sm font-medium border border-red-100">
+        <div className="p-4 bg-rose-50 text-rose-700 rounded-xl text-xs font-semibold border border-rose-200">
           {error}
         </div>
       )}
@@ -188,28 +188,28 @@ export default function CmsForm({ category, initialData, users = [] }: CmsFormPr
         <div className="xl:col-span-2 space-y-8">
           
           {/* Basic Info */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Basic Information</h2>
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] p-6 space-y-6">
+            <h2 className="text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 border-b border-[#D9E1DC]/80 pb-2">Basic Information</h2>
             
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-base font-semibold">Title</Label>
-              <Input id="title" value={title} onChange={handleTitleChange} placeholder={`Enter ${singularCategory.toLowerCase()} title...`} className="text-lg font-medium" />
+              <Label htmlFor="title" className="text-sm font-bold text-[#12372A]">Title</Label>
+              <Input id="title" value={title} onChange={handleTitleChange} placeholder={`Enter ${singularCategory.toLowerCase()} title...`} className="text-base font-medium rounded-xl border-[#D9E1DC] focus:ring-[#1F7A5C]" />
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="slug" className="font-semibold">URL Slug</Label>
+                <Label htmlFor="slug" className="text-xs font-bold text-[#12372A]">URL Slug</Label>
                 <div className="flex items-center gap-2">
-                  <Input id="slug" value={slug} onChange={e => { markDirty(); setSlug(e.target.value) }} placeholder="url-slug" className="font-mono text-sm" />
+                  <Input id="slug" value={slug} onChange={e => { markDirty(); setSlug(e.target.value) }} placeholder="url-slug" className="font-mono text-xs rounded-xl border-[#D9E1DC]" />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="author" className="font-semibold">Author</Label>
+                <Label htmlFor="author" className="text-xs font-bold text-[#12372A]">Author</Label>
                 <select 
                   id="author" 
                   value={authorId} 
                   onChange={e => { markDirty(); setAuthorId(e.target.value) }}
-                  className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-10 w-full rounded-xl border border-[#D9E1DC] bg-white px-3 py-2 text-xs font-medium text-[#202522] focus:outline-none focus:ring-2 focus:ring-[#1F7A5C]"
                 >
                   <option value="" disabled>Select author...</option>
                   {users.map(u => (
@@ -220,41 +220,41 @@ export default function CmsForm({ category, initialData, users = [] }: CmsFormPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="excerpt" className="font-semibold">Excerpt</Label>
-              <Textarea id="excerpt" value={excerpt} onChange={e => { markDirty(); setExcerpt(e.target.value) }} placeholder="Brief summary for listings and SEO fallback..." rows={3} />
+              <Label htmlFor="excerpt" className="text-xs font-bold text-[#12372A]">Excerpt</Label>
+              <Textarea id="excerpt" value={excerpt} onChange={e => { markDirty(); setExcerpt(e.target.value) }} placeholder="Brief summary for listings and search engines..." rows={3} className="rounded-xl border-[#D9E1DC] text-xs" />
             </div>
           </div>
 
           {/* Content Editor */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Content</h2>
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] p-6 space-y-4">
+            <h2 className="text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 border-b border-[#D9E1DC]/80 pb-2">Content Editor</h2>
             <div className="min-h-[500px]">
               <TiptapEditor content={content} onChange={(html) => { markDirty(); setContent(html) }} />
             </div>
           </div>
 
           {/* Key Takeaways */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-4">
-              <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Key Takeaways</h2>
-              <Button type="button" variant="outline" size="sm" onClick={() => { markDirty(); setKeyTakeaways([...keyTakeaways, '']) }} className="gap-1 h-8">
-                <Plus className="w-4 h-4" /> Add
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#D9E1DC]/80 pb-2 mb-4">
+              <h2 className="text-xs font-bold text-[#D6A84F] uppercase tracking-wider">Key Takeaways</h2>
+              <Button type="button" variant="outline" size="sm" onClick={() => { markDirty(); setKeyTakeaways([...keyTakeaways, '']) }} className="gap-1 h-8 rounded-xl border-[#D9E1DC] text-[#12372A] hover:bg-[#F7F4EC] text-xs font-bold">
+                <Plus className="w-3.5 h-3.5 text-[#1F7A5C]" /> Add Point
               </Button>
             </div>
             
             {keyTakeaways.length === 0 ? (
-              <p className="text-sm text-slate-500 italic">No key takeaways added. (They will appear in a highlighted box at the top of the article)</p>
+              <p className="text-xs text-[#66736D] italic">No key takeaways added. (They will appear in a highlighted statutory overview box)</p>
             ) : (
               <div className="space-y-3">
                 {keyTakeaways.map((takeaway, index) => (
                   <div key={index} className="flex gap-2 items-start">
-                    <span className="mt-2 text-slate-400 font-mono text-sm w-4">{index + 1}.</span>
-                    <Input value={takeaway} onChange={e => { markDirty(); const arr = [...keyTakeaways]; arr[index] = e.target.value; setKeyTakeaways(arr) }} placeholder={`Takeaway ${index + 1}`} />
+                    <span className="mt-2 text-[#66736D] font-mono text-xs w-4">{index + 1}.</span>
+                    <Input value={takeaway} onChange={e => { markDirty(); const arr = [...keyTakeaways]; arr[index] = e.target.value; setKeyTakeaways(arr) }} placeholder={`Takeaway ${index + 1}`} className="rounded-xl border-[#D9E1DC] text-xs" />
                     <div className="flex flex-col gap-1 shrink-0">
                       <div className="flex gap-1">
-                        <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => moveTakeaway(index, 'up')} disabled={index === 0}><ArrowUp className="w-3 h-3" /></Button>
-                        <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => moveTakeaway(index, 'down')} disabled={index === keyTakeaways.length - 1}><ArrowDown className="w-3 h-3" /></Button>
-                        <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => { markDirty(); setKeyTakeaways(keyTakeaways.filter((_, i) => i !== index)) }}><Trash2 className="w-3 h-3" /></Button>
+                        <Button type="button" variant="ghost" size="icon" className="h-6 w-6 rounded-lg text-[#66736D] hover:bg-[#F7F4EC]" onClick={() => moveTakeaway(index, 'up')} disabled={index === 0}><ArrowUp className="w-3 h-3" /></Button>
+                        <Button type="button" variant="ghost" size="icon" className="h-6 w-6 rounded-lg text-[#66736D] hover:bg-[#F7F4EC]" onClick={() => moveTakeaway(index, 'down')} disabled={index === keyTakeaways.length - 1}><ArrowDown className="w-3 h-3" /></Button>
+                        <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg" onClick={() => { markDirty(); setKeyTakeaways(keyTakeaways.filter((_, i) => i !== index)) }}><Trash2 className="w-3 h-3" /></Button>
                       </div>
                     </div>
                   </div>
@@ -264,15 +264,15 @@ export default function CmsForm({ category, initialData, users = [] }: CmsFormPr
           </div>
 
           {/* Related Services */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Related Services</h2>
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] p-6 space-y-4">
+            <h2 className="text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 border-b border-[#D9E1DC]/80 pb-2">Related Practice Areas</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {AVAILABLE_SERVICES.map(service => {
                 const isSelected = relatedServices.includes(service.slug)
                 return (
-                  <label key={service.slug} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${isSelected ? 'bg-blue-50 border-blue-200' : 'hover:bg-slate-50 border-slate-200'}`}>
-                    <input type="checkbox" className="mt-1" checked={isSelected} onChange={() => toggleService(service.slug)} />
-                    <span className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-slate-700'}`}>{service.title}</span>
+                  <label key={service.slug} className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${isSelected ? 'bg-[#1F7A5C]/10 border-[#1F7A5C]/30' : 'hover:bg-[#F7F4EC] border-[#D9E1DC]'}`}>
+                    <input type="checkbox" className="mt-1 rounded text-[#1F7A5C] focus:ring-[#1F7A5C]" checked={isSelected} onChange={() => toggleService(service.slug)} />
+                    <span className={`text-xs font-bold ${isSelected ? 'text-[#12372A]' : 'text-[#66736D]'}`}>{service.title}</span>
                   </label>
                 )
               })}
@@ -280,33 +280,33 @@ export default function CmsForm({ category, initialData, users = [] }: CmsFormPr
           </div>
 
           {/* CTA Configuration */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Call to Action (CTA)</h2>
-            <p className="text-sm text-slate-500 -mt-2 mb-4">Displays an inline promotional banner at the bottom of the article.</p>
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] p-6 space-y-6">
+            <h2 className="text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-2 border-b border-[#D9E1DC]/80 pb-2">Call to Action (CTA)</h2>
+            <p className="text-xs text-[#66736D] -mt-4 mb-4">Displays an inline promotional banner at the bottom of the resource.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="sm:col-span-2 space-y-2">
-                <Label htmlFor="ctaHeading" className="font-semibold">Heading</Label>
-                <Input id="ctaHeading" value={ctaHeading} onChange={e => { markDirty(); setCtaHeading(e.target.value) }} placeholder="e.g. Need help with HR or labour compliance?" />
+                <Label htmlFor="ctaHeading" className="text-xs font-bold text-[#12372A]">Heading</Label>
+                <Input id="ctaHeading" value={ctaHeading} onChange={e => { markDirty(); setCtaHeading(e.target.value) }} placeholder="e.g. Need help with HR or labour compliance?" className="rounded-xl border-[#D9E1DC] text-xs" />
               </div>
               <div className="sm:col-span-2 space-y-2">
-                <Label htmlFor="ctaDescription" className="font-semibold">Description</Label>
-                <Textarea id="ctaDescription" value={ctaDescription} onChange={e => { markDirty(); setCtaDescription(e.target.value) }} placeholder="Short descriptive text..." rows={2} />
+                <Label htmlFor="ctaDescription" className="text-xs font-bold text-[#12372A]">Description</Label>
+                <Textarea id="ctaDescription" value={ctaDescription} onChange={e => { markDirty(); setCtaDescription(e.target.value) }} placeholder="Short descriptive text..." rows={2} className="rounded-xl border-[#D9E1DC] text-xs" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ctaPrimaryLabel" className="font-semibold">Primary Button Label</Label>
-                <Input id="ctaPrimaryLabel" value={ctaPrimaryLabel} onChange={e => { markDirty(); setCtaPrimaryLabel(e.target.value) }} placeholder="e.g. Request a Health Check" />
+                <Label htmlFor="ctaPrimaryLabel" className="text-xs font-bold text-[#12372A]">Primary Button Label</Label>
+                <Input id="ctaPrimaryLabel" value={ctaPrimaryLabel} onChange={e => { markDirty(); setCtaPrimaryLabel(e.target.value) }} placeholder="e.g. Request a Health Check" className="rounded-xl border-[#D9E1DC] text-xs" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ctaPrimaryUrl" className="font-semibold">Primary Button URL</Label>
-                <Input id="ctaPrimaryUrl" value={ctaPrimaryUrl} onChange={e => { markDirty(); setCtaPrimaryUrl(e.target.value) }} placeholder="/compliance-health-check" />
+                <Label htmlFor="ctaPrimaryUrl" className="text-xs font-bold text-[#12372A]">Primary Button URL</Label>
+                <Input id="ctaPrimaryUrl" value={ctaPrimaryUrl} onChange={e => { markDirty(); setCtaPrimaryUrl(e.target.value) }} placeholder="/compliance-health-check" className="rounded-xl border-[#D9E1DC] text-xs" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ctaSecondaryLabel" className="font-semibold">Secondary Button Label</Label>
-                <Input id="ctaSecondaryLabel" value={ctaSecondaryLabel} onChange={e => { markDirty(); setCtaSecondaryLabel(e.target.value) }} placeholder="e.g. Contact Us" />
+                <Label htmlFor="ctaSecondaryLabel" className="text-xs font-bold text-[#12372A]">Secondary Button Label</Label>
+                <Input id="ctaSecondaryLabel" value={ctaSecondaryLabel} onChange={e => { markDirty(); setCtaSecondaryLabel(e.target.value) }} placeholder="e.g. Contact Us" className="rounded-xl border-[#D9E1DC] text-xs" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ctaSecondaryUrl" className="font-semibold">Secondary Button URL</Label>
-                <Input id="ctaSecondaryUrl" value={ctaSecondaryUrl} onChange={e => { markDirty(); setCtaSecondaryUrl(e.target.value) }} placeholder="/contact" />
+                <Label htmlFor="ctaSecondaryUrl" className="text-xs font-bold text-[#12372A]">Secondary Button URL</Label>
+                <Input id="ctaSecondaryUrl" value={ctaSecondaryUrl} onChange={e => { markDirty(); setCtaSecondaryUrl(e.target.value) }} placeholder="/contact" className="rounded-xl border-[#D9E1DC] text-xs" />
               </div>
             </div>
           </div>
@@ -316,14 +316,14 @@ export default function CmsForm({ category, initialData, users = [] }: CmsFormPr
         <div className="space-y-8">
           
           {/* Publishing State */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">Publishing</h2>
-            <div className="flex items-center gap-3 py-2">
-              <div className={`w-3 h-3 rounded-full ${published ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
-              <span className="font-medium">{published ? 'Published' : 'Draft'}</span>
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] p-6 space-y-4">
+            <h2 className="text-xs font-bold text-[#D6A84F] uppercase tracking-wider border-b border-[#D9E1DC]/80 pb-2">Publication Status</h2>
+            <div className="flex items-center gap-3 py-1">
+              <div className={`w-3 h-3 rounded-full ${published ? 'bg-[#1F7A5C]' : 'bg-[#D6A84F]'}`}></div>
+              <span className="font-bold text-xs text-[#12372A]">{published ? 'Published Live' : 'Draft Mode'}</span>
             </div>
             {isEdit && (
-              <div className="text-xs text-slate-500 space-y-1 mt-4 pt-4 border-t border-slate-100">
+              <div className="text-[11px] text-[#66736D] space-y-1 mt-4 pt-4 border-t border-[#D9E1DC]/80">
                 <p>Created: {new Date(initialData.createdAt).toLocaleDateString('en-GB')}</p>
                 <p>Updated: {new Date(initialData.updatedAt).toLocaleDateString('en-GB')}</p>
                 {initialData.publishedAt && <p>Published: {new Date(initialData.publishedAt).toLocaleDateString('en-GB')}</p>}
@@ -332,10 +332,10 @@ export default function CmsForm({ category, initialData, users = [] }: CmsFormPr
           </div>
 
           {/* Featured Image */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">Featured Image</h2>
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] p-6 space-y-6">
+            <h2 className="text-xs font-bold text-[#D6A84F] uppercase tracking-wider border-b border-[#D9E1DC]/80 pb-2">Cover Photography</h2>
             <div className="space-y-4">
-              <div className="aspect-video bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative flex items-center justify-center text-slate-400 text-sm font-medium">
+              <div className="aspect-video bg-[#F7F4EC] rounded-xl overflow-hidden border border-[#D9E1DC] relative flex items-center justify-center text-[#66736D] text-xs font-medium">
                 {featuredImage ? (
                   <img src={featuredImage} alt="Featured preview" className="object-cover w-full h-full" />
                 ) : (
@@ -343,48 +343,48 @@ export default function CmsForm({ category, initialData, users = [] }: CmsFormPr
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="featuredImage" className="text-xs font-semibold text-slate-500">Image URL (Recommended 1200x630)</Label>
-                <Input id="featuredImage" value={featuredImage} onChange={e => { markDirty(); setFeaturedImage(e.target.value) }} placeholder="https://..." />
+                <Label htmlFor="featuredImage" className="text-xs font-bold text-[#12372A]">Image URL (1200x630)</Label>
+                <Input id="featuredImage" value={featuredImage} onChange={e => { markDirty(); setFeaturedImage(e.target.value) }} placeholder="https://..." className="rounded-xl border-[#D9E1DC] text-xs" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="featuredImageAlt" className="text-xs font-semibold text-slate-500">Alt Text</Label>
-                <Input id="featuredImageAlt" value={featuredImageAlt} onChange={e => { markDirty(); setFeaturedImageAlt(e.target.value) }} placeholder="Describe the image..." />
+                <Label htmlFor="featuredImageAlt" className="text-xs font-bold text-[#12372A]">Alt Text</Label>
+                <Input id="featuredImageAlt" value={featuredImageAlt} onChange={e => { markDirty(); setFeaturedImageAlt(e.target.value) }} placeholder="Describe the image..." className="rounded-xl border-[#D9E1DC] text-xs" />
               </div>
             </div>
           </div>
 
           {/* SEO Metadata */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">SEO Settings</h2>
+          <div className="bg-white rounded-2xl shadow-xs border border-[#D9E1DC] p-6 space-y-6">
+            <h2 className="text-xs font-bold text-[#D6A84F] uppercase tracking-wider border-b border-[#D9E1DC]/80 pb-2">Search Preview & Meta</h2>
             
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-1 shadow-sm">
-              <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2">Google Preview</p>
-              <p className="text-blue-800 font-medium text-lg truncate">{seoTitle || title || 'Your Article Title'}</p>
-              <p className="text-emerald-700 text-sm truncate">labouraxis.com/resources/{category}/{slug || 'url-slug'}</p>
-              <p className="text-slate-600 text-sm line-clamp-2 leading-snug">{metaDescription || excerpt || 'Your article description will appear here in search results...'}</p>
+            <div className="bg-[#F7F4EC] border border-[#D9E1DC] rounded-xl p-4 space-y-1">
+              <p className="text-[10px] text-[#66736D] uppercase font-bold tracking-wider mb-2">Search Snippet</p>
+              <p className="text-[#12372A] font-bold text-sm truncate">{seoTitle || title || 'Resource Title'}</p>
+              <p className="text-[#1F7A5C] text-xs truncate">labouraxis.com/resources/{category}/{slug || 'url-slug'}</p>
+              <p className="text-[#66736D] text-xs line-clamp-2 leading-relaxed">{metaDescription || excerpt || 'Search snippet summary...'}</p>
             </div>
 
             <div className="space-y-2">
               <div className="flex justify-between">
-                <Label htmlFor="seoTitle" className="font-semibold">SEO Title</Label>
-                <span className="text-xs text-slate-400">{seoTitle.length} / 60</span>
+                <Label htmlFor="seoTitle" className="text-xs font-bold text-[#12372A]">SEO Title</Label>
+                <span className="text-[10px] text-[#66736D]">{seoTitle.length} / 60</span>
               </div>
-              <Input id="seoTitle" value={seoTitle} onChange={e => { markDirty(); setSeoTitle(e.target.value) }} placeholder="Overrides main title for SEO..." />
+              <Input id="seoTitle" value={seoTitle} onChange={e => { markDirty(); setSeoTitle(e.target.value) }} placeholder="Overrides main title for SEO..." className="rounded-xl border-[#D9E1DC] text-xs" />
             </div>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <Label htmlFor="metaDescription" className="font-semibold">Meta Description</Label>
-                <span className="text-xs text-slate-400">{metaDescription.length} / 160</span>
+                <Label htmlFor="metaDescription" className="text-xs font-bold text-[#12372A]">Meta Description</Label>
+                <span className="text-[10px] text-[#66736D]">{metaDescription.length} / 160</span>
               </div>
-              <Textarea id="metaDescription" value={metaDescription} onChange={e => { markDirty(); setMetaDescription(e.target.value) }} placeholder="Optimal description for search..." rows={3} />
+              <Textarea id="metaDescription" value={metaDescription} onChange={e => { markDirty(); setMetaDescription(e.target.value) }} placeholder="Optimal description for search..." rows={3} className="rounded-xl border-[#D9E1DC] text-xs" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="canonicalUrl" className="font-semibold">Canonical URL</Label>
-              <Input id="canonicalUrl" value={canonicalUrl} onChange={e => { markDirty(); setCanonicalUrl(e.target.value) }} placeholder="Leave blank for default" className="font-mono text-sm" />
+              <Label htmlFor="canonicalUrl" className="text-xs font-bold text-[#12372A]">Canonical URL</Label>
+              <Input id="canonicalUrl" value={canonicalUrl} onChange={e => { markDirty(); setCanonicalUrl(e.target.value) }} placeholder="Leave blank for default" className="font-mono text-xs rounded-xl border-[#D9E1DC]" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="ogImage" className="font-semibold">OpenGraph Image URL</Label>
-              <Input id="ogImage" value={ogImage} onChange={e => { markDirty(); setOgImage(e.target.value) }} placeholder="Overrides featured image on social" />
+              <Label htmlFor="ogImage" className="text-xs font-bold text-[#12372A]">Social Share Image</Label>
+              <Input id="ogImage" value={ogImage} onChange={e => { markDirty(); setOgImage(e.target.value) }} placeholder="Overrides featured image on social" className="rounded-xl border-[#D9E1DC] text-xs" />
             </div>
           </div>
         </div>
