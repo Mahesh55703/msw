@@ -101,7 +101,7 @@ export default async function TeamPage() {
     }
   ];
 
-  const displayMembers = teamMembers.length > 0 ? teamMembers.map((m: any) => ({
+  const displayMembers = (Array.isArray(teamMembers) && teamMembers.length > 0) ? teamMembers.map((m: any) => ({
     id: String(m.id),
     name: m.name,
     role: m.role,

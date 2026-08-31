@@ -88,7 +88,7 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
   }
 
   // 2. Fallback to static resourcesData if DB has no items
-  if (items.length === 0) {
+  if (!Array.isArray(items) || items.length === 0) {
     const rawType = resolvedParams.category.replace(/s$/, '');
     const staticFiltered = resourcesData.filter(r => 
       r.type === rawType || 

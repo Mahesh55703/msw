@@ -135,7 +135,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
     // fallback
   }
 
-  if (relatedArticles.length === 0) {
+  if (!Array.isArray(relatedArticles) || relatedArticles.length === 0) {
     relatedArticles = resourcesData
       .filter(r => r.slug !== resource.slug && (r.type === resolvedParams.category.replace(/s$/, '') || r.type + 's' === resolvedParams.category))
       .slice(0, 3)
