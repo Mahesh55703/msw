@@ -1,437 +1,396 @@
-import { resourcesData } from "@/data/resources";
-import { servicesData } from "@/data/services";
-import { notFound } from "next/navigation";
+import prisma from '@/lib/prisma';
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { ChevronRight, Calendar, Clock, Download, ArrowRight, List, User } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { ChevronRight, ArrowRight, User, Calendar, Clock, List as ListIcon, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
-import ReactMarkdown from 'react-markdown';
+import { resourcesData } from '@/data/resources';
 
 export async function generateStaticParams() {
-  const params: { category: string; slug: string }[] = [];
-  resourcesData.forEach(r => {
-    if (r.type === 'faq') return;
-    params.push({
-      category: r.type + 's',
-      slug: r.slug
-    });
-  });
-  return params;
+  let dbArticles: any[] = [];
+  try {
+    dbArticles = await prisma.article.findMany({ select: { slug: true, category: true }, where: { category: { not: 'faqs' } } });
+  } catch (e) {
+    console.error("Prisma error in generateStaticParams", e);
+  }
+
+  const staticArticles = resourcesData.map(r => ({
+    category: r.type === 'guide' ? 'guides' : r.type === 'checklist' ? 'checklists' : r.type === 'update' ? 'updates' : 'articles',
+    slug: r.slug
+  }));
+
+  const map = new Map<string, { category: string; slug: string }>();
+  for (const a of staticArticles) map.set(a.slug, a);
+  for (const a of dbArticles) map.set(a.slug, { category: a.category, slug: a.slug });
+
+  return Array.from(map.values());
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ category: string; slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const resource = resourcesData.find(r => r.slug === resolvedParams.slug && r.type + 's' === resolvedParams.category);
+  let resource: any = null;
+  try {
+    resource = await prisma.article.findUnique({ where: { slug: resolvedParams.slug } });
+  } catch (e) {
+    // ignore
+  }
+
+  if (!resource) {
+    const staticItem = resourcesData.find(r => r.slug === resolvedParams.slug);
+    if (staticItem) {
+      resource = {
+        title: staticItem.title,
+        seoTitle: staticItem.seoTitle || staticItem.title,
+        metaDescription: staticItem.seoDescription || staticItem.excerpt,
+        excerpt: staticItem.excerpt,
+        canonicalUrl: `/resources/${resolvedParams.category}/${staticItem.slug}`,
+        featuredImage: staticItem.featuredImage
+      };
+    }
+  }
   
   if (!resource) return { title: "Not Found" };
   
   return {
-    title: `${resource.title} | LabourAxis`,
-    description: resource.excerpt,
+    title: resource.seoTitle || `${resource.title} | LabourAxis`,
+    description: resource.metaDescription || resource.excerpt || '',
     alternates: {
-      canonical: `/resources/${resolvedParams.category}/${resource.slug}`
+      canonical: resource.canonicalUrl || `/resources/${resolvedParams.category}/${resource.slug}`
+    },
+    openGraph: {
+      title: resource.seoTitle || resource.title,
+      description: resource.metaDescription || resource.excerpt || '',
+      images: [resource.ogImage || resource.featuredImage || '/logo-transparent.png']
     }
   };
 }
 
-function InArticleCTA() {
-  return (
-    <div className="my-10 bg-slate-50 border-l-4 border-blue-600 p-6 rounded-r-xl shadow-sm not-prose">
-      <h4 className="text-xl font-bold text-slate-900 mb-2">Not sure whether your current processes have compliance gaps?</h4>
-      <p className="text-slate-600 mb-4">
-        LabourAxis can help you review your HR and labour compliance processes and identify areas that may need attention.
-      </p>
-      <Link href="/contact" className="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1 group">
-        Request a Compliance Health Check <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-      </Link>
-    </div>
-  );
-}
+const AVAILABLE_SERVICES: Record<string, string> = {
+  'hr-consulting': 'Practical HR Consulting for Growing Businesses',
+  'labour-compliance': 'Labour & Statutory Compliance Support for Businesses',
+  'pf-esic-compliance': 'PF / ESIC Compliance',
+  'payroll-compliance': 'Payroll & HR Operations',
+  'payroll-hr-operations': 'Payroll & HR Operations',
+  'factory-compliance': 'Factory & Industrial Compliance',
+  'contract-labour': 'Contract Labour Compliance',
+  'contract-labour-compliance': 'Contract Labour Compliance',
+  'compliance-health-check': 'Labour Compliance Health Checks & Internal Reviews',
+  'compliance-audit': 'Labour Compliance Audits',
+  'industrial-relations': 'Industrial Relations'
+};
 
 export default async function ResourceDetailPage({ params }: { params: Promise<{ category: string; slug: string }> }) {
   const resolvedParams = await params;
-  const resource = resourcesData.find(r => r.slug === resolvedParams.slug && r.type + 's' === resolvedParams.category);
+  if (resolvedParams.category === 'faqs') redirect('/resources/faqs');
   
+  let resource: any = null;
+  try {
+    resource = await prisma.article.findUnique({
+      where: { slug: resolvedParams.slug },
+      include: { author: true, keyTakeaways: { orderBy: { sortOrder: 'asc' } }, relatedServices: { orderBy: { sortOrder: 'asc' } } }
+    });
+  } catch (e) {
+    console.error("Prisma error, falling back to static", e);
+  }
+  
+  if (!resource) {
+    const staticItem = resourcesData.find(r => r.slug === resolvedParams.slug);
+    if (staticItem) {
+      resource = {
+        id: staticItem.slug,
+        title: staticItem.title,
+        slug: staticItem.slug,
+        content: staticItem.content || `<p>${staticItem.excerpt}</p>`,
+        excerpt: staticItem.excerpt,
+        category: resolvedParams.category,
+        featuredImage: staticItem.featuredImage,
+        publishedAt: new Date(staticItem.publishedAt),
+        updatedAt: staticItem.updatedAt ? new Date(staticItem.updatedAt) : new Date(staticItem.publishedAt),
+        author: { name: staticItem.author || "LabourAxis Editorial", bio: staticItem.authorBio || "Industrial HR and Compliance Advisory Team" },
+        keyTakeaways: (staticItem.keyTakeaways || []).map((t, idx) => ({ id: `${idx}`, point: t, sortOrder: idx })),
+        relatedServices: (staticItem.relatedServices || []).map((s, idx) => ({ id: `${idx}`, serviceSlug: s, sortOrder: idx }))
+      };
+    }
+  }
+
   if (!resource) notFound();
 
-  const relatedServices = servicesData.filter(s => resource.relatedServices?.includes(s.slug));
-  const relatedArticles = resourcesData.filter(r => r.type === 'article' && r.slug !== resource.slug).slice(0, 3);
+  // Automatic Reading Time
+  const words = (resource.content || '').replace(/<[^>]+>/g, '').split(/\s+/).length;
+  const readingTime = Math.ceil(words / 200) + ' min read';
 
-  // TOC generator
-  const toc = (resource.content?.match(/^## (.*?)$/gm) || []).map(header => {
-    const text = header.replace(/^## /, '').replace(/\*\*/g, '').trim();
-    return { text, id: text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') };
-  });
+  // Extract H2s for TOC
+  const h2Matches = Array.from((resource.content || '').matchAll(/<h2[^>]*>(.*?)<\/h2>/gi));
+  const toc = h2Matches.map((m: any) => m[1].replace(/<[^>]+>/g, ''));
 
-  let contentPart1 = resource.content || '';
-  let contentPart2 = '';
-
-  if (resource.type === 'article' && resource.content) {
-    const headings = resource.content.match(/^## (.*?)$/gm);
-    if (headings && headings.length >= 3) {
-      const splitIndex = resource.content.indexOf(headings[Math.floor(headings.length / 2)]);
-      contentPart1 = resource.content.substring(0, splitIndex);
-      contentPart2 = resource.content.substring(splitIndex);
-    }
-  }
-
-  const MarkdownComponents = {
-    h2: ({node, ...props}: any) => {
-      const id = typeof props.children === 'string' 
-        ? props.children.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-        : '';
-      return <h2 id={id} className="scroll-mt-32 mt-12 mb-6 text-2xl font-bold" {...props} />;
-    },
-    h3: ({node, ...props}: any) => <h3 className="scroll-mt-32 mt-8 mb-4 text-xl font-bold" {...props} />,
-    blockquote: ({node, ...props}: any) => {
-      // Very basic blockquote rendering logic
-      return <blockquote className="border-l-4 border-slate-300 pl-4 italic text-slate-600 my-6" {...props} />;
-    }
-  };
-
-  const jsonLd: any = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": (process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com") },
-          { "@type": "ListItem", "position": 2, "name": "Resources", "item": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/resources` },
-          { "@type": "ListItem", "position": 3, "name": resolvedParams.category.charAt(0).toUpperCase() + resolvedParams.category.slice(1), "item": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/resources/${resolvedParams.category}` },
-          { "@type": "ListItem", "position": 4, "name": resource.title, "item": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/resources/${resolvedParams.category}/${resource.slug}` }
-        ]
-      }
-    ]
-  };
-
-  if (resource.type === 'article' || resource.type === 'guide') {
-    jsonLd["@graph"].push({
-      "@type": "Article",
-      "headline": resource.title,
-      "description": resource.excerpt,
-      "datePublished": resource.publishedAt,
-      "dateModified": resource.updatedAt || resource.publishedAt,
-      "author": {
-        "@type": "Organization",
-        "name": "LabourAxis"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "LabourAxis",
-        "logo": {
-          "@type": "ImageObject",
-          "url": `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com"}/logo.png`
-        }
-      }
+  // Get related articles
+  let relatedArticles: any[] = [];
+  try {
+    relatedArticles = await prisma.article.findMany({
+      where: { category: resource.category, slug: { not: resource.slug }, published: true },
+      take: 3
     });
+  } catch (e) {
+    // fallback
   }
+
+  if (relatedArticles.length === 0) {
+    relatedArticles = resourcesData
+      .filter(r => r.slug !== resource.slug && (r.type === resolvedParams.category.replace(/s$/, '') || r.type + 's' === resolvedParams.category))
+      .slice(0, 3)
+      .map(r => ({
+        id: r.slug,
+        title: r.title,
+        slug: r.slug,
+        category: r.category,
+        publishedAt: new Date(r.publishedAt),
+        featuredImage: r.featuredImage
+      }));
+  }
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": resource.seoTitle || resource.title,
+    "description": resource.metaDescription || resource.excerpt,
+    "datePublished": resource.publishedAt,
+    "dateModified": resource.updatedAt,
+    "author": {
+      "@type": "Person",
+      "name": resource.author?.name || "LabourAxis"
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
 
   return (
-    <div className="flex flex-col pb-24 bg-white min-h-screen">
+    <div className="flex flex-col pb-24 bg-[#FFFFFF] min-h-screen overflow-x-hidden">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {/* Breadcrumb */}
-      <div className="bg-slate-50 border-b border-slate-200 pt-6 pb-4">
+      
+      {/* Breadcrumbs */}
+      <div className="bg-[#12372A] border-b border-white/10 pt-6 pb-4">
         <div className="container mx-auto px-4 md:px-8 max-w-7xl">
-          <nav className="flex text-sm text-slate-500">
-            <Link href="/" className="hover:text-slate-900">Home</Link>
-            <ChevronRight className="w-4 h-4 mx-2 mt-0.5" />
-            <Link href="/resources" className="hover:text-slate-900">Resources</Link>
-            <ChevronRight className="w-4 h-4 mx-2 mt-0.5" />
-            <Link href={`/resources/${resolvedParams.category}`} className="hover:text-slate-900 capitalize">
+          <nav className="flex items-center text-xs md:text-sm text-[#A2B3AA] font-medium">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <ChevronRight className="w-3.5 h-3.5 mx-2 text-[#66736D]" />
+            <Link href="/resources" className="hover:text-white transition-colors">Resources</Link>
+            <ChevronRight className="w-3.5 h-3.5 mx-2 text-[#66736D]" />
+            <Link href={`/resources/${resolvedParams.category}`} className="hover:text-white transition-colors capitalize">
               {resolvedParams.category}
             </Link>
-            <ChevronRight className="w-4 h-4 mx-2 mt-0.5" />
-            <span className="text-slate-900 truncate max-w-[200px] sm:max-w-none">{resource.title}</span>
+            <ChevronRight className="w-3.5 h-3.5 mx-2 text-[#66736D]" />
+            <span className="text-white truncate max-w-[200px] sm:max-w-none">{resource.title}</span>
           </nav>
         </div>
       </div>
 
       {/* Header */}
-      <section className="bg-slate-50 border-b border-slate-200 py-12 md:py-16">
-        <div className="container mx-auto px-4 md:px-8 max-w-4xl text-center">
-          <span className="inline-block bg-blue-50 text-blue-700 text-sm font-bold px-3 py-1 rounded-full mb-6 uppercase tracking-wider">
-            {resource.category}
-          </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 text-balance leading-tight">
+      <section className="bg-[#12372A] text-white pt-12 pb-16 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-forest opacity-30 pointer-events-none"></div>
+        <div className="container mx-auto px-4 md:px-8 max-w-4xl text-center relative z-10">
+          <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
+            <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
+            <span>{resource.category}</span>
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-balance leading-tight">
             {resource.title}
           </h1>
-          <p className="text-xl md:text-2xl text-slate-600 mb-10 leading-relaxed text-balance mx-auto">
-            {resource.excerpt}
-          </p>
+
+          {resource.excerpt && (
+            <p className="text-lg md:text-xl text-[#A2B3AA] mb-8 max-w-2xl mx-auto leading-relaxed text-balance">
+              {resource.excerpt}
+            </p>
+          )}
           
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 font-medium">
-            {resource.author && (
-              <div className="flex items-center gap-2 text-slate-900">
-                <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
-                  {resource.authorImage ? <Image src={resource.authorImage} alt={resource.author} width={32} height={32} /> : <User className="w-4 h-4" />}
-                </div>
-                By {resource.author}
-              </div>
-            )}
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Published: {new Date(resource.publishedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[#A2B3AA] text-xs md:text-sm font-medium">
+            <div className="flex items-center gap-2 bg-[#0D281E]/60 px-3 py-1.5 rounded-lg border border-white/10">
+              <User className="w-3.5 h-3.5 text-[#A2B3AA]" />
+              <span className="text-white">By {resource.author?.name || 'LabourAxis Editorial'}</span>
             </div>
-            {resource.updatedAt && (
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                {resource.type === 'guide' ? 'Last reviewed: ' : 'Updated: '}
-                {new Date(resource.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+            {resource.publishedAt && (
+              <div className="flex items-center gap-2 bg-[#0D281E]/60 px-3 py-1.5 rounded-lg border border-white/10">
+                <Calendar className="w-3.5 h-3.5 text-[#A2B3AA]" />
+                <span>Published: {formatDate(resource.publishedAt)}</span>
               </div>
             )}
-            {resource.readingTime && (
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                {resource.readingTime}
-              </div>
-            )}
+            <div className="flex items-center gap-2 bg-[#0D281E]/60 px-3 py-1.5 rounded-lg border border-white/10">
+              <Calendar className="w-3.5 h-3.5 text-[#A2B3AA]" />
+              <span>Updated: {formatDate(resource.updatedAt)}</span>
+            </div>
+            <div className="flex items-center gap-2 bg-[#0D281E]/60 px-3 py-1.5 rounded-lg border border-white/10">
+              <Clock className="w-3.5 h-3.5 text-[#A2B3AA]" />
+              <span>{readingTime}</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Image / Guide Cover */}
-      {resource.type === 'article' && resource.featuredImage && (
-        <div className="container mx-auto px-4 md:px-8 max-w-5xl -mt-8 relative z-10 mb-16">
-          <div className="aspect-[21/9] relative rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-white">
-            <Image src={resource.featuredImage} alt={resource.title} fill className="object-contain p-8" priority />
+      {/* Featured Image */}
+      {resource.featuredImage && (
+        <div className="container mx-auto px-4 md:px-8 max-w-5xl -mt-8 relative z-10 mb-12">
+          <div className="aspect-[16/9] bg-[#F7F4EC] rounded-3xl overflow-hidden shadow-xl border border-[#D9E1DC]">
+            <img src={resource.featuredImage} alt={resource.featuredImageAlt || resource.title} className="w-full h-full object-cover" />
           </div>
         </div>
       )}
 
-      {resource.type === 'guide' && (
-        <div className="container mx-auto px-4 md:px-8 max-w-3xl -mt-8 relative z-10 mb-16">
-          <div className="aspect-[16/9] md:aspect-[21/9] relative rounded-2xl overflow-hidden shadow-xl border border-slate-200 bg-slate-900 text-white flex flex-col items-center justify-center p-8 text-center">
-             <div className="font-bold text-sm tracking-widest text-slate-400 mb-6 uppercase">LabourAxis</div>
-             <h2 className="text-3xl md:text-5xl font-bold mb-6 max-w-xl">{resource.title}</h2>
-             <div className="text-slate-300 font-medium">HR • Labour • Compliance</div>
-          </div>
-        </div>
-      )}
+      {/* Content Section */}
+      <section className="py-8 md:py-16">
+        <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            {/* Sidebar */}
+            <div className="lg:col-span-4 order-2 lg:order-2">
+              <div className="sticky top-24 space-y-8">
+                
+                {/* Table of Contents */}
+                {toc.length > 0 && (
+                  <div className="bg-[#F7F4EC] border border-[#D9E1DC] rounded-3xl p-6 shadow-2xs">
+                    <h3 className="font-bold text-[#12372A] mb-4 uppercase tracking-wider text-xs flex items-center gap-2">
+                      <ListIcon className="w-4 h-4 text-[#1F7A5C]" /> In This Article
+                    </h3>
+                    <ul className="space-y-3">
+                      {toc.map((heading, i) => (
+                        <li key={i} className="text-[#66736D] hover:text-[#1F7A5C] transition-colors text-sm font-medium leading-snug">
+                          • {heading}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {/* NEED HELP? CTA */}
+                <div className="bg-[#12372A] rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                  <div className="absolute inset-0 bg-grid-forest opacity-30 pointer-events-none"></div>
+                  <div className="relative z-10">
+                    <span className="text-[11px] font-bold text-[#D6A84F] uppercase tracking-wider bg-[#1B4E3C] px-3 py-1 rounded-md mb-3 inline-block border border-[#D6A84F]/30">
+                      Need Assistance?
+                    </span>
+                    <h3 className="font-bold text-lg mb-2">Need Expert Support?</h3>
+                    <p className="text-[#A2B3AA] text-sm mb-6 leading-relaxed">
+                      Review your HR & labour compliance processes with our experts.
+                    </p>
+                    <Link 
+                      href="/contact" 
+                      className="block w-full text-center bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md"
+                    >
+                      Request a Health Check
+                    </Link>
+                  </div>
+                </div>
 
-      {/* Main Content Area */}
-      <div className="container mx-auto px-4 md:px-8 max-w-7xl py-8">
-        
-        <div className={`flex flex-col lg:flex-row-reverse gap-12 lg:gap-16 items-start`}>
-          
-          {/* Right Sidebar for Articles & Guides */}
-          {resource.type !== 'checklist' && (
-            <aside className="lg:w-[320px] shrink-0 lg:sticky lg:top-28 w-full space-y-8">
-              
-              {/* TOC */}
-              {toc.length > 0 && (
-                <div className="bg-slate-50 rounded-xl border border-slate-200 p-6 hidden lg:block">
-                  <h3 className="font-bold text-slate-900 mb-4 uppercase tracking-wider text-sm flex items-center gap-2">
-                    <List className="w-4 h-4"/> In This {resource.type === 'guide' ? 'Guide' : 'Article'}
-                  </h3>
-                  <ul className="space-y-3">
-                    {toc.map((item, idx) => (
-                      <li key={idx}>
-                        <a href={`#${item.id}`} className="text-slate-600 hover:text-blue-600 text-sm block leading-snug">
-                          {item.text}
-                        </a>
+                {/* Related Services */}
+                {resource.relatedServices.length > 0 && (
+                  <div>
+                    <h3 className="font-bold text-[#12372A] mb-4 uppercase tracking-wider text-xs">RELATED SERVICES</h3>
+                    <ul className="space-y-3">
+                      {resource.relatedServices.map((rs: any) => (
+                        <li key={rs.id}>
+                          <Link 
+                            href={`/services/${rs.serviceSlug}`} 
+                            className="block bg-white border border-[#D9E1DC] rounded-2xl p-4 hover:border-[#1F7A5C]/50 hover:shadow-sm transition-all group"
+                          >
+                            <span className="text-[#202522] font-bold text-sm leading-snug block pr-2 group-hover:text-[#1F7A5C] transition-colors">
+                              {AVAILABLE_SERVICES[rs.serviceSlug] || rs.serviceSlug.replace(/-/g, ' ')}
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Main Article Body */}
+            <div className="lg:col-span-8 order-1 lg:order-1">
+              {resource.keyTakeaways.length > 0 && (
+                <div className="bg-[#EDE8DE]/70 border border-[#D9E1DC] rounded-3xl p-6 md:p-8 mb-10 shadow-2xs">
+                  <h3 className="font-bold text-[#12372A] mb-4 text-lg">Key Takeaways</h3>
+                  <ul className="space-y-2.5 text-[#202522] text-sm md:text-base leading-relaxed">
+                    {resource.keyTakeaways.map((t: any) => (
+                      <li key={t.id} className="flex items-start gap-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#D6A84F] mt-2.5 shrink-0" />
+                        <span>{t.text || t.point}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
 
-              {/* Sidebar CTA */}
-              <div className="bg-slate-900 text-white rounded-xl p-6 shadow-md hidden lg:block">
-                <h3 className="font-bold text-lg mb-3">
-                  {resource.type === 'guide' ? 'Need help reviewing your factory compliance?' : 'NEED HELP?'}
-                </h3>
-                <p className="text-slate-300 text-sm mb-6">
-                  {resource.type === 'guide' 
-                    ? 'LabourAxis can help review your HR, labour and statutory compliance processes and identify areas that may require attention.'
-                    : 'Review your HR & labour compliance processes with our experts.'}
-                </p>
-                <Link href="/contact" className="block text-center bg-white text-slate-900 font-bold py-3 px-4 rounded hover:bg-slate-100 transition-colors w-full">
-                  Request a Compliance Health Check
-                </Link>
-              </div>
-
-              {/* Related Services in sidebar */}
-              <div className="hidden lg:block">
-                <h3 className="font-bold text-slate-900 mb-4 uppercase tracking-wider text-sm">Related Services</h3>
-                <div className="space-y-3">
-                  {relatedServices.map(service => (
-                    <Link key={service.slug} href={`/services/${service.slug}`} className="block group">
-                      <div className="bg-white border border-slate-200 p-4 rounded-xl hover:border-slate-300 transition-colors shadow-sm">
-                        <div className="text-sm font-bold text-slate-800 group-hover:text-blue-600">{service.title}</div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </aside>
-          )}
-
-          {/* Article Body */}
-          <article className={`flex-1 min-w-0 ${resource.type === 'checklist' ? 'max-w-4xl mx-auto w-full' : 'max-w-[800px] w-full'}`}>
-            
-            {/* Guide/Article Content */}
-            {resource.type !== 'checklist' && (
-              <>
-                {/* Key Takeaways */}
-                {resource.keyTakeaways && resource.keyTakeaways.length > 0 && (
-                  <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 md:p-8 mb-12">
-                    <h3 className="text-lg font-bold text-blue-900 mb-4 flex items-center gap-2">
-                      Key Takeaways
-                    </h3>
-                    <ul className="space-y-3">
-                      {resource.keyTakeaways.map((takeaway, idx) => (
-                        <li key={idx} className="flex items-start gap-3 text-blue-800">
-                          <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-2 shrink-0" />
-                          <span className="leading-relaxed">{takeaway}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                <div className="prose prose-slate lg:prose-lg max-w-none prose-headings:font-bold prose-headings:text-slate-900 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-li:marker:text-slate-400">
-                  <ReactMarkdown components={MarkdownComponents}>{contentPart1}</ReactMarkdown>
-                  
-                  {contentPart2 && <InArticleCTA />}
-                  
-                  {contentPart2 && <ReactMarkdown components={MarkdownComponents}>{contentPart2}</ReactMarkdown>}
-                </div>
-
-                {/* Author Profile */}
-                {(resource.type === 'article' || resource.type === 'guide') && resource.author && (
-                  <div className="mt-16 pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-slate-50 p-8 rounded-2xl">
-                    <div className="w-24 h-24 shrink-0 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-sm">
-                      {resource.authorImage ? <Image src={resource.authorImage} alt={resource.author} width={96} height={96} /> : <User className="w-10 h-10 text-slate-400" />}
-                    </div>
-                    <div className="text-center sm:text-left">
-                      <h4 className="text-xl font-bold text-slate-900 mb-1">{resource.author}</h4>
-                      <p className="text-slate-500 text-sm font-medium mb-3 uppercase tracking-wider">HR, Labour & Compliance Content</p>
-                      {resource.authorBio && <p className="text-slate-600 mb-4">{resource.authorBio}</p>}
-                      <Link href="/about" className="text-blue-600 font-bold hover:underline text-sm">View About LabourAxis &rarr;</Link>
+              <div className="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-headings:text-[#12372A] prose-headings:tracking-tight prose-h2:text-2xl prose-h2:md:text-3xl prose-a:text-[#1F7A5C] prose-img:rounded-3xl">
+                <div dangerouslySetInnerHTML={{ __html: resource.content }} />
+                
+                {(resource.ctaHeading || resource.ctaPrimaryLabel) && (
+                  <div className="mt-12 bg-[#F7F4EC] border-l-4 border-[#1F7A5C] p-8 rounded-r-3xl shadow-xs not-prose">
+                    <h4 className="text-2xl font-bold text-[#12372A] mb-3">{resource.ctaHeading || 'Ready to improve your compliance?'}</h4>
+                    {resource.ctaDescription && <p className="text-[#66736D] mb-6 text-base md:text-lg leading-relaxed">{resource.ctaDescription}</p>}
+                    <div className="flex flex-wrap gap-4">
+                      {resource.ctaPrimaryLabel && resource.ctaPrimaryUrl && (
+                        <Link href={resource.ctaPrimaryUrl} className="inline-flex items-center justify-center px-6 py-3.5 font-bold rounded-xl text-white bg-[#1F7A5C] hover:bg-[#165B44] shadow-md transition-all">
+                          {resource.ctaPrimaryLabel}
+                        </Link>
+                      )}
+                      {resource.ctaSecondaryLabel && resource.ctaSecondaryUrl && (
+                        <Link href={resource.ctaSecondaryUrl} className="inline-flex items-center justify-center px-6 py-3.5 border border-[#D9E1DC] font-bold rounded-xl text-[#202522] bg-white hover:bg-[#EDE8DE] shadow-2xs transition-all">
+                          {resource.ctaSecondaryLabel}
+                        </Link>
+                      )}
                     </div>
                   </div>
                 )}
-              </>
-            )}
+              </div>
 
-            {/* Checklist Content */}
-            {resource.type === 'checklist' && resource.checklistItems && (
-              <div className="space-y-12">
-                {resource.checklistItems.map((section, idx) => (
-                  <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 shadow-sm">
-                    <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-100 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0">
-                        {idx + 1}
-                      </div>
-                      {section.category}
-                    </h3>
-                    <ul className="space-y-4">
-                      {section.items.map((item, itemIdx) => (
-                        <li key={itemIdx} className="flex items-start gap-4">
-                          <div className="w-6 h-6 rounded border-2 border-slate-300 flex-shrink-0 mt-0.5 flex items-center justify-center bg-slate-50" />
-                          <span className="text-slate-700 leading-relaxed text-lg">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
+              {/* Author Bio Box */}
+              <div className="mt-16 bg-[#F7F4EC] rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start border border-[#D9E1DC] shadow-2xs">
+                <div className="w-16 h-16 shrink-0 rounded-2xl bg-[#1F7A5C]/10 text-[#1F7A5C] font-bold text-xl flex items-center justify-center border border-[#1F7A5C]/20 shadow-2xs">
+                  {resource.author?.name ? resource.author.name.charAt(0) : 'L'}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div>
+                    <h3 className="font-bold text-lg md:text-xl text-[#12372A]">{resource.author?.name || 'LabourAxis Editorial'}</h3>
+                    <p className="text-[#66736D] text-xs font-bold uppercase tracking-wider mt-0.5">HR, LABOUR & COMPLIANCE CONTENT</p>
                   </div>
-                ))}
-
-                <div className="mt-12 text-center p-8 bg-slate-50 rounded-2xl border border-slate-200">
-                   <h4 className="text-xl font-bold text-slate-900 mb-2">Need help implementing these compliance checks?</h4>
-                   <p className="text-slate-600 mb-6">LabourAxis can review your HR and labour compliance processes and identify areas requiring attention.</p>
-                   <Link href="/contact" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-blue-600 text-white hover:bg-blue-700 h-11 px-8">
-                     Request a Compliance Health Check
-                   </Link>
+                  <p className="text-[#66736D] text-sm md:text-base leading-relaxed">
+                    Practical insights on HR operations, labour compliance and workforce management.
+                  </p>
+                  <Link href="/about" className="inline-flex items-center text-[#1F7A5C] font-bold hover:text-[#165B44] text-xs md:text-sm pt-2">
+                    <span>View About LabourAxis</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </Link>
                 </div>
               </div>
-            )}
-          </article>
-        </div>
-      </div>
 
-      {/* Related Articles & Final CTA Area */}
-      {resource.type === 'article' && (
-        <div className="bg-slate-50 border-t border-slate-200 py-20 mt-12">
-          <div className="container mx-auto px-4 md:px-8 max-w-7xl">
-            
-            {/* Related Articles */}
-            {relatedArticles.length > 0 && (
-              <div className="mb-20">
-                <h3 className="text-2xl font-bold text-slate-900 mb-8">Related Articles</h3>
-                <div className="grid md:grid-cols-3 gap-8">
-                  {relatedArticles.map((rel) => (
-                    <Link key={rel.slug} href={`/resources/articles/${rel.slug}`} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-slate-200 group flex flex-col h-full">
-                      <div className="p-6 flex flex-col h-full">
-                        <span className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-3">{rel.category}</span>
-                        <h4 className="font-bold text-slate-900 text-xl mb-4 group-hover:text-blue-600 transition-colors line-clamp-2">{rel.title}</h4>
-                        <div className="mt-auto flex items-center text-sm font-bold text-slate-500 group-hover:text-blue-600">
-                          Read Article <ArrowRight className="w-4 h-4 ml-1" />
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Final CTA */}
-            <div className="bg-slate-900 rounded-3xl p-10 md:p-16 text-center text-white max-w-4xl mx-auto shadow-xl">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">Need help with HR or labour compliance?</h2>
-              <p className="text-xl text-slate-300 mb-10 text-balance max-w-2xl mx-auto leading-relaxed">
-                If you're unsure where your business currently stands, LabourAxis can help you identify areas that may require attention.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/contact" className={buttonVariants({ size: "lg", className: "bg-blue-600 hover:bg-blue-700 text-white border-0 w-full sm:w-auto" })}>
-                  Request a Compliance Health Check
-                </Link>
-                <Link href="/contact" className={buttonVariants({ variant: "outline", size: "lg", className: "bg-transparent text-white border-white hover:bg-white/10 w-full sm:w-auto" })}>
-                  Discuss Your Requirement
-                </Link>
-              </div>
             </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {/* Guide Final Area */}
-      {resource.type === 'guide' && (
-        <div className="bg-slate-50 border-t border-slate-200 py-20 mt-12">
-          <div className="container mx-auto px-4 md:px-8 max-w-7xl">
-            
-            <div className="bg-slate-900 rounded-3xl p-10 md:p-16 text-center text-white max-w-4xl mx-auto shadow-xl mb-20">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">Need Help Reviewing Your Factory Compliance?</h2>
-              <p className="text-xl text-slate-300 mb-10 text-balance max-w-2xl mx-auto leading-relaxed">
-                Understand where your current HR and labour compliance processes may have gaps.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/contact" className={buttonVariants({ size: "lg", className: "bg-blue-600 hover:bg-blue-700 text-white border-0 w-full sm:w-auto" })}>
-                  Request a Compliance Health Check
+      {/* Related Articles */}
+      {relatedArticles.length > 0 && (
+        <section className="bg-[#F7F4EC] border-t border-[#D9E1DC] py-16">
+          <div className="container mx-auto px-4 md:px-8 max-w-6xl">
+            <h2 className="text-2xl font-bold text-[#12372A] mb-8">Related {resource.category}</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {relatedArticles.map(article => (
+                <Link 
+                  key={article.slug} 
+                  href={`/resources/${article.category}/${article.slug}`} 
+                  className="bg-white border border-[#D9E1DC] rounded-3xl overflow-hidden shadow-2xs hover:shadow-md hover:border-[#1F7A5C]/40 transition-all flex flex-col group p-6"
+                >
+                  <h3 className="text-lg font-bold text-[#12372A] mb-2 group-hover:text-[#1F7A5C] transition-colors leading-snug">{article.title}</h3>
+                  <p className="text-[#66736D] text-sm line-clamp-2 mb-6 flex-1 leading-relaxed">{article.excerpt}</p>
+                  <span className="text-[#1F7A5C] font-bold text-xs mt-auto flex items-center pt-4 border-t border-[#D9E1DC]/60">
+                    <span>Read more</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </span>
                 </Link>
-                <Link href="/contact" className={buttonVariants({ variant: "outline", size: "lg", className: "bg-transparent text-white border-white hover:bg-white/10 w-full sm:w-auto" })}>
-                  Discuss Your Requirements
-                </Link>
-              </div>
+              ))}
             </div>
-
-            {resource.relatedResources && resource.relatedResources.length > 0 && (
-              <div className="max-w-4xl mx-auto">
-                <h3 className="text-2xl font-bold text-slate-900 mb-8">Related Resources</h3>
-                <div className="grid sm:grid-cols-2 gap-6">
-                  {resourcesData.filter(r => resource.relatedResources?.includes(r.slug)).map(rel => (
-                    <Link key={rel.slug} href={`/resources/${rel.type}s/${rel.slug}`} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-200 p-6 flex flex-col">
-                       <span className="text-blue-600 text-xs font-bold uppercase tracking-wider mb-2">{rel.category}</span>
-                       <h4 className="font-bold text-slate-900 text-lg mb-4 line-clamp-2">{rel.title}</h4>
-                       <div className="mt-auto text-sm font-bold text-slate-500 group-hover:text-blue-600 flex items-center">
-                         View Resource <ArrowRight className="w-4 h-4 ml-1" />
-                       </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
-        </div>
+        </section>
       )}
     </div>
   );

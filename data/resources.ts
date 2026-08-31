@@ -923,7 +923,135 @@ Transition away from manual spreadsheets. Utilize professional payroll processin
     "healthcare",
     "retail"
   ]
-}
+},
+  // UPDATES
+  {
+    title: "New Labour Codes Implementation & Transition Advisory",
+    slug: "labour-codes-implementation-transition-advisory",
+    type: "update",
+    category: "Labour Codes",
+    excerpt: "Key operational insights and transition protocols for employers navigating the consolidation of 29 central labour laws into the Four Labour Codes.",
+    content: `<h2>Overview of the Four Labour Codes</h2><p>The Government of India has consolidated 29 central labour enactments into four unified codes: the Code on Wages (2019), the Industrial Relations Code (2020), the Code on Social Security (2020), and the Occupational Safety, Health and Working Conditions Code (2020). While state rules continue to be published in drafts and final notifications, establishments across India are preparing their workforce processes and wage structures for seamless alignment.</p><h2>Key Wage Definition Changes</h2><p>Under the new wage definition across all codes, 'Wages' includes basic pay, dearness allowance, and retaining allowance. If all excluded allowances (such as HRA, conveyance, special allowances, etc.) exceed 50% of the total remuneration, the excess amount is automatically added back to the wage pool for statutory benefit calculations including Provident Fund (PF) and Gratuity.</p><h2>Employer Action Items</h2><ul><li>Conduct a thorough wage component and CTC simulation to evaluate the cost impact of the 50% threshold on PF and Gratuity liabilities.</li><li>Review standing orders and worker classification mechanisms to accommodate fixed-term employment (FTE) contracts.</li><li>Audit contractor onboarding practices and principal employer compliance responsibilities under the OSH Code.</li><li>Standardize appointment letter templates to ensure statutory terms, working hours, and dispute mechanisms are aligned with the new provisions.</li></ul><h2>How LabourAxis Assists</h2><p>LabourAxis provides structured transition impact assessments, helping factories and MSMEs audit their existing payroll architectures, adjust employment contracts, and maintain full statutory continuity.</p>`,
+    author: "LabourAxis Editorial",
+    publishedAt: "2026-08-25",
+    readingTime: "6 min read",
+    featuredImage: "https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=1200&auto=format&fit=crop",
+    featured: true,
+    keyTakeaways: [
+      "29 Central labour laws consolidated into 4 unified codes.",
+      "50% threshold rule on excluded allowances impacts PF and Gratuity.",
+      "Fixed-Term Employment (FTE) gets statutory recognition with proportional benefits.",
+      "Single-window web registrations and unified inspection schemes introduced."
+    ],
+    relatedServices: ["labour-compliance", "pf-esic-compliance", "payroll-hr-operations"],
+    relatedIndustries: ["manufacturing", "construction", "logistics-warehousing", "auto-engineering"]
+  },
+  {
+    title: "EPFO SOP on Joint Declaration & Member Profile Corrections",
+    slug: "epfo-sop-joint-declaration-profile-correction",
+    type: "update",
+    category: "EPFO / PF",
+    excerpt: "Analysis of the revised EPFO Standard Operating Procedure for digital joint declarations, member name corrections, and date of exit updates.",
+    content: `<h2>Digital Joint Declaration Framework</h2><p>The Employees' Provident Fund Organisation (EPFO) has issued a comprehensive Standard Operating Procedure (SOP) streamlining the process of member profile modifications. This framework digitizes the Joint Declaration workflow, drastically reducing physical visits to Field Offices.</p><h2>Classification of Corrections: Major vs Minor</h2><p>The revised SOP categorizes profile discrepancies into 'Minor' and 'Major' changes:</p><ul><li><strong>Minor Changes:</strong> Minor spelling corrections in member name or father's name (up to two characters), date of birth variations up to 3 years with valid Aadhaar/Passport, and standard gender corrections. These can be approved at the Assistant PF Commissioner (APFC) / Regional PF Commissioner (RPFC) level within short turnaround times.</li><li><strong>Major Changes:</strong> Complete surname changes post-marriage, complete name replacements, or date of joining/exit variations exceeding one year. These require documentary proof from the employer's master registers and higher-level administrative validation.</li></ul><h2>Procedural Checklist for HR Teams</h2><ul><li>Ensure all employees have their Aadhaar seeded and verified (UAN-Aadhaar match) upon initial onboarding.</li><li>Verify that the establishment's digital signature certificates (DSC/e-Sign) on the Unified Portal are active and registered.</li><li>Track member-initiated Joint Declaration requests directly through the Employer Unified Portal dashboard within the prescribed 15-day review window.</li></ul><h2>LabourAxis Advisory</h2><p>LabourAxis supports client HR teams in reconciling historical member records, preparing valid documentary submissions, and expediting pending joint declarations on the EPFO portal.</p>`,
+    author: "LabourAxis Editorial",
+    publishedAt: "2026-08-22",
+    readingTime: "5 min read",
+    featuredImage: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1200&auto=format&fit=crop",
+    featured: true,
+    keyTakeaways: [
+      "EPFO Joint Declaration process fully digitized via Employer Unified Portal.",
+      "Clear segregation between Minor and Major profile corrections.",
+      "Mandatory UAN-Aadhaar linking prevents portal rejection.",
+      "Standard document lists established for date of birth and date of exit updates."
+    ],
+    relatedServices: ["pf-esic-compliance", "payroll-hr-operations"],
+    relatedIndustries: ["manufacturing", "msme-industrial", "contractors-staffing"]
+  },
+  {
+    title: "State Minimum Wage Revision & VDA Notification Updates",
+    slug: "state-minimum-wages-vda-revision-updates",
+    type: "update",
+    category: "Minimum Wages",
+    excerpt: "Summary of half-yearly Variable Dearness Allowance (VDA) revisions and minimum wage adjustments across key industrial states in India.",
+    content: `<h2>Understanding Periodic VDA Revisions</h2><p>Under the Minimum Wages Act (and applicable state rules), state governments and central authorities notify half-yearly or annual revisions in the Variable Dearness Allowance (VDA) linked to Consumer Price Index (CPI) numbers. These revisions directly affect the statutory minimum gross pay for Unskilled, Semi-Skilled, Skilled, and Highly Skilled workforce categories.</p><h2>Impact on Payroll & Contractor Invoices</h2><p>When minimum wage rates are officially gazetted:</p><ul><li>Employers must immediately adjust the basic wage or VDA components in the salary structure so total wages are not below the revised threshold.</li><li>Overtime calculations, which are tied to basic + DA, must reflect the revised rates from the effective notification date.</li><li>Principal employers must ensure that third-party manpower contractors update their worker billing and statutory contribution challans accordingly.</li></ul><h2>Key Risk Factors</h2><p>Paying wages below the notified minimum rate constitutes a serious statutory violation under Section 20 of the Minimum Wages Act, carrying mandatory penalty claims of up to ten times the shortfall amount.</p><h2>LabourAxis Support</h2><p>LabourAxis maintains an active tracking mechanism for state and central gazette notifications, ensuring that payroll masters and contractor compliance validations are updated accurately on time.</p>`,
+    author: "LabourAxis Editorial",
+    publishedAt: "2026-08-19",
+    readingTime: "4 min read",
+    featuredImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
+    featured: false,
+    keyTakeaways: [
+      "Half-yearly VDA revisions apply to scheduled employments across Indian states.",
+      "Wages paid cannot fall below notified minimum thresholds regardless of contract terms.",
+      "Overtime and statutory bonus calculations must factor in updated basic + VDA rates.",
+      "Principal employers must audit contractor bills against latest gazette notifications."
+    ],
+    relatedServices: ["payroll-hr-operations", "labour-compliance", "contract-labour-compliance"],
+    relatedIndustries: ["manufacturing", "logistics-warehousing", "construction"]
+  },
+  {
+    title: "ESIC Wage Ceiling & Digital Aadhaar-Seeding Mandates",
+    slug: "esic-wage-ceiling-aadhaar-seeding-guidelines",
+    type: "update",
+    category: "ESIC",
+    excerpt: "Operational advisory on Aadhaar-based ABHA ID generation and biometric verification requirements for insured persons (IPs) under ESIC.",
+    content: `<h2>Aadhaar Integration on the ESIC Portal</h2><p>The Employees' State Insurance Corporation (ESIC) has made Aadhaar-based authentication and Ayushman Bharat Health Account (ABHA) linking mandatory for all registered Insured Persons (IPs) and their eligible family dependants.</p><h2>Objective of Digital Verification</h2><p>The integration ensures seamless delivery of cash benefits, prevents duplicate IP numbers across multiple employers, and enables paperless medical treatments across ESIC hospitals and empaneled tie-up healthcare centers across India.</p><h2>Employer Responsibilities</h2><ul><li>Collect Aadhaar details during employee onboarding and complete e-KYC verification through the ESIC Employer Portal.</li><li>Generate digital Pehchan Cards with photograph and family member details to prevent claim rejection at dispensaries.</li><li>Ensure that contract worker lists provided by security and housekeeping vendors contain active IP numbers with verified Aadhaar status.</li><li>Maintain monthly contribution remittances within the statutory deadline (15th of the following month) to keep medical benefits active.</li></ul><h2>Compliance Health Check</h2><p>LabourAxis helps organizations audit their ESIC databases to eliminate duplicate registrations, correct misreported wages, and ensure complete zero-error monthly return filings.</p>`,
+    author: "LabourAxis Editorial",
+    publishedAt: "2026-08-15",
+    readingTime: "5 min read",
+    featuredImage: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1200&auto=format&fit=crop",
+    featured: false,
+    keyTakeaways: [
+      "Mandatory Aadhaar seeding and ABHA ID generation on ESIC portal.",
+      "Prevents duplicate IP creation and accelerates maternity and sickness benefit payouts.",
+      "Employers must ensure contract workers maintain active ESIC credentials.",
+      "Monthly contribution cutoff remains strictly the 15th of the following month."
+    ],
+    relatedServices: ["pf-esic-compliance", "labour-compliance"],
+    relatedIndustries: ["manufacturing", "textiles-garments", "fmcg-food"]
+  },
+  {
+    title: "Factories Act Annual Returns & Workplace Safety Compliance Alerts",
+    slug: "factories-act-annual-returns-safety-audit-alerts",
+    type: "update",
+    category: "Factory Laws",
+    excerpt: "Year-end and quarterly statutory compliance reminders for factory managers, safety committees, and welfare officers.",
+    content: `<h2>Statutory Obligations under the Factories Act, 1948</h2><p>Manufacturing and industrial facilities operating with power (10 or more workers) or without power (20 or more workers) must comply with stringent inspection readiness standards under the Factories Act, 1948 and state-specific Factory Rules.</p><h2>Key Periodic Requirements</h2><ul><li><strong>Annual Returns (Form 21 / Form 22):</strong> Submission of unified annual returns covering employment, working hours, leave with wages, and safety incidents before the statutory deadline (typically by 31st January or 1st February depending on state rules).</li><li><strong>Pressure Vessel & Lifting Machinery Testing:</strong> Periodic examination by certified competent persons for hoists, cranes, steam generators, and pressure plant equipment, with Form 8 and Form 9 certificates maintained on site.</li><li><strong>Occupational Health Examinations:</strong> Mandatory pre-employment and periodic health checkups for workers employed in hazardous operations (chemical, noise, dust-intensive environments), recorded in Form 17 / Form 18 health registers.</li><li><strong>Safety Committee Meetings:</strong> Establishments with 250+ workers (or 50+ in hazardous processes) must document monthly safety committee minutes and safety officer reports.</li></ul><h2>Inspection Preparedness</h2><p>LabourAxis conducts industrial mock inspections to verify that all statutory registers, abstract displays, fire safety certifications, and drinking water test reports are maintained in full compliance.</p>`,
+    author: "LabourAxis Editorial",
+    publishedAt: "2026-08-10",
+    readingTime: "6 min read",
+    featuredImage: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=1200&auto=format&fit=crop",
+    featured: false,
+    keyTakeaways: [
+      "Annual returns submission under state Factory Rules is mandatory.",
+      "Lifting machinery, pressure vessels, and hoists require competent person certificates.",
+      "Periodic medical examinations must be recorded in statutory health registers.",
+      "Factory license renewals and building plan approvals must be kept active."
+    ],
+    relatedServices: ["factory-compliance", "labour-compliance", "compliance-audit"],
+    relatedIndustries: ["manufacturing", "auto-engineering", "pharmaceuticals"]
+  },
+  {
+    title: "Contract Labour (CLRA) Licensing Thresholds & Portal Updates",
+    slug: "clra-licensing-thresholds-portal-updates",
+    type: "update",
+    category: "Contract Labour",
+    excerpt: "State-wise amendments in CLRA worker thresholds and online registration renewal workflows for principal employers.",
+    content: `<h2>Evolution of Contract Labour Governance</h2><p>The Contract Labour (Regulation and Abolition) Act, 1970 (CLRA) regulates the employment of contract workers in establishments and sets strict compliance obligations for both Principal Employers and Manpower Contractors.</p><h2>State Threshold Variations</h2><p>While the central threshold for CLRA applicability is 20 or more workmen, several states (including Maharashtra, Gujarat, Rajasthan, and Madhya Pradesh) have amended thresholds to 50 or more workers to promote ease of doing business. Employers must accurately track the applicable state legislation.</p><h2>Principal Employer Critical Obligations</h2><ul><li><strong>Registration Certificate (Form I):</strong> Establishments employing contract labour above the threshold must hold a valid Principal Employer Registration Certificate.</li><li><strong>Form V Issuance:</strong> Principal employers must issue Form V certificates to contractors to facilitate their contractor licence applications (Form IV).</li><li><strong>Wage Payment Supervision:</strong> Under Section 21 of the CLRA, an authorized representative of the principal employer must be present during contractor wage disbursement, and must certify the payment in the muster roll.</li><li><strong>Statutory Liability:</strong> In the event of a contractor's failure to pay wages, PF, or ESIC, the principal employer remains legally liable to make payment and recover the amount from contractor bills.</li></ul><h2>LabourAxis Managed Governance</h2><p>LabourAxis provides end-to-end contractor compliance management, including bill verification, wage audits, and digital tracking of contractor licenses across multi-site industrial operations.</p>`,
+    author: "LabourAxis Editorial",
+    publishedAt: "2026-08-05",
+    readingTime: "5 min read",
+    featuredImage: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1200&auto=format&fit=crop",
+    featured: false,
+    keyTakeaways: [
+      "State-specific thresholds determine Principal Employer CLRA registration duties.",
+      "Contractors must hold valid individual licenses against Principal Employer Form V.",
+      "Principal employer is legally liable for contractor wage and PF/ESIC defaults.",
+      "Monthly contractor invoice audits are critical prior to payment clearance."
+    ],
+    relatedServices: ["contract-labour-compliance", "labour-compliance", "payroll-hr-operations"],
+    relatedIndustries: ["construction", "logistics-warehousing", "manufacturing", "contractors-staffing"]
+  }
 ];
+
 
 

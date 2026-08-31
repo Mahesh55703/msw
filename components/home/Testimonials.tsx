@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote, Star, CheckCircle2 } from "lucide-react";
 
 const TESTIMONIALS = [
   {
@@ -66,68 +66,117 @@ export function Testimonials() {
   };
 
   const current = TESTIMONIALS[currentIndex];
+  const nextItem = TESTIMONIALS[(currentIndex + 1) % TESTIMONIALS.length];
 
   return (
-    <section className="py-24 bg-slate-50 border-y border-slate-200 overflow-hidden">
-      <div className="container mx-auto px-4 md:px-8">
+    <section className="py-24 bg-[#F7F4EC] border-y border-[#D9E1DC] relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-warm opacity-50 pointer-events-none"></div>
+      
+      <div className="container mx-auto px-4 md:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">What Our Clients Say</h2>
-          <p className="text-lg text-slate-600">Practical support that makes a real operational difference.</p>
+          <span className="text-xs font-bold uppercase tracking-wider text-[#1F7A5C] bg-[#1F7A5C]/10 border border-[#1F7A5C]/20 px-3.5 py-1.5 rounded-full inline-block mb-3">
+            Client Feedback & Trust
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#12372A] mb-4 tracking-tight">What Our Clients Say</h2>
+          <p className="text-lg text-[#66736D]">Practical support that makes a real operational difference.</p>
         </div>
 
-        <div className="max-w-5xl mx-auto relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-            {/* First Card (Mobile & Desktop) */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center flex flex-col h-full">
-              <Quote className="w-8 h-8 text-blue-100 mx-auto mb-4" />
-              <p className="text-lg text-slate-700 font-medium leading-relaxed mb-8 italic flex-1">
-                "{TESTIMONIALS[currentIndex].quote}"
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            {/* Primary Testimonial Card */}
+            <div className="bg-white rounded-3xl shadow-xs border border-[#D9E1DC] p-8 md:p-10 flex flex-col justify-between relative hover:shadow-md hover:border-[#1F7A5C]/40 transition-all duration-200">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex text-[#D6A84F] gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-[#D6A84F]" />
+                  ))}
+                </div>
+                <div className="w-10 h-10 rounded-2xl bg-[#1F7A5C]/10 text-[#1F7A5C] flex items-center justify-center">
+                  <Quote className="w-5 h-5" />
+                </div>
+              </div>
+
+              <p className="text-[#202522] text-base md:text-lg leading-relaxed mb-8 italic flex-1">
+                "{current.quote}"
               </p>
-              <div className="flex flex-col items-center justify-center mt-auto">
-                <img src={TESTIMONIALS[currentIndex].image} alt={TESTIMONIALS[currentIndex].name} className="w-14 h-14 rounded-full object-cover mb-3 border-2 border-slate-100 shadow-sm" />
-                <h4 className="text-base font-bold text-slate-900">{TESTIMONIALS[currentIndex].name}</h4>
-                <p className="text-slate-500 text-xs uppercase tracking-wide">{TESTIMONIALS[currentIndex].city}</p>
+
+              <div className="flex items-center gap-4 pt-5 border-t border-[#D9E1DC]/60">
+                <img 
+                  src={current.image} 
+                  alt={current.name} 
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-xs ring-1 ring-[#D9E1DC]" 
+                />
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-base font-bold text-[#12372A]">{current.name}</h4>
+                    <CheckCircle2 className="w-4 h-4 text-[#1F7A5C]" />
+                  </div>
+                  <p className="text-[#66736D] text-xs font-semibold uppercase tracking-wider">{current.city}</p>
+                </div>
               </div>
             </div>
 
-            {/* Second Card (Desktop Only) */}
-            <div className="hidden md:flex bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center flex-col h-full">
-              <Quote className="w-8 h-8 text-blue-100 mx-auto mb-4" />
-              <p className="text-lg text-slate-700 font-medium leading-relaxed mb-8 italic flex-1">
-                "{TESTIMONIALS[(currentIndex + 1) % TESTIMONIALS.length].quote}"
+            {/* Secondary Testimonial Card (Desktop) */}
+            <div className="hidden md:flex bg-white rounded-3xl shadow-xs border border-[#D9E1DC] p-8 md:p-10 flex-col justify-between relative hover:shadow-md hover:border-[#1F7A5C]/40 transition-all duration-200">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex text-[#D6A84F] gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-[#D6A84F]" />
+                  ))}
+                </div>
+                <div className="w-10 h-10 rounded-2xl bg-[#1F7A5C]/10 text-[#1F7A5C] flex items-center justify-center">
+                  <Quote className="w-5 h-5" />
+                </div>
+              </div>
+
+              <p className="text-[#202522] text-base md:text-lg leading-relaxed mb-8 italic flex-1">
+                "{nextItem.quote}"
               </p>
-              <div className="flex flex-col items-center justify-center mt-auto">
-                <img src={TESTIMONIALS[(currentIndex + 1) % TESTIMONIALS.length].image} alt={TESTIMONIALS[(currentIndex + 1) % TESTIMONIALS.length].name} className="w-14 h-14 rounded-full object-cover mb-3 border-2 border-slate-100 shadow-sm" />
-                <h4 className="text-base font-bold text-slate-900">{TESTIMONIALS[(currentIndex + 1) % TESTIMONIALS.length].name}</h4>
-                <p className="text-slate-500 text-xs uppercase tracking-wide">{TESTIMONIALS[(currentIndex + 1) % TESTIMONIALS.length].city}</p>
+
+              <div className="flex items-center gap-4 pt-5 border-t border-[#D9E1DC]/60">
+                <img 
+                  src={nextItem.image} 
+                  alt={nextItem.name} 
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-xs ring-1 ring-[#D9E1DC]" 
+                />
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="text-base font-bold text-[#12372A]">{nextItem.name}</h4>
+                    <CheckCircle2 className="w-4 h-4 text-[#1F7A5C]" />
+                  </div>
+                  <p className="text-[#66736D] text-xs font-semibold uppercase tracking-wider">{nextItem.city}</p>
+                </div>
               </div>
             </div>
+
           </div>
 
-          <div className="flex items-center justify-center gap-4 mt-8">
+          {/* Navigation Controls */}
+          <div className="flex items-center justify-center gap-6 mt-10">
             <button 
               onClick={prev}
-              className="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-600 transition-colors shadow-sm focus:outline-none"
+              className="w-11 h-11 rounded-full bg-white border border-[#D9E1DC] flex items-center justify-center text-[#202522] hover:text-[#1F7A5C] hover:border-[#1F7A5C] hover:bg-[#F7F4EC] transition-all shadow-xs cursor-pointer"
               aria-label="Previous testimonial"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="flex gap-2">
               {TESTIMONIALS.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx)}
-                  className={`w-2.5 h-2.5 rounded-full transition-colors ${idx === currentIndex ? 'bg-blue-600' : 'bg-slate-300'}`}
+                  className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${idx === currentIndex ? 'w-6 bg-[#1F7A5C]' : 'w-2 bg-[#D9E1DC] hover:bg-[#66736D]'}`}
                   aria-label={`Go to testimonial ${idx + 1}`}
                 />
               ))}
             </div>
             <button 
               onClick={next}
-              className="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:border-blue-600 transition-colors shadow-sm focus:outline-none"
+              className="w-11 h-11 rounded-full bg-white border border-[#D9E1DC] flex items-center justify-center text-[#202522] hover:text-[#1F7A5C] hover:border-[#1F7A5C] hover:bg-[#F7F4EC] transition-all shadow-xs cursor-pointer"
               aria-label="Next testimonial"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </div>
