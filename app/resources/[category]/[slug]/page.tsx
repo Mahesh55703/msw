@@ -36,7 +36,7 @@ export async function generateStaticParams() {
     console.error('Prisma error in generateStaticParams', e)
   }
 
-  const staticArticles = resourcesData.map((r) => ({
+  const staticArticles = resourcesData.filter(r => r.type !== 'faq').map((r) => ({
     category:
       r.type === 'guide'
         ? 'guides'
@@ -184,10 +184,22 @@ export default async function ResourceDetailPage({
     console.error('Prisma error in resource page', e)
   }
 
+  if (resource) {
+    const dbCategory = resource.category?.toLowerCase() || 'articles'
+    if (dbCategory !== resolvedParams.category) {
+      notFound()
+    }
+  }
+
   // Fallback to static data
   if (!resource) {
     const staticItem = resourcesData.find((r) => r.slug === resolvedParams.slug)
     if (staticItem) {
+      if (staticItem.type === 'faq') notFound()
+      const expectedStaticCategory = staticItem.type === 'guide' ? 'guides' : staticItem.type === 'checklist' ? 'checklists' : staticItem.type === 'update' ? 'updates' : 'articles'
+      if (expectedStaticCategory !== resolvedParams.category) {
+        notFound()
+      }
       resource = {
         id: staticItem.slug,
         title: staticItem.title,
@@ -833,8 +845,8 @@ export default async function ResourceDetailPage({
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
               {relatedArticles.map((article) => {
-                const targetCategory = article.category || (resolvedParams.category === 'guides' ? 'guides' : resolvedParams.category === 'checklists' ? 'checklists' : 'articles')
-                const targetUrl = `/resources/${targetCategory === 'guides' ? 'guides' : targetCategory === 'checklists' ? 'checklists' : 'articles'}/${article.slug}`
+                const targetCategory = article.category || (resolvedParams.category === 'guides' ? 'guides' : resolvedParams.category === 'checklists' ? 'checklists' : resolvedParams.category === 'updates' ? 'updates' : 'articles')
+                const targetUrl = `/resources/${targetCategory === 'guides' ? 'guides' : targetCategory === 'checklists' ? 'checklists' : targetCategory === 'updates' ? 'updates' : 'articles'}/${article.slug}`
                 return (
                   <Link
                     key={article.slug}
