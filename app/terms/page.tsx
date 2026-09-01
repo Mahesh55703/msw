@@ -88,7 +88,7 @@ export default function TermsPage() {
             </div>
 
             <div className="border-t border-[#D9E1DC] pt-6">
-              <h2 className="text-xl md:text-2xl font-bold text-[#12372A] mb-4">6. Contact Us</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-[#12372A] mb-4">7. Contact Us</h2>
               <p className="text-[#66736D]">If you have any questions about these Terms, please contact us at:</p>
               <p className="mt-4 font-bold text-[#12372A]">Email: {siteConfig.contact.email}</p>
             </div>
