@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { buttonVariants } from "@/components/ui/button";
 import { TrackedCtaLink } from "@/components/analytics/TrackedCtaLink";
 import { servicesData } from "@/data/services";
@@ -116,9 +117,12 @@ export default function Home() {
               <div className="lg:col-span-5 relative hidden lg:block">
                 <div className="relative mx-auto rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-[#0D281E] group">
                   <div className="aspect-[4/3] relative">
-                    <img 
+                    <Image 
                       src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1000&q=80" 
-                      alt="Industrial factory operations and engineering workforce compliance" 
+                      alt="Industrial factory operations and engineering workforce compliance"
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 50vw"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95" 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0D281E] via-[#0D281E]/30 to-transparent"></div>
