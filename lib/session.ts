@@ -1,4 +1,3 @@
-import 'server-only'
 import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 
@@ -50,18 +49,26 @@ export async function createSession(userId: string, role: string) {
 }
 
 export async function verifySession() {
-  const cookieStore = await cookies()
-  const cookie = cookieStore.get('session')?.value
-  const session = await decrypt(cookie)
+  try {
+    const cookieStore = await cookies()
+    const cookie = cookieStore.get('session')?.value
+    const session = await decrypt(cookie)
 
-  if (!session?.userId) {
+    if (!session?.userId) {
+      return { isAuth: false, userId: null, role: null }
+    }
+
+    return { isAuth: true, userId: session.userId, role: session.role }
+  } catch (error) {
     return { isAuth: false, userId: null, role: null }
   }
-
-  return { isAuth: true, userId: session.userId, role: session.role }
 }
 
 export async function deleteSession() {
-  const cookieStore = await cookies()
-  cookieStore.delete('session')
+  try {
+    const cookieStore = await cookies()
+    cookieStore.delete('session')
+  } catch (error) {
+    // Outside request scope
+  }
 }
