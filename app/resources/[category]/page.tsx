@@ -242,7 +242,7 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
                 >
                   <div className="aspect-[16/9] bg-[#F7F4EC] relative overflow-hidden border-b border-[#D9E1DC] flex items-center justify-center">
                     {item.featuredImage ? (
-                      <img src={item.featuredImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <Image src={item.featuredImage} alt={item.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-[#F7F4EC] to-[#EDE8DE] flex items-center justify-center text-[#66736D] group-hover:scale-105 transition-transform duration-500">
                         <span className="font-bold text-xs tracking-wider uppercase text-[#66736D]">LabourAxis Knowledge</span>

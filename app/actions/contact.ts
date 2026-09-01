@@ -1,6 +1,7 @@
 'use server'
 
 import { headers } from 'next/headers'
+import { siteConfig } from '@/lib/site-config'
 import prisma from '@/lib/prisma'
 import crypto from 'crypto'
 import { Resend } from 'resend'
@@ -358,7 +359,7 @@ export async function submitConsultation(formData: FormData) {
       return {
         success: false,
         error:
-          "We couldn't submit your request right now. Please reach out to us directly at info@labouraxis.com",
+          `We couldn't submit your request right now. Please reach out to us directly at ${siteConfig.contact.email}`,
       }
     }
 
@@ -404,7 +405,7 @@ export async function submitConsultation(formData: FormData) {
 
       try {
         await resend.emails.send({
-          from: 'LabourAxis CRM <info@labouraxis.com>',
+          from: `LabourAxis CRM <${siteConfig.contact.email}>`,
           to: process.env.ADMIN_NOTIFICATION_EMAIL,
           subject: `New Lead [${referenceNumber}]: ${data.name} from ${data.company}`,
           html: htmlContent,

@@ -1,0 +1,13 @@
+Microsoft Windows [Version 10.0.19045.6466]
+(c) Microsoft Corporation. All rights reserved.
+
+D:\xampp\htdocs\Projects--git\msw>npx tsx scripts/bootstrap-admin.ts
+--- LabourAxis Admin Bootstrap ---
+Admin Email: admin@labouraxis.com
+Admin Name: admin
+Admin Password: admin123
+User with this email already exists.
+
+D:\xampp\htdocs\Projects--git\msw>
+
+Admin@123456

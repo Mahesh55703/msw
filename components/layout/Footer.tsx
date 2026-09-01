@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { footerNav } from "@/data/navigation";
+import { siteConfig } from "@/lib/site-config";
 import { Mail, ChevronDown, ArrowRight, ShieldCheck, MapPin } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { trackConsultationCta, trackEmailClick } from "@/lib/analytics";
@@ -97,21 +98,47 @@ export default function Footer() {
             </p>
             
             <div className="space-y-2.5 text-xs sm:text-sm text-[#A2B3AA]">
+              {siteConfig.contact.phone && (
+                <a 
+                  href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`} 
+                  onClick={() => trackConsultationCta('footer', 'phone', 'contact')}
+                  className="flex items-center gap-2.5 hover:text-white transition-colors group"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-[#1B4E3C] flex items-center justify-center text-[#D6A84F] group-hover:bg-[#1F7A5C] group-hover:text-white transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  </div>
+                  <span>{siteConfig.contact.phone}</span>
+                </a>
+              )}
+              {siteConfig.contact.whatsapp && (
+                <a 
+                  href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} 
+                  onClick={() => trackConsultationCta('footer', 'whatsapp', 'contact')}
+                  className="flex items-center gap-2.5 hover:text-white transition-colors group"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-[#1B4E3C] flex items-center justify-center text-[#D6A84F] group-hover:bg-[#1F7A5C] group-hover:text-white transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  </div>
+                  <span>WhatsApp Chat</span>
+                </a>
+              )}
               <a 
-                href="mailto:info@labouraxis.com" 
+                href={`mailto:${siteConfig.contact.email}`} 
                 onClick={() => trackEmailClick('footer', 'footer')}
                 className="flex items-center gap-2.5 hover:text-white transition-colors group"
               >
                 <div className="w-7 h-7 rounded-lg bg-[#1B4E3C] flex items-center justify-center text-[#D6A84F] group-hover:bg-[#1F7A5C] group-hover:text-white transition-all">
                   <Mail className="w-3.5 h-3.5" />
                 </div>
-                <span>info@labouraxis.com</span>
+                <span>{siteConfig.contact.email}</span>
               </a>
               <div className="flex items-start gap-2.5 text-[#A2B3AA]">
                 <div className="w-7 h-7 rounded-lg bg-[#1B4E3C] flex items-center justify-center text-[#D6A84F] shrink-0 mt-0.5">
                   <MapPin className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-xs">Based in Indore, MP • Serving clients across India</span>
+                <span className="text-xs">{siteConfig.contact.address.footerDisplay}</span>
               </div>
             </div>
           </div>
