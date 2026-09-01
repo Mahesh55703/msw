@@ -216,15 +216,29 @@ model JobApplication {
 }
 
 model TeamMember {
-  id        String   @id @default(cuid())
-  name      String
-  role      String
-  bio       String?
-  imageUrl  String?
-  order     Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String       @id @default(cuid())
+  name         String
+  designation  String       @default("")
+  role         String?
+  department   String?
+  bio          String?
+  imageUrl     String?
+  imageAlt     String?
+  linkedinUrl  String?
+  displayOrder Int          @default(0)
+  order        Int          @default(0)
+  isActive     Boolean      @default(true)
+  
+  // Hierarchy: Self-referencing Reports To
+  reportsToId  String?
+  reportsTo    TeamMember?  @relation("TeamHierarchy", fields: [reportsToId], references: [id], onDelete: SetNull)
+  directReports TeamMember[] @relation("TeamHierarchy")
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([reportsToId, isActive, displayOrder])
+  @@index([isActive, displayOrder])
 }
 
 enum FaqCategory {

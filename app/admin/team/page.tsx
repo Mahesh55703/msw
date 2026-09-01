@@ -1,81 +1,78 @@
-import prisma from '@/lib/prisma'
+import { verifySession } from '@/lib/session'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { Plus } from 'lucide-react'
+import TeamList from '@/components/admin/team/TeamList'
+import { safeFetchTeamMembers } from '@/lib/db/team'
 
-export default async function TeamPage() {
-  const members = await prisma.teamMember.findMany({
-    orderBy: { order: 'asc' }
-  })
+export const dynamic = 'force-dynamic'
+
+export default async function AdminTeamPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }> | { [key: string]: string | undefined }
+}) {
+  const session = await verifySession()
+  if (!session.isAuth) redirect('/admin/login')
+
+  const resolvedParams = (await searchParams) || {}
+  const query = (resolvedParams.q || '').trim()
+  const status = resolvedParams.status || 'all'
+  const dept = resolvedParams.dept || 'all'
+  const page = Math.max(1, parseInt(resolvedParams.page || '1', 10))
+  const pageSize = 20
+
+  const { members, totalCount, activeCount, inactiveCount, departments } =
+    await safeFetchTeamMembers({
+      where: {
+        query,
+        status,
+        dept,
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    })
 
   return (
-    <div className="space-y-6">
-      <div className="bg-[#12372A] p-6 md:p-8 rounded-2xl shadow-sm text-white flex flex-col sm:flex-row sm:items-center sm:justify-between max-w-[1600px] mx-auto w-full gap-4 border border-[#0D281E]">
+    <div className="space-y-6 max-w-[1600px] mx-auto w-full">
+      {/* Header Banner */}
+      <div className="bg-[#12372A] p-6 md:p-8 rounded-3xl shadow-sm text-white flex flex-col sm:flex-row sm:items-center sm:justify-between border border-[#0D281E] gap-4">
         <div>
-          <span className="text-[10px] font-bold text-[#D6A84F] uppercase tracking-wider">Organizational Management</span>
-          <h1 className="text-2xl font-bold tracking-tight text-white mt-1">Team & Leadership Directory</h1>
-          <p className="text-[#A2B3AA] text-xs mt-1">Manage public executive profiles and advisory team listings.</p>
+          <span className="text-[10px] font-bold text-[#D6A84F] uppercase tracking-wider">
+            Organizational Hierarchy & Directory
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-1">
+            Team Members
+          </h1>
+          <p className="text-[#A2B3AA] text-xs sm:text-sm mt-1">
+            Manage LabourAxis team profiles, roles and organizational structure ({activeCount} active, {inactiveCount} inactive).
+          </p>
         </div>
         <div className="shrink-0">
-          <Link href="/admin/team/new" className="inline-flex items-center justify-center px-4 py-2.5 font-bold rounded-xl shadow-xs transition-colors text-xs text-white bg-[#1F7A5C] hover:bg-[#165B44]">
-            + Add Team Member
+          <Link
+            href="/admin/team/new"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 font-bold rounded-xl shadow-xs transition-colors text-xs text-white bg-[#1F7A5C] hover:bg-[#165B44]"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Team Member</span>
           </Link>
         </div>
       </div>
-      
-      <div className="bg-white shadow-xs border border-[#D9E1DC] overflow-hidden rounded-2xl">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-[#D9E1DC] text-xs">
-            <thead className="bg-[#F7F4EC] text-[#66736D] uppercase font-bold tracking-wider text-[10px]">
-              <tr>
-                <th scope="col" className="px-5 py-3.5 text-left font-bold">Photo</th>
-                <th scope="col" className="px-5 py-3.5 text-left font-bold">Name</th>
-                <th scope="col" className="px-5 py-3.5 text-left font-bold">Role / Title</th>
-                <th scope="col" className="px-5 py-3.5 text-left font-bold">Status</th>
-                <th scope="col" className="px-5 py-3.5 text-right font-bold">Action</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-[#D9E1DC]/60">
-              {members.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-xs text-[#66736D]">
-                    No team members found in the directory.
-                  </td>
-                </tr>
-              ) : (
-                members.map((member) => (
-                  <tr key={member.id} className="hover:bg-[#F7F4EC]/60 transition-colors">
-                    <td className="px-5 py-3.5 whitespace-nowrap">
-                      {member.imageUrl ? (
-                        <img src={member.imageUrl} alt={member.name} className="h-9 w-9 rounded-xl object-cover border border-[#D9E1DC]" />
-                      ) : (
-                        <div className="h-9 w-9 rounded-xl bg-[#F7F4EC] border border-[#D9E1DC] flex items-center justify-center font-bold text-xs text-[#12372A]">
-                          {member.name.charAt(0)}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-5 py-3.5 whitespace-nowrap font-bold text-[#12372A]">{member.name}</td>
-                    <td className="px-5 py-3.5 whitespace-nowrap text-[#66736D]">{member.role}</td>
-                    <td className="px-5 py-3.5 whitespace-nowrap">
-                      {member.isActive ? (
-                        <span className="px-2.5 py-0.5 inline-flex text-[10px] leading-5 font-bold rounded-full bg-[#1F7A5C]/10 text-[#1F7A5C] border border-[#1F7A5C]/20">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="px-2.5 py-0.5 inline-flex text-[10px] leading-5 font-bold rounded-full bg-[#F7F4EC] text-[#66736D] border border-[#D9E1DC]">
-                          Hidden
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-5 py-3.5 whitespace-nowrap text-right font-bold">
-                      <Link href={`/admin/team/${member.id}`} className="text-[#1F7A5C] hover:text-[#165B44]">
-                        Edit →
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+
+      {/* Main Team List Card */}
+      <div className="bg-white shadow-xs border border-[#D9E1DC] overflow-hidden rounded-3xl p-6">
+        <TeamList
+          initialMembers={members as any}
+          totalCount={totalCount}
+          currentPage={page}
+          pageSize={pageSize}
+          departments={departments}
+          currentFilters={{
+            q: query,
+            status,
+            dept,
+          }}
+        />
       </div>
     </div>
   )
