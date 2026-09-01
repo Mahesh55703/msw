@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -15,21 +15,22 @@ import {
 } from "@/components/ui/sheet";
 import { mainNav } from "@/data/navigation";
 import { cn } from "@/lib/utils";
+import { trackConsultationCta, trackEmailClick } from "@/lib/analytics";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
 
-  // Sync openAccordion with current route when drawer is opened
-  useEffect(() => {
-    if (open) {
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen) {
       const activeItem = mainNav.find(item => 
         item.items && item.items.some(sub => pathname === sub.href || pathname.startsWith(sub.href))
       );
       setOpenAccordion(activeItem ? activeItem.title : null);
     }
-  }, [open, pathname]);
+  };
 
   const toggleAccordion = (title: string) => {
     setOpenAccordion(prev => (prev === title ? null : title));
@@ -40,7 +41,7 @@ export default function MobileNav() {
   };
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetTrigger
         render={
           <Button 
@@ -174,7 +175,11 @@ export default function MobileNav() {
           {/* Quick Contact Box */}
           <div className="mx-4 my-4 p-4 rounded-2xl bg-[#F7F4EC] border border-[#D9E1DC] text-xs text-[#66736D] space-y-2">
             <div className="font-bold text-[#12372A] uppercase tracking-wider text-[10px]">Contact Assistance</div>
-            <a href="mailto:info@labouraxis.com" className="flex items-center gap-2 text-[#66736D] hover:text-[#1F7A5C]">
+            <a 
+              href="mailto:info@labouraxis.com" 
+              onClick={() => trackEmailClick('mobile_nav', 'navigation')}
+              className="flex items-center gap-2 text-[#66736D] hover:text-[#1F7A5C]"
+            >
               <Mail className="w-3.5 h-3.5 text-[#1F7A5C]" />
               <span>info@labouraxis.com</span>
             </a>
@@ -185,7 +190,10 @@ export default function MobileNav() {
         <div className="p-4 border-t border-[#D9E1DC] shrink-0 bg-[#FFFFFF] shadow-2xs">
           <Link
             href="/contact"
-            onClick={handleLinkClick}
+            onClick={() => {
+              handleLinkClick();
+              trackConsultationCta('mobile_nav', 'Request Consultation', 'navigation');
+            }}
             className={buttonVariants({ className: "w-full bg-[#1F7A5C] hover:bg-[#165B44] text-white h-11 text-sm font-bold rounded-xl shadow-xs" })}
           >
             <span>Request Consultation</span>

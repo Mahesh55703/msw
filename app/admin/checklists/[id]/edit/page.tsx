@@ -1,16 +1,49 @@
 import { verifySession } from '@/lib/session'
 import { redirect, notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import CmsForm from '@/components/admin/cms/CmsForm'
+import ChecklistEditor from '@/components/admin/checklists/ChecklistEditor'
 
-export default async function EditChecklistPage({ params }: { params: Promise<{ id: string }> }) {
+interface EditChecklistPageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function EditChecklistPage({ params }: EditChecklistPageProps) {
   const session = await verifySession()
-  if (!session.isAuth) redirect('/admin/login')
+  if (!session.isAuth) {
+    redirect('/admin/login')
+  }
 
   const resolvedParams = await params
-  const article = await prisma.article.findUnique({ where: { id: resolvedParams.id } })
-  if (!article) notFound()
+  const [checklist, users] = await Promise.all([
+    prisma.article.findUnique({
+      where: { id: resolvedParams.id },
+      include: {
+        relatedServices: { orderBy: { sortOrder: 'asc' } },
+        relatedFrom: {
+          orderBy: { sortOrder: 'asc' },
+          include: {
+            toArticle: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                category: true,
+                published: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.user.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    }),
+  ])
 
-  const users = await prisma.user.findMany({ select: { id: true, name: true } });
-  return <CmsForm users={users} category="checklists" initialData={article} />
+  if (!checklist) {
+    notFound()
+  }
+
+  return <ChecklistEditor initialData={checklist} users={users} />
 }

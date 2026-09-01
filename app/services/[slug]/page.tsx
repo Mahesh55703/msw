@@ -2,6 +2,7 @@ import { servicesData } from "@/data/services";
 import { notFound } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
+import { TrackedCtaLink } from "@/components/analytics/TrackedCtaLink";
 import Image from "next/image";
 import { 
   ChevronRight, 
@@ -172,8 +173,11 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Link 
+                <TrackedCtaLink 
                   href="/contact" 
+                  ctaLocation="service_hero"
+                  ctaLabel={service.ctaText}
+                  pageType="service"
                   className={buttonVariants({ 
                     size: "lg", 
                     className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg transition-all group" 
@@ -181,7 +185,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                 >
                   <span>{service.ctaText}</span>
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                </TrackedCtaLink>
                 <Link 
                   href="/compliance-health-check" 
                   className={buttonVariants({ 
@@ -509,17 +513,23 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               Let LabourAxis help you identify the areas that may need attention.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link 
+              <TrackedCtaLink 
                 href="/contact" 
+                ctaLocation="service_bottom_banner"
+                ctaLabel="Request a Compliance Health Check"
+                pageType="service"
                 className={buttonVariants({ 
                   size: "lg", 
                   className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all" 
                 })}
               >
                 Request a Compliance Health Check
-              </Link>
-              <Link 
+              </TrackedCtaLink>
+              <TrackedCtaLink 
                 href="/contact" 
+                ctaLocation="service_bottom_banner"
+                ctaLabel="Discuss Your Requirement"
+                pageType="service"
                 className={buttonVariants({ 
                   size: "lg", 
                   variant: "outline", 
@@ -527,7 +537,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                 })}
               >
                 Discuss Your Requirement
-              </Link>
+              </TrackedCtaLink>
             </div>
           </div>
         </div>

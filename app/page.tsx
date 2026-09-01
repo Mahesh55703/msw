@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { TrackedCtaLink } from "@/components/analytics/TrackedCtaLink";
 import { servicesData } from "@/data/services";
 import { 
   ArrowRight, 
@@ -85,8 +86,11 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link 
+                  <TrackedCtaLink 
                     href="/contact" 
+                    ctaLocation="home_hero"
+                    ctaLabel="Request a Consultation"
+                    pageType="home"
                     className={buttonVariants({ 
                       size: "lg", 
                       className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all duration-200 group" 
@@ -94,7 +98,7 @@ export default function Home() {
                   >
                     <span>Request a Consultation</span>
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  </TrackedCtaLink>
                   <Link 
                     href="/services" 
                     className={buttonVariants({ 
@@ -362,8 +366,11 @@ export default function Home() {
             <p className="text-[#A2B3AA] text-base md:text-lg mb-8 max-w-2xl mx-auto leading-relaxed text-balance">
               Request a preliminary compliance discussion and understand which areas of your workforce operations may need attention.
             </p>
-            <Link 
+            <TrackedCtaLink 
               href="/contact" 
+              ctaLocation="home_bottom_banner"
+              ctaLabel="Discuss Your Compliance Requirements"
+              pageType="home"
               className={buttonVariants({ 
                 size: "lg", 
                 className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all group" 
@@ -371,7 +378,7 @@ export default function Home() {
             >
               <span>Discuss Your Compliance Requirements</span>
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </TrackedCtaLink>
           </div>
         </div>
       </section>
