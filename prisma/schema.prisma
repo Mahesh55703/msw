@@ -187,18 +187,35 @@ model Media {
 
 // Phase 2: Careers CMS
 model JobPosting {
-  id           String           @id @default(cuid())
-  title        String
-  slug         String           @unique
-  department   String
-  location     String
-  type         String           @default("Full-time")
-  description  String
-  requirements String
-  isActive     Boolean          @default(true)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  applications JobApplication[]
+  id                String           @id @default(cuid())
+  title             String
+  slug              String           @unique
+  department        String
+  location          String
+  employmentType    String           @default("Full-time")
+  type              String           @default("Full-time")
+  workMode          String           @default("On-site")
+  experience        String?
+  salary            String?
+  description       String
+  responsibilities  String?
+  requirements      String
+  applicationMethod String           @default("Email")
+  applicationUrl    String?
+  applicationEmail  String?
+  status            String           @default("PUBLISHED")
+  isActive          Boolean          @default(true)
+  publishedAt       DateTime?        @default(now())
+  closingDate       DateTime?
+  displayOrder      Int              @default(0)
+  seoTitle          String?
+  metaDescription   String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  applications      JobApplication[]
+
+  @@index([status, closingDate, displayOrder])
+  @@index([slug])
 }
 
 model JobApplication {
@@ -216,15 +233,29 @@ model JobApplication {
 }
 
 model TeamMember {
-  id        String   @id @default(cuid())
-  name      String
-  role      String
-  bio       String?
-  imageUrl  String?
-  order     Int      @default(0)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String       @id @default(cuid())
+  name         String
+  designation  String       @default("")
+  role         String?
+  department   String?
+  bio          String?
+  imageUrl     String?
+  imageAlt     String?
+  linkedinUrl  String?
+  displayOrder Int          @default(0)
+  order        Int          @default(0)
+  isActive     Boolean      @default(true)
+  
+  // Hierarchy: Self-referencing Reports To
+  reportsToId  String?
+  reportsTo    TeamMember?  @relation("TeamHierarchy", fields: [reportsToId], references: [id], onDelete: SetNull)
+  directReports TeamMember[] @relation("TeamHierarchy")
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([reportsToId, isActive, displayOrder])
+  @@index([isActive, displayOrder])
 }
 
 enum FaqCategory {

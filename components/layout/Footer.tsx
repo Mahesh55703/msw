@@ -1,8 +1,11 @@
+'use client'
+
 import Link from "next/link";
 import Image from "next/image";
 import { footerNav } from "@/data/navigation";
 import { Mail, ChevronDown, ArrowRight, ShieldCheck, MapPin } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { trackConsultationCta, trackEmailClick } from "@/lib/analytics";
 
 function FooterColumn({ title, items }: { title: string, items: {title: string, href: string}[] }) {
   return (
@@ -56,10 +59,11 @@ export default function Footer() {
                 Strategic Compliance & Workforce Support
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Need help with HR or labour compliance?</h2>
-              <p className="text-[#A2B3AA] text-base md:text-lg max-w-2xl">Let's discuss your workforce and compliance needs.</p>
+              <p className="text-[#A2B3AA] text-base md:text-lg max-w-2xl">Let&apos;s discuss your workforce and compliance needs.</p>
             </div>
             <Link 
               href="/contact" 
+              onClick={() => trackConsultationCta('footer_strip', 'Request a Consultation', 'footer')}
               className={buttonVariants({ 
                 size: "lg", 
                 className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white shrink-0 font-bold px-7 py-3.5 rounded-xl shadow-lg shadow-black/20 group" 
@@ -93,7 +97,11 @@ export default function Footer() {
             </p>
             
             <div className="space-y-2.5 text-xs sm:text-sm text-[#A2B3AA]">
-              <a href="mailto:info@labouraxis.com" className="flex items-center gap-2.5 hover:text-white transition-colors group">
+              <a 
+                href="mailto:info@labouraxis.com" 
+                onClick={() => trackEmailClick('footer', 'footer')}
+                className="flex items-center gap-2.5 hover:text-white transition-colors group"
+              >
                 <div className="w-7 h-7 rounded-lg bg-[#1B4E3C] flex items-center justify-center text-[#D6A84F] group-hover:bg-[#1F7A5C] group-hover:text-white transition-all">
                   <Mail className="w-3.5 h-3.5" />
                 </div>

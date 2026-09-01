@@ -1,9 +1,10 @@
+import React from "react";
 import { Service } from "@/data/services";
 import { ArrowRight, ShieldCheck, Briefcase, FileCheck, Users, Factory, Scale, FileSpreadsheet } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
-const SERVICE_ICONS: Record<string, any> = {
+const SERVICE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   "hr-consulting": Briefcase,
   "labour-compliance": ShieldCheck,
   "pf-esic-compliance": FileCheck,

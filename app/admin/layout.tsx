@@ -5,6 +5,21 @@ import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { LogOut, Menu, ShieldCheck } from 'lucide-react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'LabourAxis Admin Portal',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
+}
 
 export default async function AdminLayout({
   children,

@@ -1,77 +1,175 @@
-import type { Metadata } from "next";
-import FaqClientComponent from "./FaqClientComponent";
-import prisma from "@/lib/prisma";
+import type { Metadata } from 'next'
+import FaqClientComponent from './FaqClientComponent'
+import prisma from '@/lib/prisma'
+import { FAQ_CATEGORY_LABELS, FaqCategoryType } from '@/lib/validations/faq'
 
 export const metadata: Metadata = {
-  title: "HR, Labour & Compliance FAQs | LabourAxis",
-  description: "Find answers to frequently asked questions regarding PF, ESIC, factory compliance, contract labour, and general HR regulations in India.",
+  title: 'HR, Labour & Statutory Compliance FAQs | LabourAxis',
+  description:
+    'Clear, practical answers to frequently asked questions on PF, ESIC, factory compliance, contract labour, payroll, and workforce regulations in India.',
   alternates: {
-    canonical: "/resources/faqs"
-  }
-};
+    canonical: 'https://www.labouraxis.com/resources/faqs',
+  },
+  openGraph: {
+    title: 'HR, Labour & Statutory Compliance FAQs | LabourAxis',
+    description:
+      'Clear, practical answers to frequently asked questions on PF, ESIC, factory compliance, contract labour, payroll, and workforce regulations in India.',
+    url: 'https://www.labouraxis.com/resources/faqs',
+    type: 'website',
+  },
+}
 
-const CATEGORIES_META: Record<string, { title: string, ctaText: string, ctaLink: string, ctaButton: string }> = {
-  HR_OPERATIONS: { title: 'HR & HR Operations', ctaText: 'Need help improving your HR processes?', ctaLink: '/services/hr-consulting', ctaButton: 'Discuss Your HR Requirement' },
-  LABOUR_COMPLIANCE: { title: 'Labour Compliance', ctaText: 'Unsure about your compliance status?', ctaLink: '/compliance-health-check', ctaButton: 'Request a Health Check' },
-  PF_EPFO: { title: 'PF & EPFO', ctaText: 'Need assistance with PF compliance?', ctaLink: '/services/pf-esic-compliance', ctaButton: 'Get PF Support' },
-  ESIC: { title: 'ESIC', ctaText: 'Need assistance with ESIC compliance?', ctaLink: '/services/pf-esic-compliance', ctaButton: 'Get ESIC Support' },
-  PAYROLL: { title: 'Payroll & Attendance', ctaText: 'Looking for reliable payroll processing?', ctaLink: '/services/payroll-compliance', ctaButton: 'Explore Payroll Services' },
-  FACTORY_COMPLIANCE: { title: 'Factory Compliance', ctaText: 'Need to review your factory compliance?', ctaLink: '/services/factory-compliance', ctaButton: 'Get Factory Support' },
-  CONTRACT_LABOUR: { title: 'Contract Labour', ctaText: 'Managing contract workers?', ctaLink: '/services/contract-labour', ctaButton: 'Get Contract Labour Support' },
-  INDUSTRIAL_RELATIONS: { title: 'Industrial Relations', ctaText: 'Need help with employee relations?', ctaLink: '/services/industrial-relations', ctaButton: 'Get IR Support' }
-};
+const CATEGORIES_CONFIG: {
+  id: FaqCategoryType
+  title: string
+  ctaText: string
+  ctaLink: string
+  ctaButton: string
+}[] = [
+  {
+    id: 'HR_OPERATIONS',
+    title: 'HR & HR Operations',
+    ctaText: 'Need help structuring your HR operations and documentation?',
+    ctaLink: '/services/hr-consulting',
+    ctaButton: 'Discuss Your HR Requirement',
+  },
+  {
+    id: 'LABOUR_COMPLIANCE',
+    title: 'Labour Compliance',
+    ctaText: 'Unsure about your current statutory labour compliance status?',
+    ctaLink: '/compliance-health-check',
+    ctaButton: 'Request a Health Check',
+  },
+  {
+    id: 'PF_EPFO',
+    title: 'PF & EPFO',
+    ctaText: 'Need assistance with EPF registration, ECR filing, or inspections?',
+    ctaLink: '/services/pf-esic-compliance',
+    ctaButton: 'Get PF Support',
+  },
+  {
+    id: 'ESIC',
+    title: 'ESIC',
+    ctaText: 'Need help managing ESIC registrations, challans, or worker coverage?',
+    ctaLink: '/services/pf-esic-compliance',
+    ctaButton: 'Get ESIC Support',
+  },
+  {
+    id: 'PAYROLL',
+    title: 'Payroll & Attendance',
+    ctaText: 'Looking for accurate payroll processing and statutory deduction audits?',
+    ctaLink: '/services/payroll-compliance',
+    ctaButton: 'Explore Payroll Services',
+  },
+  {
+    id: 'FACTORY_COMPLIANCE',
+    title: 'Factory Compliance',
+    ctaText: 'Need to review your factory licence, registers, or safety compliance?',
+    ctaLink: '/services/factory-compliance',
+    ctaButton: 'Get Factory Support',
+  },
+  {
+    id: 'CONTRACT_LABOUR',
+    title: 'Contract Labour',
+    ctaText: 'Engaging contract workers? Ensure CLRA licensing and contractor audits.',
+    ctaLink: '/services/contract-labour',
+    ctaButton: 'Get Contract Labour Support',
+  },
+  {
+    id: 'INDUSTRIAL_RELATIONS',
+    title: 'Industrial Relations',
+    ctaText: 'Need help with disciplinary processes, grievance redressal, or standing orders?',
+    ctaLink: '/services/industrial-relations',
+    ctaButton: 'Get IR Advisory',
+  },
+]
 
 export default async function FaqsPage() {
   const dbFaqs = await prisma.faq.findMany({
-    where: { published: true, category: { not: 'UNCATEGORIZED' } },
+    where: {
+      published: true,
+      category: { not: 'UNCATEGORIZED' },
+    },
     orderBy: [
       { category: 'asc' },
       { displayOrder: 'asc' },
-      { createdAt: 'desc' }
-    ]
-  });
+      { createdAt: 'asc' },
+    ],
+  })
 
   // Group FAQs by category
-  const groupedFaqs: Record<string, any[]> = {};
-  dbFaqs.forEach(faq => {
-    if (!groupedFaqs[faq.category]) groupedFaqs[faq.category] = [];
+  const groupedFaqs: Record<string, { id: string; question: string; answer: string; displayOrder: number }[]> = {}
+  dbFaqs.forEach((faq) => {
+    if (!groupedFaqs[faq.category]) groupedFaqs[faq.category] = []
     groupedFaqs[faq.category].push({
+      id: faq.id,
       question: faq.question,
       answer: faq.answer,
-      isPopular: false
-    });
-  });
+      displayOrder: faq.displayOrder,
+    })
+  })
 
-  const faqsData = Object.keys(CATEGORIES_META).map(key => {
-    return {
-      id: key,
-      title: CATEGORIES_META[key].title,
-      ctaText: CATEGORIES_META[key].ctaText,
-      ctaLink: CATEGORIES_META[key].ctaLink,
-      ctaButton: CATEGORIES_META[key].ctaButton,
-      faqs: groupedFaqs[key] || []
-    };
-  }).filter(cat => cat.faqs.length > 0);
+  const structuredCategories = CATEGORIES_CONFIG.map((config) => ({
+    id: config.id,
+    title: config.title,
+    ctaText: config.ctaText,
+    ctaLink: config.ctaLink,
+    ctaButton: config.ctaButton,
+    faqs: groupedFaqs[config.id] || [],
+  })).filter((cat) => cat.faqs.length > 0)
 
+  // Clean, server-side FAQPage JSON-LD schema (only published FAQs)
   const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqsData.flatMap(category => 
-      category.faqs.map(faq => ({
-        "@type": "Question",
-        "name": faq.question,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": faq.answer.replace(/<[^>]+>/g, '') // strip HTML for schema
-        }
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: structuredCategories.flatMap((category) =>
+      category.faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer.replace(/<[^>]+>/g, '').trim(),
+        },
       }))
-    )
-  };
+    ),
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.labouraxis.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Resources',
+        item: 'https://www.labouraxis.com/resources',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'FAQs',
+        item: 'https://www.labouraxis.com/resources/faqs',
+      },
+    ],
+  }
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <FaqClientComponent initialData={faqsData} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <FaqClientComponent initialData={structuredCategories} />
     </>
-  );
+  )
 }

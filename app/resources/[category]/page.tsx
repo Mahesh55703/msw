@@ -78,7 +78,7 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
   try {
     items = await prisma.article.findMany({
       where: { 
-        category: categoryInfo.dbCategory,
+        category: { in: [categoryInfo.dbCategory, resolvedParams.category, resolvedParams.category.replace(/s$/, '')] },
         published: true 
       },
       orderBy: { publishedAt: 'desc' }
@@ -233,7 +233,7 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
               <p className="text-[#202522] font-medium">No {categoryInfo.title.toLowerCase()} published yet. Check back soon.</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className={items.length === 1 ? "max-w-2xl mx-auto" : "grid md:grid-cols-2 lg:grid-cols-3 gap-8"}>
               {items.map(item => (
                 <Link 
                   key={item.slug} 
@@ -268,13 +268,13 @@ export default async function ResourceCategoryPage({ params }: { params: Promise
                     <div className="mt-auto pt-4 flex items-center justify-between border-t border-[#D9E1DC]/60 text-xs md:text-sm">
                       <span className="text-[#66736D] font-medium flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 text-[#66736D]" />
-                        {item.updatedAt 
-                          ? `${new Date(item.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                        {item.scheduledAt || item.updatedAt 
+                          ? `${new Date(item.scheduledAt || item.updatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
                           : new Date(item.publishedAt || item.createdAt || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                         }
                       </span>
                       <span className="font-bold text-[#1F7A5C] flex items-center group-hover:text-[#165B44] transition-colors whitespace-nowrap">
-                        <span>Read Update</span>
+                        <span>Read {resolvedParams.category === 'articles' ? 'Article' : resolvedParams.category === 'guides' ? 'Guide' : resolvedParams.category === 'checklists' ? 'Checklist' : 'Update'}</span>
                         <ArrowRight className="w-3.5 h-3.5 ml-1 group-hover:translate-x-1 transition-transform" />
                       </span>
                     </div>
