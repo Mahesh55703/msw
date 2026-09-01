@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ChevronRight, ShieldCheck, Clock } from "lucide-react";
+import { ChevronRight, FileText, Clock, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Terms of Service | LabourAxis",
@@ -87,9 +88,9 @@ export default function TermsPage() {
             </div>
 
             <div className="border-t border-[#D9E1DC] pt-6">
-              <h2 className="text-xl md:text-2xl font-bold text-[#12372A] mb-4">7. Contact Information</h2>
-              <p className="text-[#66736D]">For any questions regarding these Terms of Use, please contact us at:</p>
-              <p className="mt-4 font-bold text-[#12372A]">Email: info@labouraxis.com</p>
+              <h2 className="text-xl md:text-2xl font-bold text-[#12372A] mb-4">7. Contact Us</h2>
+              <p className="text-[#66736D]">If you have any questions about these Terms, please contact us at:</p>
+              <p className="mt-4 font-bold text-[#12372A]">Email: {siteConfig.contact.email}</p>
             </div>
 
           </div>

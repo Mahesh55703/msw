@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { siteConfig } from "@/lib/site-config";
 import { Menu, ChevronDown, ChevronRight, X, Mail, ArrowRight } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -15,7 +16,10 @@ import {
 } from "@/components/ui/sheet";
 import { mainNav } from "@/data/navigation";
 import { cn } from "@/lib/utils";
-import { trackConsultationCta, trackEmailClick } from "@/lib/analytics";
+import {
+  trackConsultationCta,
+  trackEmailClick
+} from "@/lib/analytics";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -175,13 +179,44 @@ export default function MobileNav() {
           {/* Quick Contact Box */}
           <div className="mx-4 my-4 p-4 rounded-2xl bg-[#F7F4EC] border border-[#D9E1DC] text-xs text-[#66736D] space-y-2">
             <div className="font-bold text-[#12372A] uppercase tracking-wider text-[10px]">Contact Assistance</div>
+            {siteConfig.contact.phone && (
+              <a 
+                href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`} 
+                onClick={() => {
+                  trackConsultationCta('mobile_nav', 'phone', 'contact');
+                  setOpen(false);
+                }}
+                className="flex items-center gap-2 text-[#66736D] hover:text-[#1F7A5C]"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-[#1F7A5C]"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span>{siteConfig.contact.phone}</span>
+              </a>
+            )}
+            {siteConfig.contact.whatsapp && (
+              <a 
+                href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} 
+                onClick={() => {
+                  trackConsultationCta('mobile_nav', 'whatsapp', 'contact');
+                  setOpen(false);
+                }}
+                className="flex items-center gap-2 text-[#66736D] hover:text-[#1F7A5C]"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-[#1F7A5C]"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <span>WhatsApp Chat</span>
+              </a>
+            )}
             <a 
-              href="mailto:info@labouraxis.com" 
-              onClick={() => trackEmailClick('mobile_nav', 'navigation')}
+              href={`mailto:${siteConfig.contact.email}`} 
+              onClick={() => {
+                trackEmailClick('mobile_nav', 'navigation');
+                setOpen(false);
+              }}
               className="flex items-center gap-2 text-[#66736D] hover:text-[#1F7A5C]"
             >
               <Mail className="w-3.5 h-3.5 text-[#1F7A5C]" />
-              <span>info@labouraxis.com</span>
+              <span>{siteConfig.contact.email}</span>
             </a>
           </div>
         </div>

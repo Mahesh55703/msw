@@ -75,6 +75,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Add static resources (excluding any explicitly unpublished in DB)
   for (const resource of resourcesData) {
     if (unpublishedSlugs.has(resource.slug)) continue;
+    if (resource.type === 'faq') continue; // Do not create individual pages for FAQs
     const cat = resource.type === 'guide' ? 'guides' : resource.type === 'checklist' ? 'checklists' : resource.type === 'update' ? 'updates' : 'articles';
     resourceMap.set(resource.slug, {
       url: `${siteUrl}/resources/${cat}/${resource.slug}`,

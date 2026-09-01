@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { buttonVariants } from "@/components/ui/button";
 import { 
   ArrowRight, 
@@ -291,8 +292,8 @@ export default function AboutPage() {
       <section className="py-24 bg-[#F7F4EC]">
         <div className="container mx-auto px-4 md:px-8 max-w-4xl">
           <div className="bg-white border border-[#D9E1DC] rounded-3xl p-8 md:p-12 shadow-sm flex flex-col md:flex-row gap-10 items-center md:items-start">
-            <div className="w-36 h-36 md:w-48 md:h-48 bg-[#EDE8DE] rounded-3xl shrink-0 flex items-center justify-center overflow-hidden border-4 border-white shadow-md">
-              <img src="/lavish-chouhan.png" alt="Lavish Chouhan" className="w-full h-full object-cover" />
+            <div className="w-36 h-36 md:w-48 md:h-48 bg-[#EDE8DE] rounded-3xl shrink-0 flex items-center justify-center overflow-hidden border-4 border-white shadow-md relative">
+              <Image src="/lavish-chouhan.png" alt="Lavish Chouhan" fill sizes="192px" className="object-cover" />
             </div>
 
             <div className="text-center md:text-left">
