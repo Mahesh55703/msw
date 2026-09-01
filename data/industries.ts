@@ -132,7 +132,7 @@ export const industriesData: Industry[] = [
       { question: 'What HR records should be maintained for workforce management?', answer: 'Muster rolls, wage registers, overtime registers, and records of advances/deductions are critical for site workers.' },
       { question: 'Can LabourAxis help with contractor compliance?', answer: 'Yes, we provide tracking and monthly verification of contractor challans and wage registers before bill clearance.' },
       { question: 'Does BOCW apply to all construction projects?', answer: 'BOCW applicability depends on the number of workers and the nature of the establishment; we help assess and fulfill these specific requirements.' },
-      { question: 'How do we handle PF for highly transient labor?', answer: 'We assist in streamlining UAN generation and linking to ensure contributions are properly tracked despite high turnover.' },
+      { question: 'How do we handle PF for highly transient labour?', answer: 'We assist in streamlining UAN generation and linking to ensure contributions are properly tracked despite high turnover.' },
       { question: 'Do you assist with principal employer registrations?', answer: 'Yes, we assist in obtaining the necessary certificates under CLRA and BOCW for your project sites.' }
     ],
     relatedResources: ['Contract Labour Checklist', 'Workforce Documentation Guide', 'Payroll Compliance Checklist', 'BOCW Compliance Overview', 'Principal Employer Liability Guide'],
@@ -145,7 +145,7 @@ export const industriesData: Industry[] = [
     shortDescription: 'Compliance and HR solutions for warehouses, distribution centers, and logistics operators.',
     hubRelevantServices: ['Contract Labour', 'Payroll Operations', 'PF & ESIC', 'Labour Compliance'],
     heroH1: 'HR & Labour Compliance for Logistics & Warehousing',
-    heroSupportingText: 'Practical support for 3PLs, distribution centers, and warehouses managing 24/7 operations, contract labor, and complex statutory requirements.',
+    heroSupportingText: 'Practical support for 3PLs, distribution centers, and warehouses managing 24/7 operations, contract labour, and complex statutory requirements.',
     heroCtaText: 'Discuss Your Logistics Requirements',
     challenges: [
       { title: '24/7 Shift Management', description: 'Handling complex shift rosters, night shifts, and overtime calculations.' },
@@ -203,7 +203,7 @@ export const industriesData: Industry[] = [
     shortDescription: 'Tailored compliance and HR processes for heavy engineering, fabrication, and industrial setups.',
     hubRelevantServices: ['Factory Compliance', 'Labour Compliance', 'PF & ESIC', 'Industrial Relations'],
     heroH1: 'HR & Labour Compliance for Engineering Firms',
-    heroSupportingText: 'Navigating the complex statutory requirements, skilled labor management, and factory compliance for heavy engineering and industrial setups.',
+    heroSupportingText: 'Navigating the complex statutory requirements, skilled labour management, and factory compliance for heavy engineering and industrial setups.',
     heroCtaText: 'Discuss Your Engineering HR Requirements',
     challenges: [
       { title: 'Skilled Labour Management', description: 'Retaining and managing records for highly skilled technicians and welders.' },

@@ -269,7 +269,7 @@ export const servicesData: Service[] = [
     audience: [
       { title: 'Manufacturing Companies', description: 'Factories engaged in production requiring strict adherence to the Factories Act.' },
       { title: 'Industrial Setups', description: 'Warehouses, processing plants, and assembly units.' },
-      { title: 'Engineering Firms', description: 'Units dealing with skilled and semi-skilled labor and hazardous processes.' },
+      { title: 'Engineering Firms', description: 'Units dealing with skilled and semi-skilled labour and hazardous processes.' },
       { title: 'Warehousing & Logistics', description: 'Large-scale storage facilities falling under factory or commercial acts.' }
     ],
     deliverables: [
@@ -321,7 +321,7 @@ export const servicesData: Service[] = [
     ],
     audience: [
       { title: 'Principal Employers', description: 'Organizations engaging manpower through third-party contractors.' },
-      { title: 'Factories', description: 'Manufacturing units utilizing contract labor for production or allied services.' },
+      { title: 'Factories', description: 'Manufacturing units utilizing contract labour for production or allied services.' },
       { title: 'Large Warehouses', description: 'Logistics hubs with high volumes of contract workers.' },
       { title: 'Infrastructure Projects', description: 'Large-scale sites relying heavily on layered sub-contractors.' }
     ],

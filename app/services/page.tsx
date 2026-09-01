@@ -73,7 +73,7 @@ export default function ServicesPage() {
                       End-to-End Governance
                     </span>
                     <span className="bg-[#1F7A5C]/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full border border-white/20 shadow-md">
-                      100% Compliant
+                      Compliance Support
                     </span>
                   </div>
 
