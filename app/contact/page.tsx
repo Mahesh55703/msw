@@ -2,6 +2,7 @@ import { ConsultationForm } from "@/components/forms/ConsultationForm";
 import { Mail, MapPin, ChevronRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { TrackedAnchor } from "@/components/analytics/TrackedCtaLink";
+import { siteConfig } from "@/lib/site-config";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -106,6 +107,46 @@ export default function ContactPage() {
               <h3 className="text-xl font-bold text-[#12372A] mb-6">Direct Channels</h3>
               
               <div className="space-y-6">
+                {siteConfig.contact.phone && (
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-[#1F7A5C]/10 text-[#1F7A5C] flex items-center justify-center shrink-0 border border-[#1F7A5C]/20">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#12372A] text-sm">Phone</h4>
+                      <TrackedAnchor 
+                        href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`} 
+                        ctaType="phone"
+                        ctaLocation="contact_direct_channels"
+                        pageType="contact"
+                        className="text-[#202522] hover:text-[#1F7A5C] font-semibold text-sm transition-colors block mt-0.5"
+                      >
+                        {siteConfig.contact.phone}
+                      </TrackedAnchor>
+                    </div>
+                  </div>
+                )}
+
+                {siteConfig.contact.whatsapp && (
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-[#1F7A5C]/10 text-[#1F7A5C] flex items-center justify-center shrink-0 border border-[#1F7A5C]/20">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#12372A] text-sm">WhatsApp</h4>
+                      <TrackedAnchor 
+                        href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`} 
+                        ctaType="whatsapp"
+                        ctaLocation="contact_direct_channels"
+                        pageType="contact"
+                        className="text-[#202522] hover:text-[#1F7A5C] font-semibold text-sm transition-colors block mt-0.5"
+                      >
+                        Message Us
+                      </TrackedAnchor>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-2xl bg-[#1F7A5C]/10 text-[#1F7A5C] flex items-center justify-center shrink-0 border border-[#1F7A5C]/20">
                     <Mail className="w-5 h-5" />
@@ -113,13 +154,13 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-bold text-[#12372A] text-sm">Email</h4>
                     <TrackedAnchor 
-                      href="mailto:info@labouraxis.com" 
+                      href={`mailto:${siteConfig.contact.email}`} 
                       ctaType="email"
                       ctaLocation="contact_direct_channels"
                       pageType="contact"
                       className="text-[#202522] hover:text-[#1F7A5C] font-semibold text-sm transition-colors block mt-0.5"
                     >
-                      info@labouraxis.com
+                      {siteConfig.contact.email}
                     </TrackedAnchor>
                   </div>
                 </div>
@@ -130,8 +171,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-[#12372A] text-sm">Location</h4>
-                    <p className="text-[#202522] text-sm mt-0.5 font-medium">Based in Indore, Madhya Pradesh</p>
-                    <p className="text-xs text-[#66736D] mt-2 leading-relaxed">Serving clients remotely across India, with on-site support where applicable.</p>
+                    <p className="text-[#202522] text-sm mt-0.5 font-medium">Based in {siteConfig.contact.address.city}, {siteConfig.contact.address.state}</p>
+                    <p className="text-xs text-[#66736D] mt-2 leading-relaxed">Serving clients remotely across {siteConfig.contact.address.country}, with on-site support where applicable.</p>
                   </div>
                 </div>
               </div>

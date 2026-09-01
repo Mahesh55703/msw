@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronRight, ShieldCheck, Clock } from "lucide-react";
 import type { Metadata } from "next";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | LabourAxis",
@@ -90,7 +91,7 @@ export default function PrivacyPolicyPage() {
             <div className="border-t border-[#D9E1DC] pt-6">
               <h2 className="text-xl md:text-2xl font-bold text-[#12372A] mb-4">5. Contact Us</h2>
               <p className="text-[#66736D]">If you have questions or comments about this Privacy Policy, please contact us at:</p>
-              <p className="mt-4 font-bold text-[#12372A]">Email: info@labouraxis.com</p>
+              <p className="mt-4 font-bold text-[#12372A]">Email: {siteConfig.contact.email}</p>
             </div>
 
           </div>
