@@ -253,10 +253,10 @@ export default function TeamEditor({ initialData, availableManagers }: TeamEdito
             type="button"
             variant="outline"
             onClick={() => setShowPreviewModal(true)}
-            className="border-[#D9E1DC] text-[#12372A] hover:bg-[#F7F4EC] rounded-xl text-xs font-bold"
+            className="border-[#CBD5D0] text-[#12372A] bg-white hover:bg-[#12372A] hover:text-white hover:border-[#12372A] rounded-xl text-xs font-bold transition-all duration-150 group"
           >
-            <Eye className="w-3.5 h-3.5 mr-1.5 text-[#1F7A5C]" />
-            Preview Card
+            <Eye className="w-3.5 h-3.5 mr-1.5 text-[#1F7A5C] group-hover:text-white transition-colors" />
+            <span>Preview Card</span>
           </Button>
 
           <Button
@@ -264,7 +264,7 @@ export default function TeamEditor({ initialData, availableManagers }: TeamEdito
             variant="outline"
             disabled={isSubmitting}
             onClick={() => handleSave(false)}
-            className="border-[#D9E1DC] text-[#12372A] hover:bg-[#F7F4EC] rounded-xl text-xs font-bold"
+            className="border-[#CBD5D0] text-[#12372A] bg-white hover:bg-[#12372A] hover:text-white hover:border-[#12372A] rounded-xl text-xs font-bold transition-all duration-150"
           >
             {isSubmitting ? 'Saving...' : 'Save & Continue'}
           </Button>
@@ -273,7 +273,7 @@ export default function TeamEditor({ initialData, availableManagers }: TeamEdito
             type="button"
             disabled={isSubmitting}
             onClick={() => handleSave(true)}
-            className="bg-[#1F7A5C] hover:bg-[#165B44] text-white rounded-xl text-xs font-bold px-5 shadow-xs"
+            className="bg-[#1F7A5C] hover:bg-[#12372A] text-white rounded-xl text-xs font-bold px-5 shadow-xs transition-all duration-150"
           >
             {isSubmitting ? (
               <>
@@ -291,7 +291,8 @@ export default function TeamEditor({ initialData, availableManagers }: TeamEdito
               type="button"
               variant="outline"
               onClick={() => setShowDeleteModal(true)}
-              className="border-rose-200 text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-bold"
+              className="border-rose-200 text-rose-600 bg-white hover:bg-rose-600 hover:text-white hover:border-rose-600 rounded-xl text-xs font-bold transition-all duration-150"
+              title="Delete team member"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </Button>

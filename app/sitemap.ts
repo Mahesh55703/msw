@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { servicesData } from "@/data/services";
 import { industriesData } from "@/data/industries";
 import { resourcesData } from "@/data/resources";
+import { safeFetchJobs } from "@/lib/db/careers";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.labouraxis.com";
@@ -95,5 +96,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const resourceRoutes = Array.from(resourceMap.values());
 
-  return [...staticRoutes, ...serviceRoutes, ...industryRoutes, ...resourceRoutes];
+  // 5. Dynamic Published Active Careers (only PUBLISHED & not expired)
+  let careerRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const { jobs } = await safeFetchJobs({ where: { status: "published" } });
+    careerRoutes = jobs
+      .filter((j) => j.isCurrentlyActive)
+      .map((job) => ({
+        url: `${siteUrl}/careers/${job.slug}`,
+        lastModified: job.updatedAt || job.publishedAt || new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }));
+  } catch (e) {
+    console.error("Error in careers sitemap generation", e);
+  }
+
+  return [...staticRoutes, ...serviceRoutes, ...industryRoutes, ...resourceRoutes, ...careerRoutes];
 }

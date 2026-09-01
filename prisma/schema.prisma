@@ -187,18 +187,35 @@ model Media {
 
 // Phase 2: Careers CMS
 model JobPosting {
-  id           String           @id @default(cuid())
-  title        String
-  slug         String           @unique
-  department   String
-  location     String
-  type         String           @default("Full-time")
-  description  String
-  requirements String
-  isActive     Boolean          @default(true)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  applications JobApplication[]
+  id                String           @id @default(cuid())
+  title             String
+  slug              String           @unique
+  department        String
+  location          String
+  employmentType    String           @default("Full-time")
+  type              String           @default("Full-time")
+  workMode          String           @default("On-site")
+  experience        String?
+  salary            String?
+  description       String
+  responsibilities  String?
+  requirements      String
+  applicationMethod String           @default("Email")
+  applicationUrl    String?
+  applicationEmail  String?
+  status            String           @default("PUBLISHED")
+  isActive          Boolean          @default(true)
+  publishedAt       DateTime?        @default(now())
+  closingDate       DateTime?
+  displayOrder      Int              @default(0)
+  seoTitle          String?
+  metaDescription   String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  applications      JobApplication[]
+
+  @@index([status, closingDate, displayOrder])
+  @@index([slug])
 }
 
 model JobApplication {
