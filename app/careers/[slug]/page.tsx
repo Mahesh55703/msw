@@ -19,6 +19,7 @@ import {
 import { buttonVariants } from '@/components/ui/button'
 import { verifySession } from '@/lib/session'
 import { safeFetchJobBySlug, isJobActive, SafeJobPosting } from '@/lib/db/careers'
+import { TrackedAnchor, TrackedCtaLink } from '@/components/analytics/TrackedCtaLink'
 
 export const dynamic = 'force-dynamic'
 
@@ -321,31 +322,46 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                       Applications Closed
                     </button>
                   ) : job.applicationMethod === 'Email' ? (
-                    <a
+                    <TrackedAnchor
                       href={`mailto:${job.applicationEmail || 'careers@labouraxis.com'}?subject=Application for ${encodeURIComponent(job.title)}`}
+                      ctaType="career"
+                      jobId={job.id}
+                      jobTitle={job.title}
+                      department={job.department}
+                      applicationMethod="email"
                       className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold bg-[#1F7A5C] hover:bg-[#165B44] text-white shadow-xs transition-colors text-center"
                     >
                       <Mail className="w-4 h-4" />
                       <span>Email Resume ({job.applicationEmail || 'careers@labouraxis.com'})</span>
-                    </a>
+                    </TrackedAnchor>
                   ) : job.applicationMethod === 'URL' && job.applicationUrl ? (
-                    <a
+                    <TrackedAnchor
                       href={job.applicationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      ctaType="career"
+                      jobId={job.id}
+                      jobTitle={job.title}
+                      department={job.department}
+                      applicationMethod="url"
                       className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold bg-[#1F7A5C] hover:bg-[#165B44] text-white shadow-xs transition-colors text-center"
                     >
                       <ExternalLink className="w-4 h-4" />
                       <span>Apply on External Portal</span>
-                    </a>
+                    </TrackedAnchor>
                   ) : (
-                    <Link
+                    <TrackedCtaLink
                       href="/contact"
+                      ctaType="career"
+                      jobId={job.id}
+                      jobTitle={job.title}
+                      department={job.department}
+                      applicationMethod="form"
                       className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold bg-[#1F7A5C] hover:bg-[#165B44] text-white shadow-xs transition-colors text-center"
                     >
                       <Send className="w-4 h-4" />
                       <span>Submit Application Online</span>
-                    </Link>
+                    </TrackedCtaLink>
                   )}
                 </div>
 

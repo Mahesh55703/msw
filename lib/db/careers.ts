@@ -51,9 +51,9 @@ export function isJobActive(job: {
 /**
  * Normalizes raw SQL row or Prisma model into typed SafeJobPosting
  */
-export function normalizeJobPosting(row: any, appCount?: number): SafeJobPosting {
-  const publishedAt = row.publishedAt ? new Date(row.publishedAt) : null
-  const closingDate = row.closingDate ? new Date(row.closingDate) : null
+export function normalizeJobPosting(row: Record<string, unknown>, appCount?: number): SafeJobPosting {
+  const publishedAt = row.publishedAt ? new Date(row.publishedAt as string | number | Date) : null
+  const closingDate = row.closingDate ? new Date(row.closingDate as string | number | Date) : null
   const status: JobStatus = (row.status as JobStatus) || (row.isActive ? 'PUBLISHED' : 'CLOSED')
 
   const now = new Date()
@@ -69,24 +69,24 @@ export function normalizeJobPosting(row: any, appCount?: number): SafeJobPosting
     employmentType: String(row.employmentType || row.type || 'Full-time'),
     type: String(row.type || row.employmentType || 'Full-time'),
     workMode: String(row.workMode || 'On-site'),
-    experience: row.experience || null,
-    salary: row.salary || null,
+    experience: (row.experience as string) || null,
+    salary: (row.salary as string) || null,
     description: String(row.description || ''),
-    responsibilities: row.responsibilities || null,
+    responsibilities: (row.responsibilities as string) || null,
     requirements: String(row.requirements || ''),
     applicationMethod: String(row.applicationMethod || 'Email'),
-    applicationUrl: row.applicationUrl || null,
-    applicationEmail: row.applicationEmail || null,
+    applicationUrl: (row.applicationUrl as string) || null,
+    applicationEmail: (row.applicationEmail as string) || null,
     status,
     isActive: row.isActive !== false,
     publishedAt,
     closingDate,
     displayOrder: typeof row.displayOrder === 'number' ? row.displayOrder : 0,
-    seoTitle: row.seoTitle || null,
-    metaDescription: row.metaDescription || null,
-    createdAt: row.createdAt ? new Date(row.createdAt) : new Date(),
-    updatedAt: row.updatedAt ? new Date(row.updatedAt) : new Date(),
-    applicationCount: typeof appCount === 'number' ? appCount : (row._count?.applications || 0),
+    seoTitle: (row.seoTitle as string) || null,
+    metaDescription: (row.metaDescription as string) || null,
+    createdAt: row.createdAt ? new Date(row.createdAt as string | number | Date) : new Date(),
+    updatedAt: row.updatedAt ? new Date(row.updatedAt as string | number | Date) : new Date(),
+    applicationCount: typeof appCount === 'number' ? appCount : (typeof (row._count as Record<string, unknown> | undefined)?.applications === 'number' ? (row._count as { applications: number }).applications : 0),
     isExpired,
     isCurrentlyActive,
   }
@@ -140,36 +140,33 @@ export async function safeFetchJobs(options?: {
           j.location.toLowerCase().includes(q) ||
           j.description.toLowerCase().includes(q) ||
           j.requirements.toLowerCase().includes(q) ||
-          (j.responsibilities && j.responsibilities.toLowerCase().includes(q))
+          j.department.toLowerCase().includes(q) ||
+          j.location.toLowerCase().includes(q)
       )
     }
 
-    // 2. Status Filter
-    const filterStatus = options?.where?.status?.toLowerCase()
-    if (filterStatus && filterStatus !== 'all') {
-      if (filterStatus === 'draft') {
+    if (options?.where?.status && options.where.status !== 'all') {
+      const s = options.where.status.toLowerCase()
+      if (s === 'draft') {
         filtered = filtered.filter((j) => j.status === 'DRAFT')
-      } else if (filterStatus === 'published' || filterStatus === 'active') {
-        filtered = filtered.filter((j) => j.isCurrentlyActive)
-      } else if (filterStatus === 'closed') {
+      } else if (s === 'published') {
+        filtered = filtered.filter((j) => j.status === 'PUBLISHED')
+      } else if (s === 'closed') {
         filtered = filtered.filter((j) => j.status === 'CLOSED')
-      } else if (filterStatus === 'expired') {
+      } else if (s === 'expired') {
         filtered = filtered.filter((j) => j.isExpired)
+      } else if (s === 'active') {
+        filtered = filtered.filter((j) => j.isCurrentlyActive)
       }
-    }
-
-    // 3. Department Filter
-    if (options?.where?.department && options.where.department !== 'all') {
-      const targetDept = options.where.department.toLowerCase()
-      filtered = filtered.filter((j) => j.department.toLowerCase() === targetDept)
     }
 
     const totalCount = filtered.length
 
-    if (options?.skip !== undefined || options?.take !== undefined) {
-      const skip = options.skip || 0
-      const take = options.take || filtered.length
-      filtered = filtered.slice(skip, skip + take)
+    // Apply pagination
+    if (typeof options?.skip === 'number' && typeof options?.take === 'number') {
+      filtered = filtered.slice(options.skip, options.skip + options.take)
+    } else if (typeof options?.take === 'number') {
+      filtered = filtered.slice(0, options.take)
     }
 
     return {
@@ -182,7 +179,7 @@ export async function safeFetchJobs(options?: {
       departments,
     }
   } catch (err) {
-    console.error('Error in safeFetchJobs:', err)
+    console.error('Error fetching jobs via raw SQL:', err)
     return {
       jobs: [],
       totalCount: 0,
@@ -200,7 +197,7 @@ export async function safeFetchJobs(options?: {
  */
 export async function safeFetchJobBySlug(slug: string): Promise<SafeJobPosting | null> {
   try {
-    const rawRows: any[] = await prisma.$queryRawUnsafe(
+    const rawRows: Record<string, unknown>[] = await prisma.$queryRawUnsafe(
       'SELECT * FROM "JobPosting" WHERE "slug" = $1 LIMIT 1',
       slug
     )
@@ -217,7 +214,7 @@ export async function safeFetchJobBySlug(slug: string): Promise<SafeJobPosting |
  */
 export async function safeFetchJobById(id: string): Promise<SafeJobPosting | null> {
   try {
-    const rawRows: any[] = await prisma.$queryRawUnsafe(
+    const rawRows: Record<string, unknown>[] = await prisma.$queryRawUnsafe(
       'SELECT * FROM "JobPosting" WHERE "id" = $1 LIMIT 1',
       id
     )

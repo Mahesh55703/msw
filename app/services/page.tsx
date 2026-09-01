@@ -1,6 +1,7 @@
 import { servicesData } from "@/data/services";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import Link from "next/link";
+import { TrackedCtaLink } from "@/components/analytics/TrackedCtaLink";
 import Image from "next/image";
 import { ChevronRight, ArrowRight, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
@@ -113,8 +114,11 @@ export default function ServicesPage() {
             <p className="text-[#A2B3AA] text-base md:text-lg mb-8 max-w-2xl mx-auto leading-relaxed text-balance">
               Let LabourAxis assist you with a targeted compliance review and structured HR operational support.
             </p>
-            <Link 
+            <TrackedCtaLink 
               href="/contact" 
+              ctaLocation="services_index_bottom"
+              ctaLabel="Discuss Your Requirement"
+              pageType="service"
               className={buttonVariants({ 
                 size: "lg", 
                 className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all group" 
@@ -122,7 +126,7 @@ export default function ServicesPage() {
             >
               <span>Discuss Your Requirement</span>
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </TrackedCtaLink>
           </div>
         </div>
       </section>

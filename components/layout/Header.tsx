@@ -1,9 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { mainNav } from '@/data/navigation';
 import { buttonVariants } from '@/components/ui/button';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import MobileNav from './MobileNav';
+import { trackConsultationCta } from '@/lib/analytics';
 
 export default function Header() {
   return (
@@ -72,6 +75,7 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <Link 
             href="/contact" 
+            onClick={() => trackConsultationCta('header', 'Request Consultation', 'navigation')}
             className={buttonVariants({ 
               className: "hidden md:inline-flex bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-xs transition-all duration-200 group" 
             })}

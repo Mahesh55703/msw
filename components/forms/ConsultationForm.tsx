@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { submitConsultation } from '@/app/actions/contact'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,6 +8,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react'
+import {
+  getStoredAttribution,
+  trackContactFormStarted,
+  trackContactFormSubmitted,
+  trackContactFormError,
+} from '@/lib/analytics'
 
 const services = [
   'PF / ESIC',
@@ -24,30 +30,16 @@ const services = [
 export function ConsultationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [utmParams, setUtmParams] = useState({
-    utm_source: '',
-    utm_medium: '',
-    utm_campaign: '',
-    utm_term: '',
-    utm_content: '',
-    referrer: '',
-    landingPage: '',
-  })
+  const hasStartedTrackingRef = useRef(false)
+  const [utmParams] = useState(() => getStoredAttribution())
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const search = new URLSearchParams(window.location.search)
-      setUtmParams({
-        utm_source: search.get('utm_source') || '',
-        utm_medium: search.get('utm_medium') || '',
-        utm_campaign: search.get('utm_campaign') || '',
-        utm_term: search.get('utm_term') || '',
-        utm_content: search.get('utm_content') || '',
-        referrer: document.referrer || '',
-        landingPage: window.location.pathname,
-      })
+  // Trigger contact_form_started once on first interaction with form
+  function handleFormInteraction() {
+    if (!hasStartedTrackingRef.current) {
+      hasStartedTrackingRef.current = true
+      trackContactFormStarted('consultation_form', 'contact')
     }
-  }, [])
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -60,16 +52,14 @@ export function ConsultationForm() {
     if (result.success) {
       setStatusMessage({ type: 'success', text: result.message || 'Success!' })
       ;(event.target as HTMLFormElement).reset()
+      // Reset interaction tracking for future submissions
+      hasStartedTrackingRef.current = false
 
-      // GA4 Conversion Tracking
-      if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
-        ;(window as any).gtag('event', 'consultation_submit', {
-          source: utmParams.utm_source || 'website',
-          landing_page: utmParams.landingPage,
-        })
-      }
+      // GA4 Key Event / Conversion: Fired ONLY after confirmed PostgreSQL DB insertion
+      trackContactFormSubmitted('consultation_form', 'contact')
     } else {
       setStatusMessage({ type: 'error', text: result.error || 'An error occurred.' })
+      trackContactFormError('consultation_form', result.error ? 'validation_or_server_error' : 'unknown_error')
     }
 
     setIsSubmitting(false)
@@ -78,6 +68,8 @@ export function ConsultationForm() {
   return (
     <form
       onSubmit={onSubmit}
+      onFocus={handleFormInteraction}
+      onChange={handleFormInteraction}
       className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#D9E1DC]"
       noValidate={false}
     >

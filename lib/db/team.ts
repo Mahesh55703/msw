@@ -31,25 +31,25 @@ export interface SafeTeamMember {
 /**
  * Normalizes raw SQL row or Prisma model into typed SafeTeamMember
  */
-export function normalizeTeamMember(row: any): SafeTeamMember {
+export function normalizeTeamMember(row: Record<string, unknown>): SafeTeamMember {
   return {
     id: String(row.id),
     name: String(row.name || ''),
     designation: String(row.designation || row.role || ''),
-    role: row.role || row.designation || null,
-    department: row.department || null,
-    bio: row.bio || null,
-    imageUrl: row.imageUrl || null,
-    imageAlt: row.imageAlt || null,
-    linkedinUrl: row.linkedinUrl || null,
+    role: (row.role as string) || (row.designation as string) || null,
+    department: (row.department as string) || null,
+    bio: (row.bio as string) || null,
+    imageUrl: (row.imageUrl as string) || null,
+    imageAlt: (row.imageAlt as string) || null,
+    linkedinUrl: (row.linkedinUrl as string) || null,
     displayOrder: typeof row.displayOrder === 'number' ? row.displayOrder : (typeof row.order === 'number' ? row.order : 0),
     order: typeof row.order === 'number' ? row.order : (typeof row.displayOrder === 'number' ? row.displayOrder : 0),
     isActive: row.isActive !== false,
-    reportsToId: row.reportsToId || null,
-    createdAt: row.createdAt ? new Date(row.createdAt) : new Date(),
-    updatedAt: row.updatedAt ? new Date(row.updatedAt) : new Date(),
-    reportsTo: row.reportsTo || null,
-    directReports: row.directReports || [],
+    reportsToId: (row.reportsToId as string) || null,
+    createdAt: row.createdAt ? new Date(row.createdAt as string | number | Date) : new Date(),
+    updatedAt: row.updatedAt ? new Date(row.updatedAt as string | number | Date) : new Date(),
+    reportsTo: (row.reportsTo as SafeTeamMember['reportsTo']) || null,
+    directReports: (row.directReports as SafeTeamMember['directReports']) || [],
   }
 }
 
@@ -70,11 +70,11 @@ export async function safeFetchTeamMembers(options?: {
 }): Promise<{ members: SafeTeamMember[]; totalCount: number; activeCount: number; inactiveCount: number; departments: string[] }> {
   try {
     // 1. Try standard raw SQL query for total accuracy against PostgreSQL schema
-    const rawRows: any[] = await prisma.$queryRawUnsafe(
+    const rawRows: Record<string, unknown>[] = await prisma.$queryRawUnsafe(
       'SELECT * FROM "TeamMember" ORDER BY "displayOrder" ASC, "order" ASC, "createdAt" ASC'
     )
 
-    let all = (rawRows || []).map(normalizeTeamMember)
+    const all = (rawRows || []).map(normalizeTeamMember)
 
     // Build reportsTo relationship
     const idMap = new Map<string, SafeTeamMember>()

@@ -22,6 +22,8 @@ import { resourcesData } from '@/data/resources'
 import { parseAndFormatArticleContent } from '@/lib/content-parser'
 import { verifySession } from '@/lib/session'
 import InteractiveChecklist from '@/components/resources/InteractiveChecklist'
+import { ContentViewTracker } from '@/components/analytics/ContentViewTracker'
+import { TrackedAnchor, TrackedCtaLink } from '@/components/analytics/TrackedCtaLink'
 
 export async function generateStaticParams() {
   let dbArticles: { slug: string; category: string }[] = []
@@ -366,6 +368,21 @@ export default async function ResourceDetailPage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
+      {/* Analytics: Content View Tracking (Excluding Draft Previews) */}
+      <ContentViewTracker
+        type={
+          resolvedParams.category === 'guides' || resource.category === 'guides'
+            ? 'guide'
+            : isChecklist
+            ? 'checklist'
+            : 'article'
+        }
+        contentId={resource.id || resource.slug}
+        slug={resource.slug}
+        category={resource.category || resolvedParams.category}
+        isPreview={isPreviewMode}
+      />
+
       {/* Preview Mode Banner for Authenticated Staff */}
       {isPreviewMode && (
         <div className="bg-[#D6A84F] text-[#12372A] px-4 py-3 font-bold text-xs sticky top-0 z-50 flex items-center justify-between shadow-md">
@@ -492,8 +509,12 @@ export default async function ResourceDetailPage({
                       <p className="text-xs text-[#A2B3AA] leading-relaxed truncate">
                         {checklistPayload.downloadableFile.filename}
                       </p>
-                      <a
+                      <TrackedAnchor
                         href={checklistPayload.downloadableFile.url}
+                        ctaType="checklist"
+                        contentId={resource.id || resource.slug}
+                        contentSlug={resource.slug}
+                        fileType="pdf"
                         download
                         target="_blank"
                         rel="noopener noreferrer"
@@ -501,7 +522,7 @@ export default async function ResourceDetailPage({
                       >
                         <DownloadCloud className="w-4 h-4" />
                         <span>Download PDF</span>
-                      </a>
+                      </TrackedAnchor>
                     </div>
                   </div>
                 )}
@@ -636,8 +657,12 @@ export default async function ResourceDetailPage({
 
                       <div className="shrink-0">
                         {checklistPayload.downloadableFile?.url ? (
-                          <a
+                          <TrackedAnchor
                             href={checklistPayload.downloadableFile.url}
+                            ctaType="checklist"
+                            contentId={resource.id || resource.slug}
+                            contentSlug={resource.slug}
+                            fileType="pdf"
                             download
                             target="_blank"
                             rel="noopener noreferrer"
@@ -645,7 +670,7 @@ export default async function ResourceDetailPage({
                           >
                             <DownloadCloud className="w-4 h-4" />
                             <span>Download Checklist PDF</span>
-                          </a>
+                          </TrackedAnchor>
                         ) : (
                           <span className="inline-flex items-center gap-2 px-5 py-3 bg-[#1B4E3C] text-[#D6A84F] font-bold text-xs rounded-xl border border-[#D6A84F]/30">
                             <CheckCircle2 className="w-4 h-4" />
@@ -676,20 +701,26 @@ export default async function ResourceDetailPage({
                       )}
                       <div className="flex flex-wrap gap-4 pt-2">
                         {resource.ctaPrimaryLabel && resource.ctaPrimaryUrl && (
-                          <Link
+                          <TrackedCtaLink
                             href={resource.ctaPrimaryUrl}
+                            ctaLocation="resource_in_content_cta"
+                            ctaLabel={resource.ctaPrimaryLabel}
+                            pageType={resolvedParams.category}
                             className="inline-flex items-center justify-center px-6 py-3.5 font-bold rounded-xl text-white bg-[#1F7A5C] hover:bg-[#165B44] shadow-md transition-all text-sm"
                           >
                             {resource.ctaPrimaryLabel}
-                          </Link>
+                          </TrackedCtaLink>
                         )}
                         {resource.ctaSecondaryLabel && resource.ctaSecondaryUrl && (
-                          <Link
+                          <TrackedCtaLink
                             href={resource.ctaSecondaryUrl}
+                            ctaLocation="resource_in_content_cta_sec"
+                            ctaLabel={resource.ctaSecondaryLabel}
+                            pageType={resolvedParams.category}
                             className="inline-flex items-center justify-center px-6 py-3.5 border border-[#D9E1DC] font-bold rounded-xl text-[#202522] bg-white hover:bg-[#EDE8DE] shadow-2xs transition-all text-sm"
                           >
                             {resource.ctaSecondaryLabel}
-                          </Link>
+                          </TrackedCtaLink>
                         )}
                       </div>
                     </div>
@@ -730,20 +761,26 @@ export default async function ResourceDetailPage({
                         )}
                         <div className="flex flex-wrap gap-4 pt-2">
                           {resource.ctaPrimaryLabel && resource.ctaPrimaryUrl && (
-                            <Link
+                            <TrackedCtaLink
                               href={resource.ctaPrimaryUrl}
+                              ctaLocation="article_in_content_cta"
+                              ctaLabel={resource.ctaPrimaryLabel}
+                              pageType={resolvedParams.category}
                               className="inline-flex items-center justify-center px-6 py-3.5 font-bold rounded-xl text-white bg-[#1F7A5C] hover:bg-[#165B44] shadow-md transition-all text-sm"
                             >
                               {resource.ctaPrimaryLabel}
-                            </Link>
+                            </TrackedCtaLink>
                           )}
                           {resource.ctaSecondaryLabel && resource.ctaSecondaryUrl && (
-                            <Link
+                            <TrackedCtaLink
                               href={resource.ctaSecondaryUrl}
+                              ctaLocation="article_in_content_cta_sec"
+                              ctaLabel={resource.ctaSecondaryLabel}
+                              pageType={resolvedParams.category}
                               className="inline-flex items-center justify-center px-6 py-3.5 border border-[#D9E1DC] font-bold rounded-xl text-[#202522] bg-white hover:bg-[#EDE8DE] shadow-2xs transition-all text-sm"
                             >
                               {resource.ctaSecondaryLabel}
-                            </Link>
+                            </TrackedCtaLink>
                           )}
                         </div>
                       </div>

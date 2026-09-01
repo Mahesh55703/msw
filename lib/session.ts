@@ -29,7 +29,7 @@ export async function decrypt(session: string | undefined = '') {
       algorithms: ['HS256'],
     })
     return payload as SessionPayload
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -59,7 +59,7 @@ export async function verifySession() {
     }
 
     return { isAuth: true, userId: session.userId, role: session.role }
-  } catch (error) {
+  } catch {
     return { isAuth: false, userId: null, role: null }
   }
 }
@@ -68,7 +68,7 @@ export async function deleteSession() {
   try {
     const cookieStore = await cookies()
     cookieStore.delete('session')
-  } catch (error) {
+  } catch {
     // Outside request scope
   }
 }

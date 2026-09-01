@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { buttonVariants } from "@/components/ui/button";
+import { TrackedCtaLink } from "@/components/analytics/TrackedCtaLink";
 import { 
   ArrowRight, 
   ShieldAlert, 
@@ -125,8 +126,11 @@ export default function ComplianceHealthCheckPage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Link 
+                <TrackedCtaLink 
                   href="/contact" 
+                  ctaLocation="health_check_hero"
+                  ctaLabel="Request a Health Check"
+                  pageType="compliance_health_check"
                   className={buttonVariants({ 
                     size: "lg", 
                     className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg transition-all group" 
@@ -134,7 +138,7 @@ export default function ComplianceHealthCheckPage() {
                 >
                   <span>Request a Health Check</span>
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                </TrackedCtaLink>
                 <Link 
                   href="#scope" 
                   className={buttonVariants({ 
@@ -417,8 +421,11 @@ export default function ComplianceHealthCheckPage() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-balance">
               Ready to understand where your compliance stands?
             </h2>
-            <Link 
+            <TrackedCtaLink 
               href="/contact" 
+              ctaLocation="health_check_bottom_banner"
+              ctaLabel="Request a Compliance Health Check"
+              pageType="compliance_health_check"
               className={buttonVariants({ 
                 size: "lg", 
                 className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all group mt-6" 
@@ -426,7 +433,7 @@ export default function ComplianceHealthCheckPage() {
             >
               <span>Request a Compliance Health Check</span>
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </TrackedCtaLink>
           </div>
         </div>
       </section>

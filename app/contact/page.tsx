@@ -1,6 +1,7 @@
 import { ConsultationForm } from "@/components/forms/ConsultationForm";
 import { Mail, MapPin, ChevronRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { TrackedAnchor } from "@/components/analytics/TrackedCtaLink";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -111,9 +112,15 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-[#12372A] text-sm">Email</h4>
-                    <a href="mailto:info@labouraxis.com" className="text-[#202522] hover:text-[#1F7A5C] font-semibold text-sm transition-colors block mt-0.5">
+                    <TrackedAnchor 
+                      href="mailto:info@labouraxis.com" 
+                      ctaType="email"
+                      ctaLocation="contact_direct_channels"
+                      pageType="contact"
+                      className="text-[#202522] hover:text-[#1F7A5C] font-semibold text-sm transition-colors block mt-0.5"
+                    >
                       info@labouraxis.com
-                    </a>
+                    </TrackedAnchor>
                   </div>
                 </div>
 
