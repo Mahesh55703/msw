@@ -50,6 +50,7 @@ interface EnquiryListProps {
   totalCount: number
   page: number
   pageSize: number
+  totalPages?: number
   teamMembers: TeamMember[]
   currentFilters: {
     q: string
@@ -65,6 +66,7 @@ export default function EnquiryList({
   totalCount,
   page,
   pageSize,
+  totalPages: propTotalPages,
   teamMembers,
   currentFilters,
 }: EnquiryListProps) {
@@ -88,9 +90,10 @@ export default function EnquiryList({
     message: '',
   })
 
-  const totalPages = Math.ceil(totalCount / pageSize) || 1
-  const startItem = totalCount === 0 ? 0 : (page - 1) * pageSize + 1
-  const endItem = Math.min(page * pageSize, totalCount)
+  const currentPage = Math.max(1, Number(page) || 1)
+  const totalPages = propTotalPages !== undefined ? propTotalPages : Math.max(1, Math.ceil(totalCount / pageSize))
+  const startItem = totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1
+  const endItem = Math.min(currentPage * pageSize, totalCount)
 
   const updateUrlParams = (newParams: Record<string, string | number | undefined>) => {
     const params = new URLSearchParams()
@@ -152,7 +155,7 @@ export default function EnquiryList({
   // Generate page numbers array (max 5 visible buttons)
   const getPageNumbers = () => {
     const pages: number[] = []
-    let start = Math.max(1, page - 2)
+    let start = Math.max(1, currentPage - 2)
     let end = Math.min(totalPages, start + 4)
 
     if (end - start < 4) {
@@ -288,7 +291,7 @@ export default function EnquiryList({
                 </thead>
                 <tbody className="divide-y divide-[#D9E1DC]/60">
                   {enquiries.map((enquiry, index) => {
-                    const globalIndex = (page - 1) * pageSize + index + 1
+                    const globalIndex = (currentPage - 1) * pageSize + index + 1
                     const serialNumber = `#${String(globalIndex).padStart(2, '0')}`
 
                     return (
@@ -467,8 +470,8 @@ export default function EnquiryList({
               {/* Previous Page */}
               <button
                 type="button"
-                onClick={() => updateUrlParams({ page: page - 1 })}
-                disabled={page <= 1}
+                onClick={() => updateUrlParams({ page: currentPage - 1 })}
+                disabled={currentPage <= 1}
                 className="px-3 py-2 rounded-xl border border-[#D9E1DC] bg-white text-[#12372A] hover:bg-[#EDE8DE] disabled:opacity-40 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1 font-bold"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -483,7 +486,7 @@ export default function EnquiryList({
                     type="button"
                     onClick={() => updateUrlParams({ page: p })}
                     className={`w-8 h-8 rounded-xl font-bold text-xs transition-colors ${
-                      p === page
+                      p === currentPage
                         ? 'bg-[#1F7A5C] text-white shadow-xs'
                         : 'bg-white text-[#12372A] border border-[#D9E1DC] hover:bg-[#EDE8DE]'
                     }`}
@@ -496,8 +499,8 @@ export default function EnquiryList({
               {/* Next Page */}
               <button
                 type="button"
-                onClick={() => updateUrlParams({ page: page + 1 })}
-                disabled={page >= totalPages}
+                onClick={() => updateUrlParams({ page: currentPage + 1 })}
+                disabled={currentPage >= totalPages}
                 className="px-3 py-2 rounded-xl border border-[#D9E1DC] bg-white text-[#12372A] hover:bg-[#EDE8DE] disabled:opacity-40 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-1 font-bold"
               >
                 <span>Next</span>

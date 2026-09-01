@@ -113,11 +113,11 @@ export async function safeFetchJobs(options?: {
   departments: string[]
 }> {
   try {
-    const rawRows: any[] = await prisma.$queryRawUnsafe(
+    const rawRows: Record<string, unknown>[] = await prisma.$queryRawUnsafe(
       'SELECT * FROM "JobPosting" ORDER BY "displayOrder" ASC, "createdAt" DESC'
     )
 
-    let all = (rawRows || []).map((row) => normalizeJobPosting(row))
+    const all = (rawRows || []).map((row) => normalizeJobPosting(row))
 
     const now = new Date()
     const draftCount = all.filter((j) => j.status === 'DRAFT').length

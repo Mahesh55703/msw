@@ -77,6 +77,8 @@ export default async function EnquiriesPage({
     }),
   ])
 
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize))
+
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto w-full">
       {/* Header Banner */}
@@ -100,6 +102,7 @@ export default async function EnquiriesPage({
         totalCount={totalCount}
         page={page}
         pageSize={pageSize}
+        totalPages={totalPages}
         teamMembers={teamMembers}
         currentFilters={{
           q: query,

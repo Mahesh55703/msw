@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { submitConsultation } from '@/app/actions/contact'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Turnstile } from '@marsidev/react-turnstile'
-import { ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react'
+import { ArrowRight, CheckCircle2, AlertCircle, Loader2, ShieldCheck } from 'lucide-react'
 import {
   getStoredAttribution,
   trackContactFormStarted,
@@ -27,11 +27,19 @@ const services = [
   'Other',
 ]
 
+type TurnstileStatus = 'idle' | 'verifying' | 'solved' | 'error'
+
 export function ConsultationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [turnstileStatus, setTurnstileStatus] = useState<TurnstileStatus>('idle')
   const hasStartedTrackingRef = useRef(false)
   const [utmParams] = useState(() => getStoredAttribution())
+
+  const hasSiteKey = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
+  // Submit is only disabled by Turnstile when the site key is configured AND not yet solved
+  const turnstileBlocking = hasSiteKey && turnstileStatus !== 'solved'
+  const isDisabled = isSubmitting || turnstileBlocking
 
   // Trigger contact_form_started once on first interaction with form
   function handleFormInteraction() {
@@ -43,6 +51,17 @@ export function ConsultationForm() {
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    // Guard: if Turnstile is configured and not solved, reject client-side
+    // (server will also independently reject — this is a UX guard only)
+    if (hasSiteKey && turnstileStatus !== 'solved') {
+      setStatusMessage({
+        type: 'error',
+        text: 'Please complete the security verification before submitting.',
+      })
+      return
+    }
+
     setIsSubmitting(true)
     setStatusMessage(null)
 
@@ -52,10 +71,11 @@ export function ConsultationForm() {
     if (result.success) {
       setStatusMessage({ type: 'success', text: result.message || 'Success!' })
       ;(event.target as HTMLFormElement).reset()
-      // Reset interaction tracking for future submissions
+      // Reset Turnstile state for potential follow-up submissions
+      setTurnstileStatus('idle')
       hasStartedTrackingRef.current = false
 
-      // GA4 Key Event / Conversion: Fired ONLY after confirmed PostgreSQL DB insertion
+      // GA4 Conversion: Fired ONLY after confirmed PostgreSQL DB insertion
       trackContactFormSubmitted('consultation_form', 'contact')
     } else {
       setStatusMessage({ type: 'error', text: result.error || 'An error occurred.' })
@@ -73,7 +93,7 @@ export function ConsultationForm() {
       className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#D9E1DC]"
       noValidate={false}
     >
-      {/* Honeypot field for spam protection */}
+      {/* Honeypot field — hidden from real users, filled by bots */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
 
       {/* Marketing & UTM Tracking Hidden Inputs */}
@@ -305,6 +325,8 @@ export function ConsultationForm() {
 
       {statusMessage && (
         <div
+          role="alert"
+          aria-live="polite"
           className={`p-4 rounded-2xl text-xs sm:text-sm font-medium ${
             statusMessage.type === 'success'
               ? 'bg-[#1F7A5C]/10 text-[#12372A] border border-[#1F7A5C]/30'
@@ -312,28 +334,73 @@ export function ConsultationForm() {
           } flex items-center gap-3`}
         >
           {statusMessage.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-[#1F7A5C] shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-[#1F7A5C] shrink-0" aria-hidden="true" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" aria-hidden="true" />
           )}
           <span>{statusMessage.text}</span>
         </div>
       )}
 
-      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
-        <div className="flex justify-center pt-2">
-          <Turnstile siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
+      {/* Cloudflare Turnstile — only rendered when site key is configured */}
+      {hasSiteKey && (
+        <div className="space-y-2">
+          <div className="flex justify-center">
+            <Turnstile
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+              options={{ action: 'consultation', theme: 'light' }}
+              onBeforeInteractive={() => setTurnstileStatus('verifying')}
+              onSuccess={() => setTurnstileStatus('solved')}
+              onError={() => setTurnstileStatus('error')}
+              onExpire={() => setTurnstileStatus('idle')}
+            />
+          </div>
+
+          {/* Turnstile status indicator */}
+          {turnstileStatus === 'verifying' && (
+            <p className="flex items-center justify-center gap-1.5 text-xs text-[#66736D]" aria-live="polite">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+              Verifying&hellip;
+            </p>
+          )}
+          {turnstileStatus === 'solved' && (
+            <p className="flex items-center justify-center gap-1.5 text-xs text-[#1F7A5C] font-medium" aria-live="polite">
+              <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
+              Security verified
+            </p>
+          )}
+          {turnstileStatus === 'error' && (
+            <p className="flex items-center justify-center gap-1.5 text-xs text-red-600" aria-live="polite" role="alert">
+              <AlertCircle className="w-3.5 h-3.5" aria-hidden="true" />
+              Verification failed. Please refresh the page and try again.
+            </p>
+          )}
         </div>
       )}
 
       <Button
         type="submit"
         size="lg"
-        className="w-full bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base py-4 h-auto rounded-xl shadow-lg transition-all cursor-pointer group"
-        disabled={isSubmitting}
+        disabled={isDisabled}
+        aria-disabled={isDisabled}
+        className="w-full bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base py-4 h-auto rounded-xl shadow-lg transition-all cursor-pointer group disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        <span>{isSubmitting ? 'Submitting...' : 'Request Consultation'}</span>
-        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+        {isSubmitting ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" aria-hidden="true" />
+            <span>Submitting&hellip;</span>
+          </>
+        ) : hasSiteKey && turnstileStatus !== 'solved' && turnstileStatus !== 'idle' ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" aria-hidden="true" />
+            <span>Verifying security&hellip;</span>
+          </>
+        ) : (
+          <>
+            <span>Request Consultation</span>
+            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+          </>
+        )}
       </Button>
     </form>
   )
