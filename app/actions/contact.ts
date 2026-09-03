@@ -404,16 +404,23 @@ export async function submitConsultation(formData: FormData) {
       `
 
       try {
-        await resend.emails.send({
-          from: `LabourAxis CRM <${(await getSiteConfig()).contact.email}>`,
+        const fromAddress = process.env.RESEND_FROM_EMAIL || 'LabourAxis <onboarding@resend.dev>'
+        const { data: resendData, error: resendError } = await resend.emails.send({
+          from: fromAddress,
           to: process.env.ADMIN_NOTIFICATION_EMAIL,
           subject: `New Lead [${referenceNumber}]: ${data.name} from ${data.company}`,
           html: htmlContent,
           replyTo: data.email,
         })
+
+        if (resendError) {
+          console.error('[Email] Resend API error:', resendError.name, resendError.message)
+        } else {
+          console.log('[Email] Notification sent successfully. Message ID:', resendData?.id)
+        }
       } catch (emailError) {
         // Email failure does NOT affect success response — lead is already saved
-        console.error('[Email] Resend failed, enquiry is saved in DB:', (emailError as Error).message)
+        console.error('[Email] Resend network/system failure:', (emailError as Error).message)
       }
     }
 
