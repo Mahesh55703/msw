@@ -1,4 +1,20 @@
 import { marked } from 'marked'
+import DOMPurify from 'isomorphic-dompurify'
+
+// Pre-configure DOMPurify to ensure valid markdown tags are allowed while preventing execution
+DOMPurify.setConfig({
+  ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'br', 'hr', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'span', 'div', 'img', 'svg', 'path'],
+  ALLOWED_ATTR: ['href', 'title', 'target', 'rel', 'class', 'id', 'src', 'alt', 'width', 'height', 'viewBox', 'd', 'fill', 'stroke'],
+})
+
+// Ensure links with target="_blank" open safely
+DOMPurify.addHook('afterSanitizeAttributes', function(node) {
+  if (node.tagName && node.tagName.toUpperCase() === 'A') {
+    if (node.getAttribute('target') === '_blank') {
+      node.setAttribute('rel', 'noopener noreferrer')
+    }
+  }
+})
 
 export interface TocItem {
   id: string
@@ -130,8 +146,11 @@ export function parseAndFormatArticleContent(rawContent: string): ParsedContentR
 
   const { wordCount, minutes, text } = calculateReadingTime(html)
 
+  // Final defensive sanitization before returning
+  const sanitizedHtml = DOMPurify.sanitize(html)
+
   return {
-    html,
+    html: sanitizedHtml,
     toc,
     wordCount,
     readingTimeMinutes: minutes,

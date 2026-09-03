@@ -40,20 +40,10 @@ interface UserOption {
 interface GuideEditorProps {
   initialData?: any
   users: UserOption[]
+  availableServices: { slug: string; title: string }[]
 }
 
-const AVAILABLE_PRACTICE_AREAS = [
-  { slug: 'factory-compliance', label: 'Factory & Industrial Compliance' },
-  { slug: 'labour-compliance', label: 'Labour & Statutory Compliance' },
-  { slug: 'pf-esic-compliance', label: 'PF & ESIC Compliance' },
-  { slug: 'contract-labour', label: 'Contract Labour Regulation (CLRA)' },
-  { slug: 'payroll-compliance', label: 'Payroll & Wage Compliance' },
-  { slug: 'hr-consulting', label: 'HR Consulting & Advisory' },
-  { slug: 'compliance-health-check', label: 'Compliance Health Checks & Audits' },
-  { slug: 'industrial-relations', label: 'Industrial Relations & Disputes' },
-]
-
-export default function GuideEditor({ initialData, users }: GuideEditorProps) {
+export default function GuideEditor({ initialData, users, availableServices }: GuideEditorProps) {
   const router = useRouter()
   const isEdit = Boolean(initialData?.id)
 
@@ -812,14 +802,14 @@ export default function GuideEditor({ initialData, users }: GuideEditorProps) {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {AVAILABLE_PRACTICE_AREAS.map((area) => {
+                {availableServices.map((area) => {
                   const isSelected = selectedServices.includes(area.slug)
                   return (
                     <label
                       key={area.slug}
                       className={`flex items-center gap-3 p-3.5 rounded-2xl border cursor-pointer transition-all ${
                         isSelected
-                          ? 'bg-[#1F7A5C]/5 border-[#1F7A5C] text-[#12372A]'
+                          ? 'bg-[#1F7A5C]/10 border-[#1F7A5C]/40 text-[#12372A]'
                           : 'bg-white border-[#D9E1DC] text-[#66736D] hover:bg-[#F7F4EC]'
                       }`}
                     >
@@ -836,7 +826,7 @@ export default function GuideEditor({ initialData, users }: GuideEditorProps) {
                         }}
                         className="w-4 h-4 text-[#1F7A5C] rounded-md border-[#D9E1DC] focus:ring-[#1F7A5C]"
                       />
-                      <span className="text-xs font-bold">{area.label}</span>
+                      <span className={`text-xs font-bold ${isSelected ? 'text-[#1F7A5C]' : ''}`}>{area.title}</span>
                     </label>
                   )
                 })}

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
+import { requirePermission } from '@/lib/rbac'
 import {
   checklistSchema,
   ChecklistInput,
@@ -10,8 +11,8 @@ import {
 } from '@/lib/validations/checklist'
 
 export async function createChecklist(data: ChecklistInput) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('checklists:manage').catch(()=>null)
+  if (!session) {
     return { success: false, error: 'Unauthorized. Please sign in.' }
   }
 
@@ -103,8 +104,8 @@ export async function createChecklist(data: ChecklistInput) {
 }
 
 export async function updateChecklist(id: string, data: ChecklistInput) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('checklists:manage').catch(()=>null)
+  if (!session) {
     return { success: false, error: 'Unauthorized. Please sign in.' }
   }
 
@@ -214,8 +215,8 @@ export async function updateChecklist(id: string, data: ChecklistInput) {
 }
 
 export async function deleteChecklist(id: string) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('checklists:manage').catch(()=>null)
+  if (!session) {
     return { success: false, error: 'Unauthorized. Please sign in.' }
   }
 
@@ -251,8 +252,8 @@ export async function deleteChecklist(id: string) {
 }
 
 export async function togglePublishChecklist(id: string) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('checklists:manage').catch(()=>null)
+  if (!session) {
     return { success: false, error: 'Unauthorized. Please sign in.' }
   }
 
@@ -288,8 +289,8 @@ export async function togglePublishChecklist(id: string) {
 }
 
 export async function searchResourcesForChecklist(query: string) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('checklists:manage').catch(()=>null)
+  if (!session) {
     return []
   }
 

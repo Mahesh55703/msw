@@ -2,14 +2,15 @@
 
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
+import { requirePermission } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 import { faqSchema, FaqInput, faqCategoryEnum } from '@/lib/validations/faq'
 import { z } from 'zod'
 
 export async function createFaq(rawData: unknown) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('faqs:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login to perform this action.' }
     }
 
@@ -39,8 +40,8 @@ export async function createFaq(rawData: unknown) {
 
 export async function updateFaq(id: string, rawData: unknown) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('faqs:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login to perform this action.' }
     }
 
@@ -66,8 +67,8 @@ export async function updateFaq(id: string, rawData: unknown) {
 
 export async function deleteFaq(id: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('faqs:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login to perform this action.' }
     }
 
@@ -86,8 +87,8 @@ export async function deleteFaq(id: string) {
 
 export async function updateFaqOrder(id: string, newOrder: number) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('faqs:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login to perform this action.' }
     }
 
@@ -108,8 +109,8 @@ export async function updateFaqOrder(id: string, newOrder: number) {
 
 export async function togglePublishFaq(id: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('faqs:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login to perform this action.' }
     }
 

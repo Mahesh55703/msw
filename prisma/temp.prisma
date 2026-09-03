@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(EDITOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  enquiries Enquiry[]
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model Enquiry {
+  id                     String  @id @default(cuid())
+  referenceNumber        String  @unique
+  name                   String
+  company                String?
+  designation            String?
+  email                  String
+  phone                  String?
+  location               String?
+  industry               String?
+  employeeCount          String?
+  contractorCount        String?
+  service                String?
+  message                String?
+  preferredContactMethod String?
+  source        String?
+  sourceDetails String?
+  status   EnquiryStatus   @default(NEW)
+  priority EnquiryPriority @default(MEDIUM)
+  assignedToId String?
+  assignedTo   User?   @relation(fields: [assignedToId], references: [id])
+  activities EnquiryActivity[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  firstContactedAt DateTime?
+  qualifiedAt      DateTime?
+  proposalAt       DateTime?
+  closedAt         DateTime?
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL
+  WON
+  LOST
+}
+
+enum EnquiryPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model EnquiryActivity {
+  id        String  @id @default(cuid())
+  enquiryId String
+  enquiry   Enquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  type ActivityType
+  note String?
+  createdBy String?
+  createdAt DateTime @default(now())
+}
+
+enum ActivityType {
+  CREATED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  ASSIGNED
+  NOTE_ADDED
+  EMAIL_SENT
+}

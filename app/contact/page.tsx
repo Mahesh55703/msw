@@ -2,8 +2,11 @@ import { ConsultationForm } from "@/components/forms/ConsultationForm";
 import { Mail, MapPin, ChevronRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { TrackedAnchor } from "@/components/analytics/TrackedCtaLink";
-import { siteConfig } from "@/lib/site-config";
+import { getSiteConfig } from '@/lib/site-config-accessor';
 import type { Metadata } from "next";
+import { resolveCmsText } from "@/lib/cms/utils";
+import { getPublicPageByPath } from "@/lib/db/pages";
+import { HeroSectionInput } from "@/lib/validations/page";
 
 export const metadata: Metadata = {
   title: "Contact LabourAxis | HR & Labour Compliance Consultation",
@@ -13,7 +16,10 @@ export const metadata: Metadata = {
   }
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const siteConfig = await getSiteConfig();
+  const pageData = await getPublicPageByPath("/contact");
+  const heroSection = pageData?.revision?.sections.find(s => s.type === "HERO")?.content as HeroSectionInput | undefined;
   return (
     <div className="flex flex-col pb-24 overflow-x-hidden bg-[#F7F4EC]">
       {/* Breadcrumbs */}
@@ -33,15 +39,15 @@ export default function ContactPage() {
         <div className="container mx-auto px-4 md:px-8 text-center max-w-4xl relative z-10">
           <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
             <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
-            <span>Consultation & Enquiries</span>
+            <span>{resolveCmsText(heroSection?.eyebrow, "Consultation & Enquiries")}</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance leading-tight">
-            Discuss Your HR & Compliance Requirements
+            {resolveCmsText(heroSection?.heading, "Discuss Your HR & Compliance Requirements")}
           </h1>
 
           <p className="text-lg md:text-xl text-[#A2B3AA] max-w-2xl mx-auto text-balance leading-relaxed">
-            Whether you need a full compliance audit, routine HR support, or contractor compliance tracking, our team is ready to assist.
+            {resolveCmsText(heroSection?.description, "Whether you need a full compliance audit, routine HR support, or contractor compliance tracking, our team is ready to assist.")}
           </p>
         </div>
       </section>

@@ -26,7 +26,7 @@ interface MediaItem {
 interface MediaPickerModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSelect: (media: { url: string; filename: string; altText?: string }) => void
+  onSelect: (media: { id?: string; url: string; filename: string; altText?: string }) => void
   currentUrl?: string
 }
 
@@ -127,12 +127,14 @@ export function MediaPickerModal({
   }
 
   const handleConfirmSelection = () => {
-    if (!selectedItem) return
-    onSelect({
-      url: selectedItem.url,
-      filename: selectedItem.filename,
-      altText: customAltText.trim() || selectedItem.altText || '',
-    })
+    if (selectedItem) {
+      onSelect({
+        id: selectedItem.id,
+        url: selectedItem.url,
+        filename: selectedItem.filename,
+        altText: customAltText.trim() || selectedItem.altText || '',
+      })
+    }
     onOpenChange(false)
   }
 

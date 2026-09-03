@@ -1,3 +1,6 @@
+import { resolveCmsText } from "@/lib/cms/utils";
+import { getPublicPageByPath } from "@/lib/db/pages";
+import { HeroSectionInput } from "@/lib/validations/page";
 import Link from 'next/link'
 import Image from 'next/image'
 import { buttonVariants } from '@/components/ui/button'
@@ -124,6 +127,8 @@ function buildHierarchyTree(members: any[]): HierarchyMember[] {
 }
 
 export default async function TeamPage() {
+  const pageData = await getPublicPageByPath("/team");
+  const heroSection = pageData?.revision?.sections.find(s => s.type === "HERO")?.content as HeroSectionInput | undefined;
   const { members } = await safeFetchTeamMembers({ where: { isActive: true } })
   const activeMembers = members.filter((m) => m.isActive)
   const rootHierarchy = buildHierarchyTree(activeMembers)
@@ -172,15 +177,15 @@ export default async function TeamPage() {
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
                 <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
-                <span>Leadership & Corporate Advisory</span>
+                <span>{resolveCmsText(heroSection?.eyebrow, "Leadership & Corporate Advisory")}</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance leading-tight">
-                Meet the People Behind LabourAxis
+                {resolveCmsText(heroSection?.heading, "Meet the People Behind LabourAxis")}
               </h1>
 
               <p className="text-lg md:text-xl text-[#A2B3AA] mb-8 text-balance leading-relaxed">
-                A multidisciplinary team focused on HR operations, labour compliance, workforce management and industrial relations.
+                {resolveCmsText(heroSection?.description, "A multidisciplinary team focused on HR operations, labour compliance, workforce management and industrial relations.")}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -192,7 +197,7 @@ export default async function TeamPage() {
                       'bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg transition-all group',
                   })}
                 >
-                  <span>Explore Open Positions</span>
+                  <span>{resolveCmsText(heroSection?.primaryCta?.label, "Explore Open Positions")}</span>
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
@@ -204,7 +209,7 @@ export default async function TeamPage() {
                       'bg-white/5 border-white/20 text-white hover:bg-white/10 hover:border-white/30 text-base px-7 py-3.5 rounded-xl transition-all',
                   })}
                 >
-                  Connect with Advisory
+                  {resolveCmsText(heroSection?.secondaryCta?.label, "Connect with Advisory")}
                 </Link>
               </div>
 

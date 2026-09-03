@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { footerNav } from "@/data/navigation";
-import { siteConfig } from "@/lib/site-config";
+import { useSiteConfig } from '@/components/layout/SiteConfigProvider';
 import { Mail, ChevronDown, ArrowRight, ShieldCheck, MapPin } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { trackConsultationCta, trackEmailClick } from "@/lib/analytics";
@@ -46,6 +46,7 @@ function FooterColumn({ title, items }: { title: string, items: {title: string, 
 }
 
 export default function Footer() {
+  const siteConfig = useSiteConfig();
   return (
     <footer className="bg-[#12372A] text-[#A2B3AA] border-t border-[#12372A]">
       

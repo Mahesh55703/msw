@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { siteConfig } from "@/lib/site-config";
+import { useSiteConfig } from '@/components/layout/SiteConfigProvider';
 import { Menu, ChevronDown, ChevronRight, X, Mail, ArrowRight } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -22,6 +22,7 @@ import {
 } from "@/lib/analytics";
 
 export default function MobileNav() {
+  const siteConfig = useSiteConfig();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);

@@ -1,4 +1,10 @@
+import { resolveCmsText } from "@/lib/cms/utils";
+import { getPublicPageByPath, getDraftRevisionForPreview } from "@/lib/db/pages";
+import { HeroSectionInput } from "@/lib/validations/page";
 import Link from 'next/link'
+import Image from 'next/image'
+import prisma from '@/lib/prisma'
+import { verifySession } from '@/lib/session'
 import { buttonVariants } from '@/components/ui/button'
 import {
   ArrowRight,
@@ -13,6 +19,7 @@ import {
   Clock,
   Send,
   Building2,
+  AlertTriangle,
 } from 'lucide-react'
 import type { Metadata } from 'next'
 import { safeFetchJobs } from '@/lib/db/careers'
@@ -69,7 +76,33 @@ const HIRING_PROCESS = [
   { step: '04', title: 'Offer & Onboarding', desc: 'Formal offer and integration into our consulting practice.' },
 ]
 
-export default async function CareersPage() {
+export default async function CareersPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ preview?: string }>
+}) {
+  const resolvedSearch = searchParams ? await searchParams : undefined;
+  let isPreview = false;
+  let pageData = await getPublicPageByPath("/careers");
+
+  if (resolvedSearch?.preview) {
+    const session = await verifySession();
+    if (session.isAuth && (session.role === 'SUPER_ADMIN' || session.role === 'ADMIN' || session.role === 'EDITOR')) {
+      const page = await prisma.page.findUnique({ where: { path: '/careers' } });
+      if (page) {
+        const draft = await getDraftRevisionForPreview(page.id, resolvedSearch.preview);
+        if (draft) {
+          pageData = { id: page.id, key: page.key, path: page.path, revision: draft as any };
+          isPreview = true;
+        }
+      }
+    }
+  }
+
+  const heroSectionObj = pageData?.revision?.sections.find(s => s.type === "HERO");
+  const heroSection = heroSectionObj?.content as HeroSectionInput | undefined;
+  const heroMedia = heroSectionObj?.media;
+
   const { jobs } = await safeFetchJobs({
     where: {
       status: 'published',
@@ -81,6 +114,13 @@ export default async function CareersPage() {
 
   return (
     <div className="flex flex-col pb-24 overflow-x-hidden bg-[#F7F4EC]">
+      {isPreview && (
+        <div className="bg-[#D6A84F] text-[#12372A] px-4 py-2 text-center text-xs font-bold sticky top-0 z-50 shadow-md flex items-center justify-center gap-2">
+          <AlertTriangle className="w-4 h-4" />
+          You are viewing a draft preview. This content is not public.
+        </div>
+      )}
+
       {/* Breadcrumbs */}
       <div className="bg-[#12372A] border-b border-white/10 pt-6 pb-4">
         <div className="container mx-auto px-4 md:px-8">
@@ -98,32 +138,79 @@ export default async function CareersPage() {
       <section className="bg-[#12372A] text-white pt-12 pb-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-forest opacity-30 pointer-events-none"></div>
         <div className="container mx-auto px-4 md:px-8 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
-              <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
-              <span>Careers at LabourAxis</span>
+          {heroMedia?.url ? (
+            <div className="grid lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-7">
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
+                  <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
+                  <span>{resolveCmsText(heroSection?.eyebrow, "Careers at LabourAxis")}</span>
+                </div>
+
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance leading-tight">
+                  {resolveCmsText(heroSection?.heading, "Build the Future of Industrial HR & Labour Compliance")}
+                </h1>
+
+                <p className="text-base sm:text-lg md:text-xl text-[#A2B3AA] text-balance leading-relaxed mb-10">
+                  {resolveCmsText(heroSection?.description, "Join LabourAxis and advise industrial plants, MSMEs, and enterprise employers on statutory integrity, inspection defense, and workforce operations.")}
+                </p>
+
+                <a
+                  href="#open-positions"
+                  className={buttonVariants({
+                    size: 'lg',
+                    className:
+                      'bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all group',
+                  })}
+                >
+                  <span>{heroSection?.primaryCta?.label ? `${heroSection.primaryCta.label} (${activeJobs.length})` : activeJobs.length > 0 ? `Explore Open Positions (${activeJobs.length})` : 'View Practice Areas'}</span>
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </a>
+              </div>
+
+              <div className="lg:col-span-5 relative">
+                <div className="relative mx-auto rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-[#0D281E] group">
+                  <div className="aspect-[4/3] relative">
+                    <Image
+                      src={heroMedia.url}
+                      alt={heroMedia.altText || resolveCmsText(heroSection?.heading, "Careers at LabourAxis")}
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0D281E] via-[#0D281E]/20 to-transparent"></div>
+                  </div>
+                </div>
+              </div>
             </div>
+          ) : (
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
+                <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
+                <span>{resolveCmsText(heroSection?.eyebrow, "Careers at LabourAxis")}</span>
+              </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance leading-tight">
-              Build the Future of Industrial HR & Labour Compliance
-            </h1>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance leading-tight">
+                {resolveCmsText(heroSection?.heading, "Build the Future of Industrial HR & Labour Compliance")}
+              </h1>
 
-            <p className="text-lg md:text-xl text-[#A2B3AA] max-w-2xl mx-auto text-balance leading-relaxed mb-10">
-              Join LabourAxis and advise industrial plants, MSMEs, and enterprise employers on statutory integrity, inspection defense, and workforce operations.
-            </p>
+              <p className="text-lg md:text-xl text-[#A2B3AA] max-w-2xl mx-auto text-balance leading-relaxed mb-10">
+                {resolveCmsText(heroSection?.description, "Join LabourAxis and advise industrial plants, MSMEs, and enterprise employers on statutory integrity, inspection defense, and workforce operations.")}
+              </p>
 
-            <a
-              href="#open-positions"
-              className={buttonVariants({
-                size: 'lg',
-                className:
-                  'bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all group',
-              })}
-            >
-              <span>{activeJobs.length > 0 ? `Explore Open Positions (${activeJobs.length})` : 'View Practice Areas'}</span>
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </a>
-          </div>
+              <a
+                href="#open-positions"
+                className={buttonVariants({
+                  size: 'lg',
+                  className:
+                    'bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all group',
+                })}
+              >
+                <span>{heroSection?.primaryCta?.label ? `${heroSection.primaryCta.label} (${activeJobs.length})` : activeJobs.length > 0 ? `Explore Open Positions (${activeJobs.length})` : 'View Practice Areas'}</span>
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
+          )}
         </div>
       </section>
 

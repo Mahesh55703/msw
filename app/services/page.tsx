@@ -1,4 +1,5 @@
-import { servicesData } from "@/data/services";
+import prisma from "@/lib/prisma";
+import { buildServiceFromCms } from "@/lib/cms/service-adapter";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import Link from "next/link";
 import { TrackedCtaLink } from "@/components/analytics/TrackedCtaLink";
@@ -15,7 +16,21 @@ export const metadata: Metadata = {
   }
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const servicePages = await prisma.page.findMany({
+    where: { path: { startsWith: '/services/' }, status: 'PUBLISHED' },
+    include: {
+      publishedRevision: {
+        include: {
+          sections: { orderBy: { sortOrder: 'asc' as const }, include: { media: true } }
+        }
+      }
+    }
+  });
+
+  const servicesData = servicePages
+    .filter(p => p.publishedRevision)
+    .map(p => buildServiceFromCms(p.publishedRevision, p.key, p.path.replace('/services/', '')));
   return (
     <div className="flex flex-col pb-24 overflow-x-hidden bg-[#F7F4EC]">
       {/* Breadcrumbs */}
@@ -97,7 +112,7 @@ export default function ServicesPage() {
         <div className="container mx-auto px-4 md:px-8">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {servicesData.map((service) => (
-              <ServiceCard key={service.slug} service={service} />
+              <ServiceCard key={service.slug} service={service as any} />
             ))}
           </div>
         </div>

@@ -13,10 +13,11 @@ import {
   Briefcase,
   Settings,
   Search,
-  Inbox
+  Inbox,
+  Files
 } from 'lucide-react'
 
-export function AdminSidebar({ newEnquiriesCount }: { newEnquiriesCount: number }) {
+export function AdminSidebar({ newEnquiriesCount, userRole }: { newEnquiriesCount: number, userRole?: string }) {
   const pathname = usePathname()
 
   const isActive = (path: string) => {
@@ -82,6 +83,10 @@ export function AdminSidebar({ newEnquiriesCount }: { newEnquiriesCount: number 
       <div>
         <p className="px-3 text-[10px] font-bold text-[#D6A84F] uppercase tracking-wider mb-2">Content & Knowledge</p>
         <nav className="space-y-1">
+          <Link href="/admin/pages" className={navLinkClass('/admin/pages')}>
+            <Files className={iconClass('/admin/pages')} />
+            Pages
+          </Link>
           <Link href="/admin/articles" className={navLinkClass('/admin/articles')}>
             <FileText className={iconClass('/admin/articles')} />
             Articles
@@ -122,10 +127,18 @@ export function AdminSidebar({ newEnquiriesCount }: { newEnquiriesCount: number 
       <div>
         <p className="px-3 text-[10px] font-bold text-[#D6A84F] uppercase tracking-wider mb-2">Settings</p>
         <nav className="space-y-1">
-          <Link href="/admin/settings" className={navLinkClass('/admin/settings')}>
-            <Settings className={iconClass('/admin/settings')} />
-            Configuration
-          </Link>
+          {userRole === 'SUPER_ADMIN' && (
+            <Link href="/admin/users" className={navLinkClass('/admin/users')}>
+              <Users className={iconClass('/admin/users')} />
+              Users & Roles
+            </Link>
+          )}
+          {userRole === 'SUPER_ADMIN' && (
+            <Link href="/admin/configuration" className={navLinkClass('/admin/configuration')}>
+              <Settings className={iconClass('/admin/configuration')} />
+              Configuration
+            </Link>
+          )}
         </nav>
       </div>
     </div>

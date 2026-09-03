@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
+import { requirePermission } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 import { jobPostingSchema, JobPostingInput } from '@/lib/validations/job'
 import { safeFetchJobById, safeFetchJobBySlug, safeFetchJobs } from '@/lib/db/careers'
@@ -25,8 +26,8 @@ export async function checkSlugAvailability(slug: string, excludeId?: string) {
  */
 export async function createJob(rawInput: JobPostingInput) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('careers:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -136,8 +137,8 @@ export async function createJob(rawInput: JobPostingInput) {
  */
 export async function updateJob(id: string, rawInput: JobPostingInput) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('careers:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -249,8 +250,8 @@ export async function updateJob(id: string, rawInput: JobPostingInput) {
  */
 export async function publishJob(id: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('careers:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -295,8 +296,8 @@ export async function publishJob(id: string) {
  */
 export async function unpublishJob(id: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('careers:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -337,8 +338,8 @@ export async function unpublishJob(id: string) {
  */
 export async function closeJob(id: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('careers:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -379,8 +380,8 @@ export async function closeJob(id: string) {
  */
 export async function deleteJob(id: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('careers:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 

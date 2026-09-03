@@ -1,7 +1,5 @@
 import { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
-import { servicesData } from "@/data/services";
-import { industriesData } from "@/data/industries";
 import { resourcesData } from "@/data/resources";
 import { safeFetchJobs } from "@/lib/db/careers";
 
@@ -34,21 +32,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "" ? 1 : 0.8,
   }));
 
-  // 2. Dynamic Service Routes
-  const serviceRoutes: MetadataRoute.Sitemap = servicesData.map((service) => ({
-    url: `${siteUrl}/services/${service.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.9,
-  }));
+  // 2. Dynamic Service Routes — sourced from CMS DB (PUBLISHED only)
+  let serviceRoutes: MetadataRoute.Sitemap = [];
+  let industryRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const [servicePages, industryPages] = await Promise.all([
+      prisma.page.findMany({
+        where: { path: { startsWith: '/services/' }, status: 'PUBLISHED', publishedRevisionId: { not: null } },
+        select: { path: true, updatedAt: true },
+      }),
+      prisma.page.findMany({
+        where: { path: { startsWith: '/industries/' }, status: 'PUBLISHED', publishedRevisionId: { not: null } },
+        select: { path: true, updatedAt: true },
+      }),
+    ]);
+    serviceRoutes = servicePages.map((p: any) => ({
+      url: `${siteUrl}${p.path}`,
+      lastModified: p.updatedAt || new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    }));
+    industryRoutes = industryPages.map((p: any) => ({
+      url: `${siteUrl}${p.path}`,
+      lastModified: p.updatedAt || new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    }));
+  } catch (e) {
+    // Fallback to empty array if DB unreachable
+    console.error("Sitemap service/industry fetch failed", e);
+  }
 
-  // 3. Dynamic Industry Routes
-  const industryRoutes: MetadataRoute.Sitemap = industriesData.map((industry) => ({
-    url: `${siteUrl}/industries/${industry.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.9,
-  }));
+  // 3. (Folded into section 2 above)
 
   // 4. Dynamic Published Resources (Prisma DB + Static Fallback)
   let dbArticles: { slug: string; category: string; updatedAt: Date; publishedAt: Date | null }[] = [];

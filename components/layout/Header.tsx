@@ -7,8 +7,10 @@ import { buttonVariants } from '@/components/ui/button';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import MobileNav from './MobileNav';
 import { trackConsultationCta } from '@/lib/analytics';
+import { useSiteConfig } from '@/components/layout/SiteConfigProvider';
 
 export default function Header() {
+  const siteConfig = useSiteConfig();
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#D9E1DC] bg-[#FFFFFF]/95 backdrop-blur-md transition-all duration-200 shadow-2xs">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-8">

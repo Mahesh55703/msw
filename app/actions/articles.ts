@@ -2,13 +2,14 @@
 
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
+import { requirePermission, hasPermission, Role } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 import { articleSchema, type ArticleFormData } from '@/lib/validations/article'
 
 export async function createArticle(rawData: ArticleFormData) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth || !session.userId) {
+    const session = await requirePermission('articles:edit').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please log in to perform this action.' }
     }
 
@@ -19,6 +20,12 @@ export async function createArticle(rawData: ArticleFormData) {
     }
 
     const data = validated.data
+
+    if (data.published && !hasPermission(session.role as Role, 'articles:publish')) {
+      return { success: false, error: 'Unauthorized to publish articles.' }
+    }
+
+    
 
     // Check slug uniqueness
     const existing = await prisma.article.findUnique({ where: { slug: data.slug } })
@@ -36,7 +43,7 @@ export async function createArticle(rawData: ArticleFormData) {
           excerpt: data.excerpt || null,
           content: data.content,
           category: data.category || 'articles',
-          authorId: authorId,
+          authorId: authorId as string,
           published: data.published,
           publishedAt: data.published ? (data.publishedAt || new Date()) : null,
           
@@ -97,8 +104,8 @@ export async function createArticle(rawData: ArticleFormData) {
 
 export async function updateArticle(id: string, rawData: ArticleFormData) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('articles:edit').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please log in to perform this action.' }
     }
 
@@ -119,6 +126,10 @@ export async function updateArticle(id: string, rawData: ArticleFormData) {
     const currentArticle = await prisma.article.findUnique({ where: { id } })
     if (!currentArticle) {
       return { success: false, error: 'Article not found.' }
+    }
+
+    if (data.published !== currentArticle.published && !hasPermission(session.role as Role, 'articles:publish')) {
+      return { success: false, error: 'Unauthorized to change publish status.' }
     }
 
     // Determine publication timestamp
@@ -218,8 +229,8 @@ export async function updateArticle(id: string, rawData: ArticleFormData) {
 
 export async function deleteArticle(id: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('articles:publish').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please log in to perform this action.' }
     }
 
@@ -244,8 +255,8 @@ export async function deleteArticle(id: string) {
 
 export async function togglePublishArticle(id: string, published: boolean) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('articles:publish').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please log in to perform this action.' }
     }
 
@@ -276,8 +287,8 @@ export async function togglePublishArticle(id: string, published: boolean) {
 
 export async function searchArticlesForRelation(query: string = '', excludeId?: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) return []
+    const session = await requirePermission('articles:edit').catch(()=>null)
+    if (!session) return []
 
     const articles = await prisma.article.findMany({
       where: {

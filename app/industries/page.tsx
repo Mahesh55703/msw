@@ -1,4 +1,5 @@
-import { industriesData } from "@/data/industries";
+import prisma from "@/lib/prisma";
+import { buildIndustryFromCms } from "@/lib/cms/industry-adapter";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -19,6 +20,9 @@ import {
 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import type { Metadata } from "next";
+import { resolveCmsText } from "@/lib/cms/utils";
+import { getPublicPageByPath } from "@/lib/db/pages";
+import { HeroSectionInput } from "@/lib/validations/page";
 
 export const metadata: Metadata = {
   title: "Industries We Serve | LabourAxis",
@@ -41,7 +45,30 @@ const INDUSTRY_ICONS: Record<string, any> = {
   "msmes": Building2,
 };
 
-export default function IndustriesHubPage() {
+export default async function IndustriesHubPage() {
+  const pageData = await getPublicPageByPath("/industries");
+  const heroSection = pageData?.revision?.sections.find(s => s.type === "HERO")?.content as HeroSectionInput | undefined;
+
+  const industryPages = await prisma.page.findMany({
+    where: { path: { startsWith: '/industries/' }, status: 'PUBLISHED' },
+    include: {
+      publishedRevision: {
+        include: {
+          sections: { orderBy: { sortOrder: 'asc' as const }, include: { media: true } }
+        }
+      }
+    }
+  });
+
+  const industriesData = industryPages
+    .filter(p => p.publishedRevision)
+    .map(p => {
+      const built = buildIndustryFromCms(p.publishedRevision, p.key, p.path.replace('/industries/', ''));
+      return {
+        ...built,
+        hubRelevantServices: built.process.slice(0, 3).map((proc: any) => proc.title) || ["Compliance Review", "HR Audits"]
+      };
+    });
   return (
     <div className="flex flex-col pb-24 overflow-x-hidden bg-[#F7F4EC]">
       {/* Breadcrumbs */}
@@ -65,13 +92,13 @@ export default function IndustriesHubPage() {
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
                 <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
-                <span>Industry-Focused HR & Compliance</span>
+                <span>{resolveCmsText(heroSection?.eyebrow, "Industry-Focused HR & Compliance")}</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight text-balance leading-tight">
-                HR & Labour Compliance Solutions by Industry
+                {resolveCmsText(heroSection?.heading, "HR & Labour Compliance Solutions by Industry")}
               </h1>
               <p className="text-lg md:text-xl text-[#A2B3AA] leading-relaxed text-balance mb-8">
-                Workforce requirements, labour compliance and HR challenges vary by industry. LabourAxis provides practical HR and compliance support tailored to the operational realities of different businesses.
+                {resolveCmsText(heroSection?.description, "Workforce requirements, labour compliance and HR challenges vary by industry. LabourAxis provides practical HR and compliance support tailored to the operational realities of different businesses.")}
               </p>
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2 text-xs font-semibold text-[#A2B3AA] bg-[#0D281E]/60 px-3.5 py-1.5 rounded-lg border border-white/10">
@@ -149,7 +176,7 @@ export default function IndustriesHubPage() {
                   <div className="mb-8 pt-4 border-t border-[#D9E1DC]/60">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-[#66736D] mb-3">Relevant Services:</h4>
                     <div className="flex flex-wrap gap-1.5">
-                      {industry.hubRelevantServices.map((service, idx) => (
+                      {industry.hubRelevantServices.map((service: string, idx: number) => (
                         <span key={idx} className="bg-[#F7F4EC] text-[#202522] text-xs px-2.5 py-1 rounded-lg font-medium border border-[#D9E1DC]/50">
                           {service}
                         </span>

@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
+import { requirePermission } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 import { EnquiryStatus, EnquiryPriority } from '@prisma/client'
 import crypto from 'crypto'
@@ -27,8 +28,8 @@ export async function updateEnquiryStatus(rawData: {
   note?: string
 }) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('enquiries:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login.' }
     }
 
@@ -121,8 +122,8 @@ export async function updateEnquiryPriority(rawData: {
   priority: EnquiryPriority
 }) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('enquiries:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login.' }
     }
 
@@ -170,8 +171,8 @@ export async function assignEnquiry(rawData: {
   assignedToId?: string | null
 }) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('enquiries:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login.' }
     }
 
@@ -214,8 +215,8 @@ export async function assignEnquiry(rawData: {
 
 export async function addEnquiryNote(rawData: { enquiryId: string; note: string }) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('enquiries:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login.' }
     }
 
@@ -246,8 +247,8 @@ export async function setEnquiryFollowUp(rawData: {
   followUpDate?: string | null
 }) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('enquiries:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login.' }
     }
 
@@ -305,8 +306,8 @@ export async function setEnquiryFollowUp(rawData: {
 
 export async function createManualLead(rawData: unknown) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('enquiries:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login.' }
     }
 
@@ -362,8 +363,8 @@ export async function createManualLead(rawData: unknown) {
 
 export async function deleteEnquiry(enquiryId: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('enquiries:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized. Please login.' }
     }
 

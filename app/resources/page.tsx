@@ -2,6 +2,9 @@ import { resourcesData } from "@/data/resources";
 import Link from "next/link";
 import { BookOpen, CheckSquare, HelpCircle, Bell, FileText, ArrowRight, ChevronRight, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
+import { resolveCmsText } from "@/lib/cms/utils";
+import { getPublicPageByPath } from "@/lib/db/pages";
+import { HeroSectionInput } from "@/lib/validations/page";
 
 export const metadata: Metadata = {
   title: "HR & Labour Compliance Resources | LabourAxis",
@@ -54,7 +57,9 @@ const CATEGORIES = [
   }
 ];
 
-export default function ResourcesHubPage() {
+export default async function ResourcesHubPage() {
+  const pageData = await getPublicPageByPath("/resources");
+  const heroSection = pageData?.revision?.sections.find(s => s.type === "HERO")?.content as HeroSectionInput | undefined;
   const featuredResources = resourcesData.filter(r => r.featured).slice(0, 3);
 
   return (
@@ -77,13 +82,13 @@ export default function ResourcesHubPage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
               <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
-              <span>Knowledge & Insights Center</span>
+              <span>{resolveCmsText(heroSection?.eyebrow, "Knowledge & Insights Center")}</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight text-balance leading-tight">
-              HR, Labour & Compliance Resources
+              {resolveCmsText(heroSection?.heading, "HR, Labour & Compliance Resources")}
             </h1>
             <p className="text-lg md:text-xl text-[#A2B3AA] leading-relaxed text-balance">
-              Practical guides, checklists, FAQs and compliance insights to help businesses understand and manage HR and labour requirements.
+              {resolveCmsText(heroSection?.description, "Practical guides, checklists, FAQs and compliance insights to help businesses understand and manage HR and labour requirements.")}
             </p>
           </div>
         </div>

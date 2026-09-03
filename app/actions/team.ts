@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
+import { requirePermission } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 import { teamMemberSchema, TeamMemberInput } from '@/lib/validations/team'
 import { safeFetchTeamMembers, normalizeTeamMember } from '@/lib/db/team'
@@ -65,8 +66,8 @@ async function getDescendantIds(memberId: string): Promise<string[]> {
  */
 export async function getPotentialManagers(excludeMemberId?: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('team:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized', managers: [] }
     }
 
@@ -97,8 +98,8 @@ export async function getPotentialManagers(excludeMemberId?: string) {
  */
 export async function createTeamMember(rawInput: TeamMemberInput) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('team:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -178,8 +179,8 @@ export async function createTeamMember(rawInput: TeamMemberInput) {
  */
 export async function updateTeamMember(id: string, rawInput: TeamMemberInput) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('team:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -263,8 +264,8 @@ export async function updateTeamMember(id: string, rawInput: TeamMemberInput) {
  */
 export async function toggleTeamMemberStatus(id: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('team:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -302,8 +303,8 @@ export async function toggleTeamMemberStatus(id: string) {
  */
 export async function updateTeamMemberOrder(id: string, newOrder: number) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('team:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -344,8 +345,8 @@ export async function deleteTeamMember(
   options?: { reassignReportsToId?: string | null; force?: boolean }
 ) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('team:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 

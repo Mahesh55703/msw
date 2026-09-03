@@ -17,6 +17,9 @@ import {
   CheckCircle2
 } from "lucide-react";
 import type { Metadata } from "next";
+import { resolveCmsText } from "@/lib/cms/utils";
+import { getPublicPageByPath } from "@/lib/db/pages";
+import { HeroSectionInput } from "@/lib/validations/page";
 
 export const metadata: Metadata = {
   title: "Labour & Statutory Compliance Health Check | LabourAxis",
@@ -90,7 +93,9 @@ const FAQ = [
   }
 ];
 
-export default function ComplianceHealthCheckPage() {
+export default async function ComplianceHealthCheckPage() {
+  const pageData = await getPublicPageByPath("/compliance-health-check");
+  const heroSection = pageData?.revision?.sections.find(s => s.type === "HERO")?.content as HeroSectionInput | undefined;
   return (
     <div className="flex flex-col pb-24 overflow-x-hidden bg-[#F7F4EC]">
       {/* Breadcrumbs */}
@@ -114,15 +119,15 @@ export default function ComplianceHealthCheckPage() {
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-4 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
                 <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
-                <span>Proactive Diagnostic Assessment</span>
+                <span>{resolveCmsText(heroSection?.eyebrow, "Proactive Diagnostic Assessment")}</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance leading-tight">
-                Labour & Statutory Compliance Health Check
+                {resolveCmsText(heroSection?.heading, "Labour & Statutory Compliance Health Check")}
               </h1>
 
               <p className="text-lg md:text-xl text-[#A2B3AA] mb-8 text-balance leading-relaxed">
-                Identify gaps in your HR documentation, workforce processes, and statutory records before they become costly liabilities.
+                {resolveCmsText(heroSection?.description, "Identify gaps in your HR documentation, workforce processes, and statutory records before they become costly liabilities.")}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -136,7 +141,7 @@ export default function ComplianceHealthCheckPage() {
                     className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-7 py-3.5 rounded-xl shadow-lg transition-all group" 
                   })}
                 >
-                  <span>Request a Health Check</span>
+                  <span>{resolveCmsText(heroSection?.primaryCta?.label, "Request a Health Check")}</span>
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </TrackedCtaLink>
                 <Link 

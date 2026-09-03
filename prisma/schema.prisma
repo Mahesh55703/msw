@@ -14,16 +14,34 @@ model User {
   password  String
   name      String?
   role      Role     @default(EDITOR)
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  enquiries Enquiry[]
-  articles  Article[]
+  enquiries          Enquiry[]
+  articles           Article[]
+  pageRevisions      PageRevision[]
+  auditLogsActed     AdminAuditLog[]     @relation("ActorAuditLogs")
+  auditLogsTargeted  AdminAuditLog[]     @relation("TargetAuditLogs")
+  siteConfigurations SiteConfiguration[] @relation("UserSiteConfigs")
 }
 
 enum Role {
+  SUPER_ADMIN
   ADMIN
   EDITOR
+}
+
+model AdminAuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  actorId   String?
+  targetId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  actor  User? @relation("ActorAuditLogs", fields: [actorId], references: [id], onDelete: SetNull)
+  target User? @relation("TargetAuditLogs", fields: [targetId], references: [id], onDelete: SetNull)
 }
 
 model Enquiry {
@@ -98,21 +116,20 @@ enum ActivityType {
   EMAIL_SENT
 }
 
-
 model Article {
-  id               String    @id @default(cuid())
-  title            String
-  slug             String    @unique
-  content          String
-  excerpt          String?
-  category         String    @default("updates")
-  
+  id       String  @id @default(cuid())
+  title    String
+  slug     String  @unique
+  content  String
+  excerpt  String?
+  category String  @default("updates")
+
   // Publishing
-  published        Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  publishedAt      DateTime?
-  scheduledAt      DateTime?
+  published   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+  scheduledAt DateTime?
 
   // Media
   featuredImage    String?
@@ -120,60 +137,63 @@ model Article {
   ogImage          String?
 
   // Author
-  authorId         String
-  author           User      @relation(fields: [authorId], references: [id])
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
 
   // Content Relations
-  keyTakeaways     ArticleTakeaway[]
+  keyTakeaways ArticleTakeaway[]
 
   // Relationships
-  relatedServices  ArticleRelatedService[]
-  
+  relatedServices ArticleRelatedService[]
+
   // Self-referencing Many-to-Many for Related Articles
-  relatedFrom      ArticleToRelatedArticle[] @relation("RelatedFrom")
-  relatedTo        ArticleToRelatedArticle[] @relation("RelatedTo")
+  relatedFrom ArticleToRelatedArticle[] @relation("RelatedFrom")
+  relatedTo   ArticleToRelatedArticle[] @relation("RelatedTo")
 
   // CTA
-  ctaHeading       String?
-  ctaDescription   String?
-  ctaPrimaryLabel  String?
-  ctaPrimaryUrl    String?
+  ctaHeading        String?
+  ctaDescription    String?
+  ctaPrimaryLabel   String?
+  ctaPrimaryUrl     String?
   ctaSecondaryLabel String?
-  ctaSecondaryUrl  String?
+  ctaSecondaryUrl   String?
 
   // SEO
-  seoTitle         String?
-  metaDescription  String?
-  canonicalUrl     String?
+  seoTitle        String?
+  metaDescription String?
+  canonicalUrl    String?
+
+  pageSectionReferences PageSectionReference[]
 }
 
 model ArticleTakeaway {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   text      String
-  sortOrder Int      @default(0)
+  sortOrder Int     @default(0)
   articleId String
-  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model ArticleRelatedService {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   serviceSlug String
-  sortOrder   Int      @default(0)
+  sortOrder   Int     @default(0)
   articleId   String
-  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  article     Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model ArticleToRelatedArticle {
-  id          String   @id @default(cuid())
-  fromId      String
-  toId        String
-  sortOrder   Int      @default(0)
-  
-  fromArticle Article  @relation("RelatedFrom", fields: [fromId], references: [id], onDelete: Cascade)
-  toArticle   Article  @relation("RelatedTo", fields: [toId], references: [id], onDelete: Cascade)
+  id        String @id @default(cuid())
+  fromId    String
+  toId      String
+  sortOrder Int    @default(0)
+
+  fromArticle Article @relation("RelatedFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toArticle   Article @relation("RelatedTo", fields: [toId], references: [id], onDelete: Cascade)
 
   @@unique([fromId, toId])
 }
+
 model Media {
   id        String   @id @default(cuid())
   url       String   @unique
@@ -183,6 +203,10 @@ model Media {
   size      Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  pageSections       PageSection[]       @relation("SectionMedia")
+  pageRevisions      PageRevision[]      @relation("RevisionOgImage")
+  siteConfigurations SiteConfiguration[] @relation("ConfigOgImage")
 }
 
 // Phase 2: Careers CMS
@@ -214,6 +238,8 @@ model JobPosting {
   updatedAt         DateTime         @updatedAt
   applications      JobApplication[]
 
+  pageSectionReferences PageSectionReference[]
+
   @@index([status, closingDate, displayOrder])
   @@index([slug])
 }
@@ -233,26 +259,28 @@ model JobApplication {
 }
 
 model TeamMember {
-  id           String       @id @default(cuid())
+  id           String  @id @default(cuid())
   name         String
-  designation  String       @default("")
+  designation  String  @default("")
   role         String?
   department   String?
   bio          String?
   imageUrl     String?
   imageAlt     String?
   linkedinUrl  String?
-  displayOrder Int          @default(0)
-  order        Int          @default(0)
-  isActive     Boolean      @default(true)
-  
+  displayOrder Int     @default(0)
+  order        Int     @default(0)
+  isActive     Boolean @default(true)
+
   // Hierarchy: Self-referencing Reports To
-  reportsToId  String?
-  reportsTo    TeamMember?  @relation("TeamHierarchy", fields: [reportsToId], references: [id], onDelete: SetNull)
+  reportsToId   String?
+  reportsTo     TeamMember?  @relation("TeamHierarchy", fields: [reportsToId], references: [id], onDelete: SetNull)
   directReports TeamMember[] @relation("TeamHierarchy")
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pageSectionReferences PageSectionReference[]
 
   @@index([reportsToId, isActive, displayOrder])
   @@index([isActive, displayOrder])
@@ -278,9 +306,122 @@ model Faq {
   published    Boolean     @default(false)
   displayOrder Int         @default(0)
 
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pageSectionReferences PageSectionReference[]
 
   @@index([category, published, displayOrder])
   @@index([published, displayOrder])
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum SectionType {
+  HERO
+  TEXT_IMAGE
+  FEATURE_LIST
+  CTA_BANNER
+  CONTENT_REFERENCE
+}
+
+model Page {
+  id                  String         @id @default(cuid())
+  key                 String         @unique
+  path                String         @unique
+  status              PageStatus     @default(DRAFT)
+  publishedRevisionId String?        @unique
+  publishedRevision   PageRevision?  @relation("PublishedRevision", fields: [publishedRevisionId], references: [id])
+  revisions           PageRevision[] @relation("PageRevisions")
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+}
+
+model PageRevision {
+  id              String        @id @default(cuid())
+  pageId          String
+  page            Page          @relation("PageRevisions", fields: [pageId], references: [id], onDelete: Cascade)
+  version         Int
+  seoTitle        String?
+  metaDescription String?
+  canonicalUrl    String?
+  ogImageId       String?
+  ogImage         Media?        @relation("RevisionOgImage", fields: [ogImageId], references: [id], onDelete: SetNull)
+  sections        PageSection[]
+  activeForPage   Page?         @relation("PublishedRevision")
+  createdById     String?
+  createdBy       User?         @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt       DateTime      @default(now())
+
+  @@unique([pageId, version])
+}
+
+model PageSection {
+  id            String                 @id @default(cuid())
+  revisionId    String
+  revision      PageRevision           @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+  type          SectionType
+  sortOrder     Int
+  isVisible     Boolean                @default(true)
+  schemaVersion Int                    @default(1)
+  content       Json                   @default("{}")
+  mediaId       String?
+  media         Media?                 @relation("SectionMedia", fields: [mediaId], references: [id], onDelete: SetNull)
+  references    PageSectionReference[]
+
+  @@index([revisionId, sortOrder])
+}
+
+model PageSectionReference {
+  id           String      @id @default(cuid())
+  sectionId    String
+  section      PageSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  sortOrder    Int         @default(0)
+  articleId    String?
+  article      Article?    @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  faqId        String?
+  faq          Faq?        @relation(fields: [faqId], references: [id], onDelete: Cascade)
+  teamMemberId String?
+  teamMember   TeamMember? @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  jobPostingId String?
+  jobPosting   JobPosting? @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId])
+}
+
+model SiteConfiguration {
+  id String @id @default("global")
+
+  // Business Information
+  businessName     String  @default("LabourAxis")
+  tagline          String?
+  shortDescription String?
+
+  // Contact Information
+  email                String?
+  phone                String?
+  whatsapp             String?
+  addressCity          String?
+  addressState         String?
+  addressCountry       String?
+  addressDisplay       String?
+  addressFooterDisplay String?
+
+  // Social Links
+  linkedin String?
+
+  // SEO & Branding Defaults
+  seoTitle        String?
+  metaDescription String?
+
+  ogImageId String?
+  ogImage   Media?  @relation("ConfigOgImage", fields: [ogImageId], references: [id], onDelete: SetNull)
+
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+  updatedBy   User?    @relation("UserSiteConfigs", fields: [updatedById], references: [id], onDelete: SetNull)
 }

@@ -2,8 +2,10 @@ import { ReactNode } from 'react'
 import { logout } from '@/app/actions/auth'
 import { verifySession } from '@/lib/session'
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 import prisma from '@/lib/prisma'
-import { LogOut, Menu, ShieldCheck } from 'lucide-react'
+import { LogOut, Menu } from 'lucide-react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import type { Metadata } from 'next'
 
@@ -46,17 +48,24 @@ export default async function AdminLayout({
     <div className="flex h-screen bg-[#F7F4EC] font-sans overflow-hidden">
       {/* Sidebar (Desktop) */}
       <aside className="hidden md:flex w-64 flex-shrink-0 bg-[#12372A] border-r border-[#0D281E] flex-col z-20 h-full text-white">
-        <div className="flex items-center h-16 border-b border-white/10 px-6 shrink-0 gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#1F7A5C] flex items-center justify-center text-white shadow-xs">
-            <ShieldCheck className="w-5 h-5 text-[#D6A84F]" />
-          </div>
-          <div>
-            <h1 className="text-base font-bold text-white tracking-tight leading-none">LABOURAXIS</h1>
-            <span className="text-[10px] font-semibold text-[#D6A84F] tracking-wider uppercase">Admin Portal</span>
-          </div>
+        <div className="flex items-center h-16 border-b border-white/10 px-4 shrink-0">
+          <Link href="/admin" className="flex items-center gap-3 group transition-transform hover:scale-[1.01]">
+            <Image 
+              src="/icon.png" 
+              alt="LabourAxis Icon" 
+              width={56} 
+              height={56} 
+              className="object-contain h-11 w-auto brightness-0 invert shrink-0" 
+              priority 
+            />
+            <div>
+              <h1 className="text-base font-bold text-white tracking-tight leading-none">LABOURAXIS</h1>
+              <span className="text-[10px] font-semibold text-[#D6A84F] tracking-wider uppercase">Admin Portal</span>
+            </div>
+          </Link>
         </div>
         
-        <AdminSidebar newEnquiriesCount={newEnquiriesCount} />
+        <AdminSidebar newEnquiriesCount={newEnquiriesCount} userRole={user?.role} />
         
         {/* Profile / Account Area */}
         <div className="flex-shrink-0 border-t border-white/10 p-4 bg-[#0D281E]/60">
@@ -88,7 +97,17 @@ export default async function AdminLayout({
               <span className="sr-only">Open sidebar</span>
               <Menu className="h-6 w-6" aria-hidden="true" />
             </button>
-            <h1 className="ml-3 text-base font-bold text-[#12372A] tracking-tight">LABOURAXIS</h1>
+            <Link href="/admin" className="ml-3 flex items-center gap-2">
+              <Image 
+                src="/icon.png" 
+                alt="LabourAxis Icon" 
+                width={36} 
+                height={36} 
+                className="object-contain h-7 w-auto" 
+                priority 
+              />
+              <span className="text-base font-bold text-[#12372A] tracking-tight">LABOURAXIS</span>
+            </Link>
           </div>
           
           <div className="hidden md:flex items-center gap-2 text-xs font-semibold text-[#66736D]">

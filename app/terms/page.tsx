@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ChevronRight, FileText, Clock, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
-import { siteConfig } from "@/lib/site-config";
+import { getSiteConfig } from '@/lib/site-config-accessor';
 
 export const metadata: Metadata = {
   title: "Terms of Service | LabourAxis",
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   }
 };
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const siteConfig = await getSiteConfig();
   return (
     <div className="flex flex-col pb-24 overflow-x-hidden bg-[#F7F4EC]">
       {/* Breadcrumbs */}

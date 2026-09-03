@@ -2,11 +2,12 @@
 
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
+import { requirePermission, hasPermission, Role } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 
 export async function deleteContent(id: string) {
-  const session = await verifySession()
-  if (!session.isAuth) throw new Error('Unauthorized')
+  const session = await requirePermission('articles:publish').catch(()=>null)
+  if (!session) throw new Error('Unauthorized')
 
   const record = await prisma.article.findUnique({ where: { id } })
   if (!record) throw new Error('Record not found')
@@ -20,8 +21,8 @@ export async function deleteContent(id: string) {
 }
 
 export async function togglePublishContent(id: string, publish: boolean) {
-  const session = await verifySession()
-  if (!session.isAuth) throw new Error('Unauthorized')
+  const session = await requirePermission('articles:publish').catch(()=>null)
+  if (!session) throw new Error('Unauthorized')
 
   const record = await prisma.article.findUnique({ where: { id } })
   if (!record) throw new Error('Record not found')
@@ -36,8 +37,8 @@ export async function togglePublishContent(id: string, publish: boolean) {
 }
 
 export async function createContent(data: any) {
-  const session = await verifySession()
-  if (!session.isAuth || !session.userId) throw new Error('Unauthorized')
+  const session = await requirePermission('articles:publish').catch(()=>null)
+  if (!session) throw new Error('Unauthorized')
 
   if (!data.title || !data.slug || !data.content) {
     throw new Error('Missing required fields')
@@ -67,8 +68,8 @@ export async function createContent(data: any) {
 }
 
 export async function updateContent(id: string, data: any) {
-  const session = await verifySession()
-  if (!session.isAuth) throw new Error('Unauthorized')
+  const session = await requirePermission('articles:publish').catch(()=>null)
+  if (!session) throw new Error('Unauthorized')
 
   if (!data.title || !data.slug || !data.content) {
     throw new Error('Missing required fields')

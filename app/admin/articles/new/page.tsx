@@ -12,5 +12,15 @@ export default async function NewArticlePage() {
     orderBy: { name: 'asc' },
   })
 
-  return <ArticleEditor users={users} />
+  const services = await prisma.page.findMany({
+    where: { path: { startsWith: '/services/' }, status: 'PUBLISHED' },
+    select: { path: true, publishedRevision: { select: { seoTitle: true } } }
+  })
+  
+  const availableServices = services.map(s => ({
+    slug: s.path.replace('/services/', ''),
+    title: s.publishedRevision?.seoTitle?.split(' |')[0] || s.path.replace('/services/', '').replace(/-/g, ' ')
+  }))
+
+  return <ArticleEditor users={users} availableServices={availableServices} />
 }

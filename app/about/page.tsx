@@ -19,6 +19,9 @@ import {
   HeartPulse 
 } from "lucide-react";
 import type { Metadata } from "next";
+import { resolveCmsText } from "@/lib/cms/utils";
+import { getPublicPageByPath } from "@/lib/db/pages";
+import { HeroSectionInput, TextImageSectionInput, FeatureListSectionInput, CtaBannerSectionInput } from "@/lib/validations/page";
 
 export const metadata: Metadata = {
   title: "About LabourAxis | Industrial HR & Labour Compliance",
@@ -28,6 +31,7 @@ export const metadata: Metadata = {
   }
 };
 
+// Replaced by CMS if present, fallback below
 const FOCUS_PILLARS = [
   {
     icon: Cog,
@@ -108,7 +112,17 @@ const INDUSTRY_ICONS: Record<string, any> = {
   "MSMEs": Building2,
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const pageData = await getPublicPageByPath("/about");
+  const sections = pageData?.revision?.sections || [];
+  
+  const heroSection = sections.find(s => s.type === "HERO")?.content as HeroSectionInput | undefined;
+  const whoWeAreSection = sections.find(s => s.type === "TEXT_IMAGE" && (s.content as TextImageSectionInput).heading === "Who We Are")?.content as TextImageSectionInput | undefined;
+  const whatWeFocusSection = sections.find(s => s.type === "FEATURE_LIST" && (s.content as FeatureListSectionInput).heading === "What We Focus On")?.content as FeatureListSectionInput | undefined;
+  const approachSection = sections.find(s => s.type === "FEATURE_LIST" && (s.content as FeatureListSectionInput).heading === "Our Approach")?.content as FeatureListSectionInput | undefined;
+  const whyLabourAxisSection = sections.find(s => s.type === "FEATURE_LIST" && (s.content as FeatureListSectionInput).heading === "Why LabourAxis")?.content as FeatureListSectionInput | undefined;
+  const commitmentSection = sections.find(s => s.type === "FEATURE_LIST" && (s.content as FeatureListSectionInput).heading === "Our Commitment")?.content as FeatureListSectionInput | undefined;
+  const ctaSection = sections.find(s => s.type === "CTA_BANNER")?.content as CtaBannerSectionInput | undefined;
   return (
     <div className="flex flex-col pb-24 overflow-x-hidden bg-[#F7F4EC]">
       {/* Breadcrumbs */}
@@ -129,21 +143,21 @@ export default function AboutPage() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 text-xs font-bold text-[#D6A84F] uppercase tracking-wider mb-6 bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full shadow-xs">
               <ShieldCheck className="w-4 h-4 text-[#D6A84F]" />
-              <span>About LabourAxis</span>
+              <span>{resolveCmsText(heroSection?.eyebrow, "About LabourAxis")}</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance leading-tight">
-              About LabourAxis
+              {resolveCmsText(heroSection?.heading, "About LabourAxis")}
             </h1>
 
             <p className="text-xl md:text-2xl font-semibold text-white mb-6 text-balance">
-              Practical HR and labour compliance for businesses that employ people.
+              {resolveCmsText(heroSection?.description?.split(". ")[0], "Practical HR and labour compliance for businesses that employ people.") + (heroSection?.description?.split(". ")[0] ? "." : "")}
             </p>
 
             <div className="w-16 h-1 bg-[#D6A84F] mx-auto mb-8 rounded-full"></div>
 
             <p className="text-base md:text-lg text-[#A2B3AA] max-w-2xl mx-auto text-balance leading-relaxed">
-              LabourAxis focuses on the intersection of HR Operations, Labour Compliance, Industrial Relations, and Workforce Management.
+              {resolveCmsText(heroSection?.description?.split(". ").slice(1).join(". "), "LabourAxis focuses on the intersection of HR Operations, Labour Compliance, Industrial Relations, and Workforce Management.")}
             </p>
           </div>
         </div>
@@ -156,12 +170,12 @@ export default function AboutPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-[#1F7A5C] bg-[#1F7A5C]/10 border border-[#1F7A5C]/20 px-3.5 py-1.5 rounded-full inline-block mb-3">
               Our Identity
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#12372A] mb-6 tracking-tight">Who We Are</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#12372A] mb-6 tracking-tight">{resolveCmsText(whoWeAreSection?.heading, "Who We Are")}</h2>
             <p className="text-xl text-[#202522] leading-relaxed mb-6 font-medium">
-              LabourAxis is being built around a simple idea: HR and compliance should not operate as disconnected administrative functions.
+              {resolveCmsText(whoWeAreSection?.body?.split("\n\n")[0], "LabourAxis is being built around a simple idea: HR and compliance should not operate as disconnected administrative functions.")}
             </p>
             <p className="text-[#66736D] text-base md:text-lg leading-relaxed">
-              Businesses need structured HR processes, organized workforce records, clear compliance tracking and practical support to manage their people effectively.
+              {resolveCmsText(whoWeAreSection?.body?.split("\n\n")[1], "Businesses need structured HR processes, organized workforce records, clear compliance tracking and practical support to manage their people effectively.")}
             </p>
           </div>
           
@@ -185,11 +199,17 @@ export default function AboutPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-[#1F7A5C] bg-[#1F7A5C]/10 border border-[#1F7A5C]/20 px-3.5 py-1.5 rounded-full inline-block mb-3">
               Core Pillars
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#12372A] mb-4 tracking-tight">What We Focus On</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#12372A] mb-4 tracking-tight">{resolveCmsText(whatWeFocusSection?.heading, "What We Focus On")}</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {FOCUS_PILLARS.map((pillar, idx) => (
+            {whatWeFocusSection?.features?.map((pillar, idx) => {
+              const Icon = FOCUS_PILLARS[idx % FOCUS_PILLARS.length].icon;
+              return {
+                ...pillar,
+                icon: Icon
+              };
+            })?.map((pillar, idx) => (
               <div key={idx} className="bg-white p-8 md:p-10 rounded-3xl border border-[#D9E1DC] shadow-xs flex items-start gap-6 hover:shadow-md hover:border-[#1F7A5C]/40 transition-all duration-200 group">
                 <div className="w-14 h-14 bg-[#1F7A5C]/10 text-[#1F7A5C] rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-[#1F7A5C] group-hover:text-white transition-colors duration-200 shadow-2xs">
                   <pillar.icon className="w-7 h-7" />
@@ -211,12 +231,12 @@ export default function AboutPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-[#1F7A5C] bg-[#1F7A5C]/10 border border-[#1F7A5C]/20 px-3.5 py-1.5 rounded-full inline-block mb-3">
               Methodology
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#12372A] mb-4 tracking-tight">Our Approach</h2>
-            <p className="text-lg text-[#66736D]">Our signature methodology applied to your establishment.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#12372A] mb-4 tracking-tight">{resolveCmsText(approachSection?.heading, "Our Approach")}</h2>
+            <p className="text-lg text-[#66736D]">{resolveCmsText(approachSection?.description, "Our signature methodology applied to your establishment.")}</p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            {APPROACH_STEPS.map((step, idx) => (
+            {(approachSection?.features?.map((f, i) => ({ step: `0${i+1}`, title: f.title, desc: f.description })) || APPROACH_STEPS).map((step, idx) => (
               <div key={idx} className="bg-[#F7F4EC]/60 p-6 rounded-3xl border border-[#D9E1DC] shadow-2xs flex flex-col justify-start relative">
                 <span className="text-4xl font-black text-[#D6A84F] mb-4 block">{step.step}</span>
                 <h3 className="text-lg font-bold text-[#12372A] mb-2">{step.title}</h3>
@@ -235,11 +255,11 @@ export default function AboutPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-[#D6A84F] bg-[#1B4E3C]/80 border border-[#D6A84F]/30 px-3.5 py-1.5 rounded-full inline-block mb-3">
               The LabourAxis Edge
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">Why LabourAxis</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">{resolveCmsText(whyLabourAxisSection?.heading, "Why LabourAxis")}</h2>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-6 md:gap-8">
-            {WHY_LABOURAXIS.map((item, idx) => (
+            {(whyLabourAxisSection?.features || WHY_LABOURAXIS).map((item, idx) => (
               <div key={idx} className="flex items-start gap-4 p-6 bg-[#0D281E] border border-white/10 rounded-3xl shadow-md">
                 <div className="w-8 h-8 rounded-full bg-[#1F7A5C]/20 text-[#1F7A5C] flex items-center justify-center shrink-0 border border-[#1F7A5C]/40 mt-0.5">
                   <Check className="w-4 h-4 stroke-[2.5]" />
@@ -346,11 +366,11 @@ export default function AboutPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-[#1F7A5C] bg-[#1F7A5C]/10 border border-[#1F7A5C]/20 px-3.5 py-1.5 rounded-full inline-block mb-3">
               Guiding Principles
             </span>
-            <h2 className="text-3xl font-bold text-[#12372A] mb-4 tracking-tight">Our Commitment</h2>
+            <h2 className="text-3xl font-bold text-[#12372A] mb-4 tracking-tight">{resolveCmsText(commitmentSection?.heading, "Our Commitment")}</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {COMMITMENTS.map((item, idx) => (
+            {(commitmentSection?.features || COMMITMENTS).map((item, idx) => (
               <div key={idx} className="bg-white border-l-4 border-[#1F7A5C] pl-6 pr-6 py-6 rounded-r-3xl border-y border-r border-[#D9E1DC] shadow-2xs">
                 <h3 className="text-xl font-bold text-[#12372A] mb-2">{item.title}</h3>
                 <p className="text-[#66736D] text-sm leading-relaxed">{item.description}</p>
@@ -366,10 +386,10 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-grid-forest opacity-30 pointer-events-none"></div>
           <div className="relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight text-balance">
-              Building better HR and compliance processes?
+              {resolveCmsText(ctaSection?.heading, "Building better HR and compliance processes?")}
             </h2>
             <p className="text-[#A2B3AA] text-base md:text-lg mb-8 max-w-2xl mx-auto leading-relaxed text-balance">
-              Connect with LabourAxis to discuss your organization's specific workforce setup and requirements.
+              {resolveCmsText(ctaSection?.description, "Connect with LabourAxis to discuss your organization's specific workforce setup and requirements.")}
             </p>
             <Link 
               href="/contact" 
@@ -378,7 +398,7 @@ export default function AboutPage() {
                 className: "bg-[#1F7A5C] hover:bg-[#165B44] text-white font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all group" 
               })}
             >
-              <span>Discuss Your Requirements</span>
+              <span>{resolveCmsText(ctaSection?.primaryCta?.label, "Discuss Your Requirements")}</span>
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

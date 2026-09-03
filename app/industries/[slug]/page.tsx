@@ -1,55 +1,58 @@
 import { industriesData } from "@/data/industries";
-import { servicesData } from "@/data/services";
+import { buildServiceFromCms } from "@/lib/cms/service-adapter";
 import { notFound } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { 
-  ChevronRight, 
-  Check, 
-  ArrowRight, 
-  FileText, 
-  AlertTriangle, 
-  ShieldCheck, 
-  Plus,
-  Clock,
-  Network,
-  HardHat,
-  Truck,
-  ShieldAlert,
-  Scale,
-  HeartHandshake,
-  ClipboardCheck,
-  Calculator,
-  MapPin,
-  TrendingUp,
-  Award,
-  Shield,
-  GraduationCap,
-  Smartphone,
-  Building2
+  ChevronRight, Check, ArrowRight, FileText, AlertTriangle, ShieldCheck, Plus, Clock, Network, HardHat, Truck, ShieldAlert, Scale, HeartHandshake, ClipboardCheck, Calculator, MapPin, TrendingUp, Award, Shield, GraduationCap, Smartphone, Building2
 } from "lucide-react";
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
+import { getPublicPageByPath, getDraftRevisionForPreview } from "@/lib/db/pages";
+import { buildIndustryFromCms } from "@/lib/cms/industry-adapter";
+import prisma from "@/lib/prisma";
+import { verifySession } from "@/lib/session";
 
 export async function generateStaticParams() {
-  return industriesData.map((ind) => ({
-    slug: ind.slug,
+  const pages = await prisma.page.findMany({
+    where: { path: { startsWith: '/industries/' }, status: 'PUBLISHED' }
+  });
+  return pages.map((p: any) => ({
+    slug: p.path.replace('/industries/', ''),
   }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata(
+  { params, searchParams }: { params: Promise<{ slug: string }>, searchParams: Promise<{ preview?: string }> },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
   const resolvedParams = await params;
-  const industry = industriesData.find((s) => s.slug === resolvedParams.slug);
-  if (!industry) {
-    return { title: "Industry Not Found" };
-  }
-  return {
-    title: `${industry.title} HR & Labour Compliance | LabourAxis`,
-    description: industry.shortDescription,
-    alternates: {
-      canonical: `/industries/${industry.slug}`
+  const path = `/industries/${resolvedParams.slug}`;
+  
+  let page = await getPublicPageByPath(path);
+  const resolvedSearch = await searchParams;
+
+  if (resolvedSearch.preview) {
+    const p = await prisma.page.findUnique({ where: { path } });
+    if (p) {
+      const draft = await getDraftRevisionForPreview(p.id, resolvedSearch.preview);
+      if (draft) {
+        page = { id: p.id, key: p.key, path: p.path, revision: draft as any };
+      }
     }
+  }
+
+  if (!page || !page.revision) return { title: "Industry Not Found" };
+
+  const industry = buildIndustryFromCms(page.revision, page.key, resolvedParams.slug);
+
+  const meta: Metadata = {
+    title: page.revision.seoTitle || `${industry.title} HR & Labour Compliance | LabourAxis`,
+    description: page.revision.metaDescription || industry.shortDescription,
+    alternates: { canonical: page.revision.canonicalUrl || path }
   };
+  if (resolvedSearch.preview) meta.robots = { index: false, follow: false };
+  return meta;
 }
 
 const INDUSTRY_HERO_IMAGES: Record<string, { url: string; badge: string; caption: string }> = {
@@ -127,22 +130,60 @@ function getChallengeIcon(title: string) {
   return AlertTriangle;
 }
 
-export default async function IndustryDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function IndustryDetailPage({ params, searchParams }: { params: Promise<{ slug: string }>, searchParams: Promise<{ preview?: string }> }) {
   const resolvedParams = await params;
-  const industry = industriesData.find((s) => s.slug === resolvedParams.slug);
+  const path = `/industries/${resolvedParams.slug}`;
+  let page = await getPublicPageByPath(path);
 
-  if (!industry) {
+  const resolvedSearch = await searchParams;
+  let isPreview = false;
+  
+  if (resolvedSearch.preview) {
+    const session = await verifySession();
+    if (session.isAuth && (session.role === 'SUPER_ADMIN' || session.role === 'ADMIN' || session.role === 'EDITOR')) {
+      const p = await prisma.page.findUnique({ where: { path } });
+      if (p) {
+        const draft = await getDraftRevisionForPreview(p.id, resolvedSearch.preview);
+        if (draft) {
+          page = { id: p.id, key: p.key, path: p.path, revision: draft as any };
+          isPreview = true;
+        }
+      }
+    }
+  }
+
+  if (!page || !page.revision) {
     notFound();
   }
 
-  const heroImageInfo = INDUSTRY_HERO_IMAGES[industry.slug] || {
-    url: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200&auto=format&fit=crop",
-    badge: "Industry Focus",
-    caption: `${industry.title} Operations`
+  const industry = buildIndustryFromCms(page.revision, page.key, resolvedParams.slug);
+
+  const heroImageInfo = {
+    url: industry.heroImageUrl || INDUSTRY_HERO_IMAGES[industry.slug]?.url || "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200&auto=format&fit=crop",
+    badge: industry.heroImageBadge || INDUSTRY_HERO_IMAGES[industry.slug]?.badge || "Industry Focus",
+    caption: INDUSTRY_HERO_IMAGES[industry.slug]?.caption || `${industry.title} Operations`
   };
 
-  // Filter actual service data based on the industry's relevantServices array
-  const relatedServices = servicesData.filter(s => industry.relevantServices.includes(s.slug));
+  const staticIndustry = industriesData.find(i => i.slug === resolvedParams.slug);
+  const relevantServices = staticIndustry ? staticIndustry.relevantServices : ["hr-consulting", "labour-compliance", "pf-esic-compliance"];
+  
+  const relatedServicesPages = await prisma.page.findMany({
+    where: { 
+      path: { in: relevantServices.map(slug => `/services/${slug}`) }, 
+      status: 'PUBLISHED' 
+    },
+    include: {
+      publishedRevision: {
+        include: {
+          sections: { orderBy: { sortOrder: 'asc' as const }, include: { media: true } }
+        }
+      }
+    }
+  });
+
+  const relatedServices = relatedServicesPages
+    .filter(p => p.publishedRevision)
+    .map(p => buildServiceFromCms(p.publishedRevision, p.key, p.path.replace('/services/', '')));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -157,8 +198,13 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
   return (
     <div className="flex flex-col pb-24 overflow-x-hidden bg-[#F7F4EC]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      
-      {/* 01. Breadcrumb */}
+      {isPreview && (
+        <div className="bg-[#D6A84F] text-[#12372A] px-4 py-2 text-center text-xs font-bold sticky top-0 z-50 shadow-md flex items-center justify-center gap-2">
+          <AlertTriangle className="w-4 h-4" />
+          You are viewing a draft preview. This content is not public.
+        </div>
+      )}
+{/* 01. Breadcrumb */}
       <div className="bg-[#12372A] border-b border-white/10 pt-6 pb-4">
         <div className="container mx-auto px-4 md:px-8">
           <nav className="flex items-center text-xs md:text-sm text-[#A2B3AA] font-medium">
@@ -269,7 +315,7 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {industry.challenges.map((challenge, idx) => {
+            {industry.challenges.map((challenge: any, idx: number) => {
               const ChallengeIcon = getChallengeIcon(challenge.title);
               return (
                 <div 
@@ -302,11 +348,11 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {industry.hrAndComplianceRequirements.map((cat, idx) => (
+            {industry.hrAndComplianceRequirements.map((cat: any, idx: number) => (
               <div key={idx} className="bg-white border border-[#D9E1DC] rounded-3xl p-8 shadow-2xs">
                 <h3 className="text-xl font-bold text-[#12372A] mb-4 pb-2 border-b border-[#D9E1DC]/60">{cat.title}</h3>
                 <ul className="space-y-3">
-                  {cat.items.map((item, i) => (
+                  {cat.items.map((item: any, i: number) => (
                     <li key={i} className="flex items-start gap-3 text-sm text-[#202522] font-medium">
                       <div className="w-2 h-2 rounded-full bg-[#1F7A5C] mt-2 shrink-0" />
                       <span>{item}</span>
@@ -334,7 +380,7 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relatedServices.map((service, idx) => (
+            {relatedServices.map((service: any, idx: number) => (
               <Link 
                 key={idx} 
                 href={`/services/${service.slug}`} 
@@ -362,7 +408,7 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            {industry.process.map((step, idx) => (
+            {industry.process.map((step: any, idx: number) => (
               <div key={idx} className="bg-[#F7F4EC]/60 p-6 rounded-3xl border border-[#D9E1DC] shadow-2xs flex flex-col justify-start relative">
                 <span className="text-4xl font-black text-[#D6A84F] mb-4 block">{step.step}</span>
                 <h3 className="text-lg font-bold text-[#12372A] mb-2">{step.title}</h3>
@@ -382,7 +428,7 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
             </span>
             <h2 className="text-2xl md:text-3xl font-bold text-[#12372A] mb-8">Who We Support</h2>
             <div className="grid sm:grid-cols-2 gap-4">
-              {industry.whoWeSupport.map((entity, idx) => (
+              {industry.whoWeSupport.map((entity: any, idx: number) => (
                 <div key={idx} className="flex items-center gap-3 p-4 bg-[#F7F4EC] rounded-2xl border border-[#D9E1DC]/50">
                   <div className="w-5 h-5 rounded-full bg-[#1F7A5C]/10 text-[#1F7A5C] flex items-center justify-center shrink-0 border border-[#1F7A5C]/20">
                     <Check className="w-3 h-3 stroke-[2.5]" />
@@ -406,7 +452,7 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
           </div>
 
           <div className="space-y-4">
-            {industry.faqs.map((faq, idx) => (
+            {industry.faqs.map((faq: any, idx: number) => (
               <details key={idx} className="group bg-[#F7F4EC]/60 border border-[#D9E1DC] rounded-2xl [&_summary::-webkit-details-marker]:hidden shadow-2xs">
                 <summary className="flex cursor-pointer items-center justify-between p-6 font-bold text-[#12372A] select-none">
                   <span className="text-base md:text-lg pr-4 font-semibold text-[#12372A] group-open:text-[#1F7A5C] transition-colors">{faq.question}</span>
@@ -434,7 +480,7 @@ export default async function IndustryDetailPage({ params }: { params: Promise<{
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {industry.relatedResources.map((resource, idx) => (
+            {industry.relatedResources.map((resource: any, idx: number) => (
               <Link 
                 key={idx} 
                 href="/resources" 

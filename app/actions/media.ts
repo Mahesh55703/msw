@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
+import { requirePermission } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 import { del } from '@vercel/blob'
 import fs from 'fs'
@@ -9,8 +10,8 @@ import path from 'path'
 
 export async function getMediaUsage(url: string) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('media:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized', usage: [] }
     }
 
@@ -65,8 +66,8 @@ export async function getMediaUsage(url: string) {
 
 export async function updateMediaMetadata(data: { id: string; filename: string; altText?: string }) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('media:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 
@@ -93,8 +94,8 @@ export async function updateMediaMetadata(data: { id: string; filename: string; 
 
 export async function deleteMediaItem(id: string, force = false) {
   try {
-    const session = await verifySession()
-    if (!session.isAuth) {
+    const session = await requirePermission('media:manage').catch(()=>null)
+    if (!session) {
       return { success: false, error: 'Unauthorized' }
     }
 

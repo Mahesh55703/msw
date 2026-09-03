@@ -48,6 +48,8 @@ export async function createSession(userId: string, role: string) {
   })
 }
 
+import prisma from '@/lib/prisma'
+
 export async function verifySession() {
   try {
     const cookieStore = await cookies()
@@ -58,7 +60,16 @@ export async function verifySession() {
       return { isAuth: false, userId: null, role: null }
     }
 
-    return { isAuth: true, userId: session.userId, role: session.role }
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { role: true, isActive: true },
+    })
+
+    if (!user || !user.isActive) {
+      return { isAuth: false, userId: null, role: null }
+    }
+
+    return { isAuth: true, userId: session.userId, role: user.role }
   } catch {
     return { isAuth: false, userId: null, role: null }
   }

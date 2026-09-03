@@ -12,7 +12,7 @@ export default async function EditGuidePage({
   if (!session.isAuth) redirect('/admin/login')
 
   const resolvedParams = await params
-  const [guide, users] = await Promise.all([
+  const [guide, users, services] = await Promise.all([
     prisma.article.findUnique({
       where: { id: resolvedParams.id },
       include: {
@@ -33,9 +33,18 @@ export default async function EditGuidePage({
       select: { id: true, name: true, email: true },
       orderBy: { name: 'asc' },
     }),
+    prisma.page.findMany({
+      where: { path: { startsWith: '/services/' }, status: 'PUBLISHED' },
+      select: { path: true, publishedRevision: { select: { seoTitle: true } } }
+    }),
   ])
 
   if (!guide) notFound()
+  
+  const availableServices = services.map(s => ({
+    slug: s.path.replace('/services/', ''),
+    title: s.publishedRevision?.seoTitle?.split(' |')[0] || s.path.replace('/services/', '').replace(/-/g, ' ')
+  }))
 
-  return <GuideEditor initialData={guide} users={users} />
+  return <GuideEditor initialData={guide} users={users} availableServices={availableServices} />
 }

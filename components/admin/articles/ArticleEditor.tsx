@@ -34,24 +34,14 @@ import {
   Image as ImageIcon,
 } from 'lucide-react'
 
-const AVAILABLE_SERVICES = [
-  { slug: 'labour-compliance', title: 'Labour & Statutory Compliance' },
-  { slug: 'pf-esic-compliance', title: 'PF / ESIC Compliance' },
-  { slug: 'payroll-compliance', title: 'Payroll & HR Operations' },
-  { slug: 'factory-compliance', title: 'Factory & Industrial Compliance' },
-  { slug: 'contract-labour-compliance', title: 'Contract Labour Compliance' },
-  { slug: 'compliance-health-check', title: 'Labour Compliance Health Check' },
-  { slug: 'industrial-relations', title: 'Industrial Relations' },
-  { slug: 'hr-consulting', title: 'HR Consulting' },
-]
-
 export interface ArticleEditorProps {
   initialData?: any
   users: { id: string; name: string | null; email?: string }[]
   initialRelatedArticles?: { id: string; title: string; slug: string; category: string; published: boolean }[]
+  availableServices: { slug: string; title: string }[]
 }
 
-export default function ArticleEditor({ initialData, users, initialRelatedArticles = [] }: ArticleEditorProps) {
+export default function ArticleEditor({ initialData, users, initialRelatedArticles = [], availableServices }: ArticleEditorProps) {
   const router = useRouter()
   const isEdit = !!initialData
   const [, startTransition] = useTransition()
@@ -384,7 +374,7 @@ export default function ArticleEditor({ initialData, users, initialRelatedArticl
     }
   }
 
-  const filteredServices = AVAILABLE_SERVICES.filter(s =>
+  const filteredServices = availableServices.filter(s =>
     s.title.toLowerCase().includes(serviceSearchQuery.toLowerCase())
   )
 

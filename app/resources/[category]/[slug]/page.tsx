@@ -140,20 +140,6 @@ export async function generateMetadata({
   }
 }
 
-const AVAILABLE_SERVICES: Record<string, string> = {
-  'hr-consulting': 'Practical HR Consulting for Growing Businesses',
-  'labour-compliance': 'Labour & Statutory Compliance Support for Businesses',
-  'pf-esic-compliance': 'PF / ESIC Compliance',
-  'payroll-compliance': 'Payroll & HR Operations',
-  'payroll-hr-operations': 'Payroll & HR Operations',
-  'factory-compliance': 'Factory & Industrial Compliance',
-  'contract-labour': 'Contract Labour Compliance',
-  'contract-labour-compliance': 'Contract Labour Compliance',
-  'compliance-health-check': 'Labour Compliance Health Checks & Internal Reviews',
-  'compliance-audit': 'Labour Compliance Audits',
-  'industrial-relations': 'Industrial Relations',
-}
-
 export default async function ResourceDetailPage({
   params,
 }: {
@@ -182,6 +168,38 @@ export default async function ResourceDetailPage({
     })
   } catch (e) {
     console.error('Prisma error in resource page', e)
+  }
+
+  if (!resource) {
+    const staticItem = resourcesData.find((r) => r.slug === resolvedParams.slug)
+    if (staticItem) {
+      resource = {
+        ...staticItem,
+        author: staticItem.author ? { name: staticItem.author } : null,
+        keyTakeaways: staticItem.keyTakeaways?.map(t => ({ text: t })),
+        relatedServices: staticItem.relatedServices?.map(s => ({ serviceSlug: s }))
+      }
+    }
+  }
+
+  if (!resource) notFound()
+
+  // Fetch dynamic service titles
+  let dynamicServiceTitles: Record<string, string> = {}
+  try {
+    if (resource.relatedServices?.length > 0) {
+      const slugs = resource.relatedServices.map((rs: any) => rs.serviceSlug)
+      const services = await prisma.page.findMany({
+        where: { path: { in: slugs.map((s: string) => `/services/${s}`) }, status: 'PUBLISHED' },
+        select: { path: true, publishedRevision: { select: { seoTitle: true } } }
+      })
+      services.forEach(s => {
+        const slug = s.path.replace('/services/', '')
+        dynamicServiceTitles[slug] = s.publishedRevision?.seoTitle?.split(' |')[0] || slug.replace(/-/g, ' ')
+      })
+    }
+  } catch (e) {
+    // ignore
   }
 
   if (resource) {
@@ -595,7 +613,7 @@ export default async function ResourceDetailPage({
                             className="block bg-white border border-[#D9E1DC] rounded-2xl p-4 hover:border-[#1F7A5C]/50 hover:shadow-sm transition-all group"
                           >
                             <span className="text-[#202522] font-bold text-sm leading-snug block pr-2 group-hover:text-[#1F7A5C] transition-colors">
-                              {AVAILABLE_SERVICES[rs.serviceSlug] || rs.serviceSlug.replace(/-/g, ' ')}
+                              {dynamicServiceTitles[rs.serviceSlug] || rs.serviceSlug.replace(/-/g, ' ')}
                             </span>
                           </Link>
                         </li>

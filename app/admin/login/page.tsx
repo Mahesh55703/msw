@@ -2,6 +2,8 @@
 
 import { useActionState } from 'react'
 import { login } from '@/app/actions/auth'
+import Image from 'next/image'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,13 +21,22 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-[#F7F4EC] px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 bg-white p-8 md:p-10 rounded-3xl border border-[#D9E1DC] shadow-lg">
         <div className="text-center">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-[#12372A] flex items-center justify-center text-[#D6A84F] shadow-sm mb-4">
-            <ShieldCheck className="w-7 h-7 text-[#D6A84F]" />
+          <div className="flex justify-center mb-5">
+            <Link href="/" className="inline-block transition-transform hover:scale-[1.02]">
+              <Image 
+                src="/logo-transparent.png" 
+                alt="LabourAxis Logo" 
+                width={220} 
+                height={55} 
+                className="object-contain h-12 w-auto" 
+                priority 
+              />
+            </Link>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#12372A]">
-            LabourAxis Portal
+          <h2 className="text-xl font-bold tracking-tight text-[#12372A]">
+            Admin Portal Login
           </h2>
-          <p className="mt-1.5 text-xs text-[#66736D] font-medium">
+          <p className="mt-1 text-xs text-[#66736D] font-medium">
             Authorized administrative & compliance access
           </p>
         </div>

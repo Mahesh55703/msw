@@ -2,12 +2,13 @@
 
 import prisma from '@/lib/prisma'
 import { verifySession } from '@/lib/session'
+import { requirePermission } from '@/lib/rbac'
 import { revalidatePath } from 'next/cache'
 import { guideSchema, type GuideInput } from '@/lib/validations/guide'
 
 export async function createGuide(data: GuideInput) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('guides:manage').catch(()=>null)
+  if (!session) {
     return { success: false, error: 'Unauthorized: You must be logged in to create a guide' }
   }
 
@@ -87,8 +88,8 @@ export async function createGuide(data: GuideInput) {
 }
 
 export async function updateGuide(id: string, data: GuideInput) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('guides:manage').catch(()=>null)
+  if (!session) {
     return { success: false, error: 'Unauthorized: You must be logged in to update a guide' }
   }
 
@@ -190,8 +191,8 @@ export async function updateGuide(id: string, data: GuideInput) {
 }
 
 export async function deleteGuide(id: string) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('guides:manage').catch(()=>null)
+  if (!session) {
     return { success: false, error: 'Unauthorized: You must be logged in to delete a guide' }
   }
 
@@ -222,8 +223,8 @@ export async function deleteGuide(id: string) {
 }
 
 export async function togglePublishGuide(id: string) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('guides:manage').catch(()=>null)
+  if (!session) {
     return { success: false, error: 'Unauthorized: You must be logged in to modify guide status' }
   }
 
@@ -259,8 +260,8 @@ export async function togglePublishGuide(id: string) {
 }
 
 export async function searchResourcesForGuide(query: string, currentGuideId?: string) {
-  const session = await verifySession()
-  if (!session.isAuth) {
+  const session = await requirePermission('guides:manage').catch(()=>null)
+  if (!session) {
     return []
   }
 

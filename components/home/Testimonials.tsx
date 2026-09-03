@@ -98,7 +98,7 @@ export function Testimonials() {
               </div>
 
               <p className="text-[#202522] text-base md:text-lg leading-relaxed mb-8 italic flex-1">
-                "{current.quote}"
+                &ldquo;{current.quote}&rdquo;
               </p>
 
               <div className="flex items-center gap-4 pt-5 border-t border-[#D9E1DC]/60">
@@ -131,7 +131,7 @@ export function Testimonials() {
               </div>
 
               <p className="text-[#202522] text-base md:text-lg leading-relaxed mb-8 italic flex-1">
-                "{nextItem.quote}"
+                &ldquo;{nextItem.quote}&rdquo;
               </p>
 
               <div className="flex items-center gap-4 pt-5 border-t border-[#D9E1DC]/60">
